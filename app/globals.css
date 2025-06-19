@@ -1,0 +1,214 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 210 100% 50%;
+    --primary-foreground: 210 100% 98%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 14% 20%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 220 13% 69%;
+    --accent-foreground: 220 13% 20%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 210 100% 50%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 100% 50%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 220 13% 69%;
+    --accent-foreground: 220 13% 20%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 210 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+.font-noto {
+  font-family: var(--font-noto);
+}
+
+/* Custom colors for the theme - change from green to blue */
+:root {
+  --primary-50: 210 100% 97%;
+  --primary-100: 210 100% 94%;
+  --primary-200: 210 100% 85%;
+  --primary-300: 210 100% 75%;
+  --primary-400: 210 100% 65%;
+  --primary-500: 210 100% 55%;
+  --primary-600: 210 100% 50%;
+  --primary-700: 210 100% 40%;
+  --primary-800: 210 100% 30%;
+  --primary-900: 210 100% 20%;
+
+  /* Accent color - Gray instead of Gold/Amber */
+  --accent-50: 220 13% 95%;
+  --accent-100: 220 13% 90%;
+  --accent-200: 220 13% 80%;
+  --accent-300: 220 13% 70%;
+  --accent-400: 220 13% 60%;
+  --accent-500: 220 13% 50%;
+  --accent-600: 220 13% 40%;
+  --accent-700: 220 13% 30%;
+  --accent-800: 220 13% 20%;
+  --accent-900: 220 13% 10%;
+}
+
+/* Urdu text direction */
+.urdu {
+  direction: rtl;
+  text-align: right;
+}
+
+.urdu-center {
+  direction: rtl;
+  text-align: center;
+}
+
+/* Update the Islamic pattern color to blue */
+.islamic-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230066cc' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.islamic-pattern-light {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Update the divider color to blue */
+.islamic-divider {
+  background: linear-gradient(90deg, transparent, hsl(var(--primary-600)), transparent);
+}
+
+.islamic-divider::before,
+.islamic-divider::after {
+  content: " ";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: hsl(var(--primary-600));
+  font-size: 1rem;
+  background-color: white;
+  padding: 0 10px;
+}
+
+.islamic-divider-dark::before,
+.islamic-divider-dark::after {
+  background-color: hsl(var(--primary-900));
+}
+
+/* Add responsive utility classes for extra small screens */
+@layer utilities {
+  .xs\:text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
+  .xs\:text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  .xs\:text-base {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .xs\:h-44 {
+    height: 11rem;
+  }
+
+  .xs\:h-52 {
+    height: 13rem;
+  }
+
+  .xs\:w-44 {
+    width: 11rem;
+  }
+
+  .xs\:w-52 {
+    width: 13rem;
+  }
+
+  .xs\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .xs\:col-span-2 {
+    grid-column: span 2 / span 2;
+  }
+
+  .xs\:h-250px {
+    height: 250px;
+  }
+}
+
+/* Improve responsive text sizing */
+@media (max-width: 640px) {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    letter-spacing: -0.01em;
+  }
+
+  p,
+  li,
+  a {
+    letter-spacing: 0.01em;
+  }
+}
+
+/* Add a utility class for extra small screens */
+@media (min-width: 480px) {
+  .xs\:block {
+    display: block;
+  }
+
+  .xs\:hidden {
+    display: none;
+  }
+
+  .xs\:flex {
+    display: flex;
+  }
+}
