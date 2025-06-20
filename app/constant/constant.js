@@ -1,4 +1,4 @@
-const devURL = "http://localhost:4000/";
+const devURL = "http://localhost:4000";
 const prodURL = "";
 
 export const BASE_URL = devURL;

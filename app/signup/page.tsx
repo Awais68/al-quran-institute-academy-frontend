@@ -49,6 +49,12 @@ export default function Signup({
 }: RegisterModalProps) {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const ageOptions = [
+    { label: "Child (02-12)", value: "child(02-12)" },
+    { label: "Teen (13-17)", value: "teen(13-17)" },
+    { label: "Adult (18+)", value: "adult(18+)" },
+  ];
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     const data = {
@@ -61,6 +67,8 @@ export default function Signup({
       app: e.target.app.value,
       suitableTime: e.target.suitableTime.value,
       course: e.target.course.value,
+      city: e.target.city.value,
+      country: e.target.country.value,
       password: e.target.password.value,
 
       //   role: "student",
@@ -69,12 +77,15 @@ export default function Signup({
 
     try {
       const response = await axios.post(AppRoutes.signup, data);
+
+      console.log("Signup URL ===>", AppRoutes.signup);
+
       console.log(response);
-      if (response.status === 200 || 201) {
+      if (response.status === 200 || response.status === 201) {
         router.push("/login");
       }
     } catch (err: any) {
-      console.log("api message===>>>>>>>", err.message);
+      console.log("api error==>", err.response?.data || err.message);
     }
   };
 
@@ -154,7 +165,7 @@ export default function Signup({
                 </Label>
                 <Select name="gender" required>
                   <SelectTrigger className="border-blue-200 focus:border-blue-400">
-                    <SelectValue placeholder="Select age group" />
+                    <SelectValue placeholder="Select Gender" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="male">Male</SelectItem>
@@ -170,7 +181,7 @@ export default function Signup({
                 <Input
                   id="phone"
                   name="phone"
-                  type="number || tel"
+                  type="number"
                   placeholder="+1 (555) 123-4567"
                   className="border-blue-200 focus:border-blue-400"
                 />
@@ -206,17 +217,30 @@ export default function Signup({
                 <Label htmlFor="age" className="text-blue-900">
                   Age Group
                 </Label>
+                <Input
+                  id="age"
+                  name="age"
+                  placeholder="Age"
+                  className="border-blue-200 focus:border-blue-400"
+                />
+              </div>
+
+
+              {/* <div>
+                <Label htmlFor="age" className="text-blue-900">
+                  Age Group
+                </Label>
                 <Select name="age" required>
                   <SelectTrigger className="border-blue-200 focus:border-blue-400">
                     <SelectValue placeholder="Select age group" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="child">Child (02-12)</SelectItem>
-                    <SelectItem value="teen">Teen (13-17)</SelectItem>
-                    <SelectItem value="adult">Adult (18+)</SelectItem>
+                    <SelectItem value="child (02-12)">Child (02-12)</SelectItem>
+                    <SelectItem value="teen (13-17)">Teen (13-17)</SelectItem>
+                    <SelectItem value="adult (18+)">Adult (18+)</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
+              </div> */}
 
               <div>
                 <Label htmlFor="app" className="text-blue-900">
@@ -324,7 +348,7 @@ export default function Signup({
               <p className="text-blue-700 text-sm">
                 Already have an account?{" "}
                 <Link
-                  href="/login"
+                  href=""
                   className="text-blue-600 hover:text-blue-800 font-medium"
                 >
                   Sign in here
