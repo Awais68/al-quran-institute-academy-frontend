@@ -217,19 +217,14 @@ export default function Signup({
                 </div>
                 <div>
                   <Label htmlFor="age" className="text-blue-900">
-                    Age Group
+                    Date of Birth
                   </Label>
-                   <Select name="age" required>
+                  <Select name="age" required>
                     <SelectTrigger className="border-blue-200 focus:border-blue-400">
-                      <SelectValue placeholder= <CalendarRangeIcon/> />
+                      <SelectValue placeholder="Date of Birth" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <CalendarRangeIcon/>
-                      <
-                      {/* <SelectItem value="child (02-12)">Child (02-12)</SelectItem>
-                      <SelectItem value="teen (13-17)">Teen (13-17)</SelectItem>
-                      <SelectItem value="adult (18+)">Adult (18+)</SelectItem> */}
-                    </SelectContent>
+                    {/* <CalendarRangeIcon /> */}
+
                   </Select>
                 </div>
 

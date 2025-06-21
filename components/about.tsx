@@ -37,8 +37,7 @@ export default function About() {
           </h2>
           <div className="islamic-divider w-16 sm:w-20 md:w-24 mx-auto mb-4 sm:mb-6"></div>
           <p className="text-gray-600 max-w-2xl mx-auto text-xs sm:text-sm md:text-base px-4">
-            Founded in 1995, Madarsa Hajira has been a beacon of Islamic education and spiritual guidance for over 25
-            years.
+
           </p>
         </div>
 
@@ -52,17 +51,17 @@ export default function About() {
             <div className="relative h-[200px] xs:h-[250px] sm:h-[300px] md:h-[400px] lg:h-[500px] rounded-lg overflow-hidden shadow-2xl">
               <Image src="/images/prayar.png" alt="Madarsa Hajira Building" fill className="object-cover" />
             </div>
-            <div className="absolute -bottom-4 sm:-bottom-6 -right-4 sm:-right-6 bg-white p-2 sm:p-3 md:p-4 rounded-lg shadow-xl max-w-[150px] sm:max-w-[200px] md:max-w-xs">
-              <div className="flex items-center gap-1 sm:gap-2 md:gap-3 mb-0.5 sm:mb-1 md:mb-2">
+            {/* <div className="absolute -bottom-4 sm:-bottom-6 -right-4 sm:-right-6 bg-white p-2 sm:p-3 md:p-4 rounded-lg shadow-xl max-w-[150px] sm:max-w-[200px] md:max-w-xs"> */}
+              {/* <div className="flex items-center gap-1 sm:gap-2 md:gap-3 mb-0.5 sm:mb-1 md:mb-2">
                 <div className="bg-primary-100 p-1 sm:p-2 rounded-full">
-                  <span className="font-noto text-base sm:text-lg md:text-xl font-bold text-primary-700">٢٥+</span>
+                  <span className="font-noto text-base sm:text-lg md:text-xl font-bold text-primary-700"></span>
                 </div>
                 <h4 className="text-sm sm:text-base md:text-lg font-bold text-gray-900">Years of Excellence</h4>
               </div>
               <p className="text-gray-600 text-[10px] xs:text-xs md:text-sm">
                 Providing quality Islamic education since 1995
-              </p>
-            </div>
+              </p> */}
+            {/* </div> */}
           </motion.div>
 
           <motion.div variants={containerVariants} initial="hidden" animate={isInView ? "visible" : "hidden"}>
@@ -70,39 +69,42 @@ export default function About() {
               variants={itemVariants}
               className="text-lg sm:text-xl md:text-2xl font-bold text-primary-800 mb-3 sm:mb-4"
             >
-              Our History & Mission
+              Our Mission
             </motion.h3>
 
             <motion.div variants={itemVariants} className="mb-3 sm:mb-4 md:mb-6">
-              <p className="font-noto text-lg sm:text-xl text-primary-700 mb-1 sm:mb-2 urdu">
+              {/* <p className="font-noto text-lg sm:text-xl text-primary-700 mb-1 sm:mb-2 urdu">
                 ہمارا مقصد طلباء کو اسلامی تعلیمات سے آراستہ کرنا ہے
-              </p>
-              <p className="text-gray-600 text-xs sm:text-sm italic">
-                "Our purpose is to equip students with Islamic teachings and values"
+              </p> */}
+              <p className="text-gray-600 text-md font-bold sm:text-sm italic">
+                "Empowering students with Quranic knowledge and Islamic values"
               </p>
             </motion.div>
 
             <motion.p
               variants={itemVariants}
-              className="text-gray-700 mb-3 sm:mb-4 md:mb-6 leading-relaxed text-xs sm:text-sm md:text-base"
+              className="text-gray-700 mb-3 sm:mb-4 md:mb-6 leading-relaxed text-xs sm:text-sm md:text-base text-justify"
             >
-              Madarsa Hajira was established with the vision of providing comprehensive Islamic education that balances
-              traditional teachings with contemporary educational approaches. Our institution has grown from a small
-              classroom to a full-fledged educational center serving hundreds of students.
+              Welcome to Al Quran Institute Online!
+              Al Quran Institute Online is dedicated to providing comprehensive and accessible Quranic education services. We offer a diverse range of Islamic courses designed to foster proficiency in Quran recitation, deepen understanding of its teachings, cultivate strong character, and inspire life reformation, all in strict adherence to Sharia principles.
+              Our proven online classes have successfully guided numerous students, both within Pakistan and globally, in their journey to read and comprehend the Holy Quran.
+              We are proud to offer our services 24 hours a day, 7 days a week, providing unparalleled flexibility for learners to schedule classes at their convenience.
+              We earnestly encourage all Muslim brothers and sisters to enroll with Al Quran Institute Online. Fulfilling the sacred duty of not only reciting the Holy Quran but also internalizing its profound meaning is a paramount endeavor. If you or your loved ones aspire to enhance Quranic recitation, we invite you to take this transformative step today and illuminate your hearts with the divine words of Almighty Allah.
+              Join Al Quran Institute Online now and benefit from our continuous online Quran teaching services.
             </motion.p>
 
-            <motion.p
+            {/* <motion.p
               variants={itemVariants}
               className="text-gray-700 mb-4 sm:mb-6 md:mb-8 leading-relaxed text-xs sm:text-sm md:text-base"
             >
               Our mission is to nurture students who excel not only in Islamic knowledge but also in character and
               conduct. We strive to develop individuals who embody Islamic values and contribute positively to society.
-            </motion.p>
+            </motion.p> */}
 
             <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
               <div className="bg-primary-50 p-4 md:p-6 rounded-lg border-l-4 border-primary-600">
                 <h4 className="text-lg md:text-xl font-bold text-gray-900 mb-2">Our Vision</h4>
-                <p className="font-noto text-primary-700 mb-1 urdu text-base">علم کے ساتھ عمل</p>
+                {/* <p className="font-noto text-primary-700 mb-1 urdu text-base">علم کے ساتھ عمل</p> */}
                 <p className="text-gray-700 text-sm md:text-base">
                   To be a leading institution that produces scholars who combine deep Islamic knowledge with exemplary
                   character.
@@ -110,7 +112,7 @@ export default function About() {
               </div>
               <div className="bg-primary-50 p-4 md:p-6 rounded-lg border-l-4 border-primary-600">
                 <h4 className="text-lg md:text-xl font-bold text-gray-900 mb-2">Our Values</h4>
-                <p className="font-noto text-primary-700 mb-1 urdu text-base">اخلاق و کردار</p>
+                {/* <p className="font-noto text-primary-700 mb-1 urdu text-base">اخلاق و کردار</p> */}
                 <p className="text-gray-700 text-sm md:text-base">
                   Excellence, integrity, compassion, and dedication to lifelong learning and spiritual growth.
                 </p>
@@ -121,11 +123,15 @@ export default function About() {
               <h4 className="text-base md:text-lg font-bold text-gray-900 mb-3">What Sets Us Apart</h4>
               <ul className="space-y-2">
                 {[
-                  "Qualified and experienced faculty",
-                  "Comprehensive Islamic curriculum",
-                  "Modern teaching methodologies",
-                  "Focus on character development",
-                  "Supportive learning environment",
+
+                  "What Sets Us Apart",
+                  "✅ Expert & Certified Online Instructors",
+                  "✅ Structured Quran Curriculum with Tajweed & Tafsir",
+                  "✅ Interactive Online Learning Experience",
+                  "✅ Focus on Character Building & Spiritual Growth",
+                  "✅ Flexible Timings for Global Students",
+                  "✅ 1-on-1 and Group Classes Available"
+
                 ].map((item, index) => (
                   <li key={index} className="flex items-start gap-2">
                     <CheckCircle className="h-5 w-5 text-primary-600 mt-0.5 flex-shrink-0" />

@@ -11,18 +11,18 @@ export default function Footer() {
         <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-12">
           <div>
             <div className="flex items-center mb-3 sm:mb-4 md:mb-6">
-               <div className="relative h-16 w-16 md:h-20 md:w-20 bg-white mr-7 backdrop-blur-sm rounded-full overflow-hidden shadow-lg">
-                          <Image
-                            src="/images/hajiraLogo.png"
-                            alt="Madarsa Hajira Logo"
-                            fill={true}
-                            className="object-contain"
-                          />
-                        </div>
+              <div className="relative h-16 w-16 md:h-20 md:w-20 bg-white mr-7 backdrop-blur-sm rounded-full overflow-hidden shadow-lg">
+                <Image
+                  src="/images/hajiraLogo.png"
+                  alt="Madarsa Hajira Logo"
+                  fill={true}
+                  className="object-contain"
+                />
+              </div>
               <div>
-                <h3 className="text-lg sm:text-xl md:text-2xl font-bold font-noto text-white">مدرسہ حاجرہ</h3>
-                <br/>
-                <p className="text-[8px] sm:text-[10px] md:text-xs text-accent-300">ESTABLISHED 2010</p>
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold font-noto text-white">Al-Quran Institute Online</h3>
+                <br />
+                {/* <p className="text-[8px] sm:text-[10px] md:text-xs text-accent-300">ESTABLISHED 2010</p> */}
               </div>
             </div>
             <p className="mb-3 sm:mb-4 md:mb-6 text-primary-200 leading-relaxed text-xs sm:text-sm">
@@ -171,11 +171,11 @@ export default function Footer() {
               </li>
               <li className="flex items-center">
                 <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-2 md:mr-3 text-accent-400 flex-shrink-0" />
-                <span className="text-primary-200 text-xs sm:text-sm">+1 (123) 456-7890</span>
+                <span className="text-primary-200 text-xs sm:text-sm">+92-340-3201940</span>
               </li>
               <li className="flex items-center">
                 <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-2 md:mr-3 text-accent-400 flex-shrink-0" />
-                <span className="text-primary-200 text-xs sm:text-sm">info@madarsahajira.com</span>
+                <span className="text-primary-200 text-xs sm:text-sm">info@alquraninstituteonline.com</span>
               </li>
             </ul>
 
@@ -191,7 +191,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-primary-800 mt-6 sm:mt-8 md:mt-12 pt-4 sm:pt-6 md:pt-8 text-center text-primary-300 text-[10px] xs:text-xs sm:text-sm">
-          <p>&copy; {currentYear} Madarsa Hajira. All rights reserved.</p>
+          <p>&copy; {currentYear} Al-Quran Institute Online. All rights reserved.</p>
         </div>
       </div>
     </footer>

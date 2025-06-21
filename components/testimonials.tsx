@@ -14,9 +14,9 @@ const testimonials = [
     role: "Parent",
     image: "/images/person1.png",
     quote:
-      "Madarsa Hajira has transformed my child's understanding of Islam. The teachers are knowledgeable and caring, creating an environment where students thrive both academically and spiritually.",
-    urduQuote:
-      "مدرسہ حاجرہ نے میرے بچے کی اسلام کی سمجھ کو بدل دیا ہے۔ اساتذہ علم رکھتے ہیں اور خیال رکھتے ہیں، ایک ایسا ماحول بناتے ہیں جہاں طلباء تعلیمی اور روحانی طور پر پروان چڑھتے ہیں۔",
+      " has transformed my child's understanding of Islam. The teachers are knowledgeable and caring, creating an environment where students thrive both academically and spiritually.",
+    // urduQuote:
+      // "مدرسہ حاجرہ نے میرے بچے کی اسلام کی سمجھ کو بدل دیا ہے۔ اساتذہ علم رکھتے ہیں اور خیال رکھتے ہیں، ایک ایسا ماحول بناتے ہیں جہاں طلباء تعلیمی اور روحانی طور پر پروان چڑھتے ہیں۔",
   },
   {
     id: 2,
@@ -25,8 +25,8 @@ const testimonials = [
     image: "/images/person2.png",
     quote:
       "The years I spent at Madarsa Hajira were the most formative of my life. The comprehensive curriculum and supportive teachers helped me build a strong foundation in Islamic studies that continues to guide me today.",
-    urduQuote:
-      "مدرسہ حاجرہ میں گزارے گئے سال میری زندگی کے سب سے زیادہ تشکیلی تھے۔ جامع نصاب اور معاون اساتذہ نے مجھے اسلامی تعلیمات میں ایک مضبوط بنیاد بنانے میں مدد کی جو آج بھی میری رہنمائی کرتی ہے۔",
+    // urduQuote:
+    //   "مدرسہ حاجرہ میں گزارے گئے سال میری زندگی کے سب سے زیادہ تشکیلی تھے۔ جامع نصاب اور معاون اساتذہ نے مجھے اسلامی تعلیمات میں ایک مضبوط بنیاد بنانے میں مدد کی جو آج بھی میری رہنمائی کرتی ہے۔",
   },
   {
     id: 3,
@@ -35,8 +35,8 @@ const testimonials = [
     image: "/images/person3.png",
     quote:
       "Madarsa Hajira is a pillar in our community. Their commitment to excellence in Islamic education and character development has produced graduates who are well-rounded individuals and positive contributors to society.",
-    urduQuote:
-      "مدرسہ حاجرہ ہماری کمیونٹی کا ایک ستون ہے۔ اسلامی تعلیم اور کردار سازی میں ان کی عمدگی کے لیے عزم نے ایسے فارغین پیدا کیے ہیں جو ہمہ جہت افراد ہیں اور معاشرے میں مثبت کردار ادا کرتے ہیں۔",
+    // urduQuote:
+    //   "مدرسہ حاجرہ ہماری کمیونٹی کا ایک ستون ہے۔ اسلامی تعلیم اور کردار سازی میں ان کی عمدگی کے لیے عزم نے ایسے فارغین پیدا کیے ہیں جو ہمہ جہت افراد ہیں اور معاشرے میں مثبت کردار ادا کرتے ہیں۔",
   },
 ]
 
@@ -117,9 +117,9 @@ export default function Testimonials() {
                     "{testimonial.quote}"
                   </blockquote>
 
-                  <div className="font-noto text-primary-700 text-sm sm:text-base italic mb-4 sm:mb-6 md:mb-8 text-center max-w-2xl mx-auto urdu leading-relaxed">
+                  {/* <div className="font-noto text-primary-700 text-sm sm:text-base italic mb-4 sm:mb-6 md:mb-8 text-center max-w-2xl mx-auto urdu leading-relaxed">
                     "{testimonial.urduQuote}"
-                  </div>
+                  </div> */}
 
                   <div className="flex flex-col items-center">
                     <div className="relative w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full overflow-hidden mb-2 sm:mb-3 md:mb-4 border-4 border-primary-100">

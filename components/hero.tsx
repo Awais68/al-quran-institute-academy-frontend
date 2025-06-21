@@ -11,30 +11,30 @@ export default function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationRef = useRef<number | null>(null)
-  
+
   const slides = [
     {
       id: 1,
       image: "/images/hero1.png",
-      title: "تعلیم کے ساتھ تربیت، علم کے ساتھ عمل",
-      subtitle: "Education with nurturing, knowledge with practice",
-      urduText: "قرآن و سنت کی روشنی میں جدید تعلیم کا حصول",
+      title: "Education with character-building, knowledge with action.",
+      // subtitle: "Education with nurturing, knowledge with practice",
+      urduText: "Empowering modern education through the guidance of the Quran and Sunnah.",
       color: "#4CAF50"
     },
     {
       id: 2,
       image: "/images/hero2.png",
-      title: "قرآن کی روشنی میں زندگی کا سفر",
-      subtitle: "Life's journey in the light of the Quran",
-      urduText: "اخلاق و کردار کی تعمیر ہماری اولین ترجیح ہے",
+      title: "A journey of life guided by the wisdom of the Quran",
+      // subtitle: "Life's journey in the light of the Quran",
+      urduText: "Building character and ethics is our top priority",
       color: "#2196F3"
     },
     {
       id: 3,
       image: "/images/hero3.png",
-      title: "اسلامی اقدار کی ترویج",
-      subtitle: "Islamic values",
-      urduText: "دین و دنیا کی تعلیم ایک ساتھ، ایک چھت کے نیچے",
+      title: "Promotion of Islamic values",
+      // subtitle: "Islamic values",
+      urduText: "A unified space for both Islamic and contemporary education",
       color: "#9C27B0"
     },
   ]
@@ -52,11 +52,11 @@ export default function Hero() {
     const material = new THREE.MeshBasicMaterial({ color: new THREE.Color(slides[currentSlide].color), transparent: true, opacity: 0.6 })
     const geo = new THREE.BoxGeometry(0.2, 0.2, 0.2)
     for (let i = 0; i < 100; i++) {
-const mesh = new THREE.Mesh(geo, material.clone())
-const r = 8 + Math.random() * 15
-const a = Math.random() * Math.PI * 2
-mesh.position.set(Math.cos(a) * r, (Math.random() - 0.5) * 15, Math.sin(a) * r - 5)
-mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0)
+      const mesh = new THREE.Mesh(geo, material.clone())
+      const r = 8 + Math.random() * 15
+      const a = Math.random() * Math.PI * 2
+      mesh.position.set(Math.cos(a) * r, (Math.random() - 0.5) * 15, Math.sin(a) * r - 5)
+      mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0)
       mesh.scale.setScalar(Math.random() * 0.8 + 0.2)
       particles.add(mesh)
     }
@@ -78,11 +78,11 @@ mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0)
       renderer.setSize(window.innerWidth, window.innerHeight)
     }
     window.addEventListener('resize', onResize)
-    return () => { window.removeEventListener('resize', onResize); if (animationRef.current) cancelAnimationFrame(animationRef.current)}
+    return () => { window.removeEventListener('resize', onResize); if (animationRef.current) cancelAnimationFrame(animationRef.current) }
   }, [currentSlide])
 
   useEffect(() => {
-    const id = setInterval(() => setCurrentSlide(i => (i+1)%slides.length), 6000)
+    const id = setInterval(() => setCurrentSlide(i => (i + 1) % slides.length), 6000)
     return () => clearInterval(id)
   }, [])
 
@@ -97,7 +97,7 @@ mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0)
           key={slide.id}
           className={cn("absolute inset-0 transition-opacity duration-1000", i === currentSlide ? 'opacity-100' : 'opacity-0')}
         >
-          <Image src={slide.image} alt={slide.title} fill priority={i===0} sizes="100vw" className="object-cover brightness-50" />
+          <Image src={slide.image} alt={slide.title} fill priority={i === 0} sizes="100vw" className="object-cover brightness-50" />
         </div>
       ))}
 
@@ -106,12 +106,12 @@ mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0)
         <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Text */}
           <motion.div key={currentSlide} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }} className="text-center md:text-left">
-            <h3 className="text-sm sm:text-base text-gray-300 uppercase">Madrasa Hajera</h3>
-            <h1 className="mt-2 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">مدرسہ حاجرہ</h1>
+            <h3 className="text-sm sm:text-base text-gray-300 uppercase">Al-Quran Institute Online</h3>
+            <h1 className="mt-2 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">Al-Quran Institute Online</h1>
             <div className="mt-2 h-1 w-16 bg-accent-500 mx-auto md:mx-0" />
             <p className="mt-4 text-xl sm:text-2xl font-noto text-primary-200">{slides[currentSlide].title}</p>
             <p className="mt-2 text-base sm:text-lg md:text-xl text-white">{slides[currentSlide].urduText}</p>
-            <p className="mt-2 text-sm sm:text-base text-primary-200 italic">"{slides[currentSlide].subtitle}"</p>
+            {/* <p className="mt-2 text-sm sm:text-base text-primary-200 italic">"{slides[currentSlide].subtitle}"</p> */}
             <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <Link href="/#programs" className="px-6 py-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-md text-sm sm:text-base w-full sm:w-auto text-center">Our Programs</Link>
               <Link href="/#contact" className="px-6 py-2 border border-accent-400 text-gray-300 rounded-md text-sm sm:text-base w-full sm:w-auto text-center hover:bg-accent-500/10">Contact Us</Link>
@@ -122,10 +122,10 @@ mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0)
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.2 }} className="hidden lg:block">
             <div className="p-6 bg-white/5 backdrop-blur-md rounded-2xl shadow-xl">
               {[
-                { icon: '📖', title: 'قرآنی تعلیم', desc: 'معیاری قرآنی تعلیم برائے تجوید اور تفہیم' },
-                { icon: '🎓', title: 'جدید نصاب', desc: 'عصری تعلیم اسلامی اصولوں کے مطابق' },
-                { icon: '🌱', title: 'کردار سازی', desc: 'اخلاقی اقدار اور اصولوں کی ترقی' },
-                { icon: '👨‍🏫', title: 'ماہر اساتذہ', desc: 'پرعزم تجربہ کار اساتذہ' }
+                { icon: '📖', title: 'Authentic Quranic Learning', desc: 'Providing authentic Quranic learning with proper Tajweed and meaningful understanding' },
+                { icon: '🎓', title: 'Up-to-date Curriculum', desc: 'Delivering contemporary education rooted in Islamic values.' },
+                { icon: '🌱', title: 'Focus on Character Development', desc: 'Advancing ethical values and foundational principles.' },
+                { icon: '👨‍🏫', title: 'Expert and Passionate Teachers', desc: 'Driven and seasoned teachers devoted to excellence.' }
               ].map((f, idx) => (
                 <div key={idx} className="flex items-start mb-4 last:mb-0">
                   <div className="text-2xl mr-3">{f.icon}</div>
@@ -150,7 +150,7 @@ mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0)
               'rounded-full transition-all duration-300',
               idx === currentSlide ? 'w-4 h-4 bg-accent-500' : 'w-2 h-2 bg-white/50 hover:bg-white/80'
             )}
-            aria-label={`Slide ${idx+1}`}
+            aria-label={`Slide ${idx + 1}`}
           />
         ))}
       </div>

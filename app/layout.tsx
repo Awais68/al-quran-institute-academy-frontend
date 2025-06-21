@@ -36,7 +36,8 @@ export const metadata: Metadata = {
   description:
     "Al-Quran Institute Online provides quality Islamic education with a focus on character development and practical implementation of knowledge.",
   icons: {
-    icon: "/images/hajiraLogo.png",
+    icon: "/images/logo.png",
+    
   },
 }
 
