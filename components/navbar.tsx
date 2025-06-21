@@ -16,7 +16,7 @@ export default function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm shadow-sm">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <Link href="/" className="flex items-center">
-          <span className="font-noto text-3xl font-bold text-blue-600">مدرسہ حاجرہ</span>
+          <span className="font-noto text-3xl font-bold text-blue-600">Al-Quran Institute Online</span>
         </Link>
 
         {/* Desktop Navigation */}

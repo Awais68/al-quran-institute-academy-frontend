@@ -4,6 +4,8 @@ import { Inter } from "next/font/google"
 import localFont from "next/font/local"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import AuthContextProvider from "./context/AuthContext"
+
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,16 +27,16 @@ const notoNastaliq = localFont({
       style: "normal",
     },
   ],
-   display: "swap", 
+  display: "swap",
   variable: "--font-noto",
 })
 
 export const metadata: Metadata = {
-  title: "Madarsa Hajira - Islamic Education Center",
+  title: "AL-QURAN Institute Online - Islamic Education Center",
   description:
-    "Madarsa Hajira provides quality Islamic education with a focus on character development and practical implementation of knowledge.",
-     icons: {
-    icon: "/images/hajiraLogo.png", 
+    "Al-Quran Institute Online provides quality Islamic education with a focus on character development and practical implementation of knowledge.",
+  icons: {
+    icon: "/images/hajiraLogo.png",
   },
 }
 
@@ -45,11 +47,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${notoNastaliq.variable} font-sans overflow-x-hidden overflow-y-auto`}  cz-shortcut-listen="true">
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          {children}
-        </ThemeProvider>
+      <body className={`${inter.variable} ${notoNastaliq.variable} font-sans overflow-x-hidden overflow-y-auto`} cz-shortcut-listen="true">
+        <AuthContextProvider>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+            {children}
+          </ThemeProvider>
+        </AuthContextProvider>
       </body>
     </html>
   )
 }
+
+

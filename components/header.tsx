@@ -59,7 +59,7 @@ export default function Header() {
           <div className="relative h-16 w-16 md:h-20 md:w-20">
             <Image
               src="/images/hajiraLogo.png"
-              alt="Madarsa Hajira Logo"
+              alt="Al-Quran Institute Online"
               fill={true}
               className="object-contain"
             />
