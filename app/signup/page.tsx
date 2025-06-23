@@ -22,6 +22,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import {
+  CalendarIcon,
   CalendarRangeIcon,
   EyeIcon,
   EyeOffIcon,
@@ -36,7 +37,14 @@ import axios from "axios";
 import { AppRoutes } from "@/app/constant/constant";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Calendar28 } from "@/components/datepicker";
 import { Calendar } from "@/components/ui/calendar";
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface RegisterModalProps {
   open: boolean;
@@ -46,12 +54,14 @@ interface RegisterModalProps {
 
 export default function Signup({
   open,
+
   onOpenChange,
   onLoginClick,
 }: RegisterModalProps) {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-
+  //  const [date, setDate] = React.useState<Date | undefined>(new Date());
+  const [date, setDate] = useState();
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     const data = {
@@ -79,7 +89,7 @@ export default function Signup({
 
       console.log(response);
       if (response.status === 200 || response.status === 201) {
-        router.push("/login");
+        router.push("/students");
       }
     } catch (err: any) {
       console.log("api error==>", err.response?.data || err.message);
@@ -110,7 +120,7 @@ export default function Signup({
               </div>
             </Link>
             <CardTitle className="text-2xl text-blue-900">
-              Join Our Community
+              Join Us Now
             </CardTitle>
             <CardDescription className="text-blue-700">
               Create your account to start learning the Quran
@@ -214,20 +224,40 @@ export default function Signup({
                     className="border-blue-200 focus:border-blue-400"
                   />
                 </div>
-                <div>
+                <div className="w-full max-w-sm space-y-2">
                   <Label htmlFor="dob" className="text-blue-900">
                     Date of Birth
                   </Label>
-                  <Select name="dob" required>
-                    <SelectTrigger className="border-blue-200 focus:border-blue-400">
-                      <SelectValue placeholder="DATE OF BIRTH" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="dob">
-                        <Calendar />
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal border-blue-200"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date ? (
+                          format(date, "PPP")
+                        ) : (
+                          <span className="text-muted-foreground">
+                            Select your DOB
+                          </span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        captionLayout="dropdown"
+                        fromYear={1950}
+                        toYear={2024}
+                        className="rounded-md border"
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
 
                 <div>
