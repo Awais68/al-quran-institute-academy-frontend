@@ -1,18 +1,26 @@
+"use client"; // if using app router
 
-import { useState } from 'react';
-import DatePicker from 'react-date-picker';
+import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
+export default function DOBPicker() {
+  const [dob, setDob] = useState(null);
 
-type ValuePiece = Date | null;
-
-type Value = ValuePiece | [ValuePiece, ValuePiece];
-
-export default function Calender() {
-    const [value, onChange] = useState<Value>(new Date());
-
-    return (
-        <div>
-            <DatePicker onChange={onChange} value={value} />
-        </div>
-    );
+  return (
+    <div className="flex flex-col gap-2">
+      <label className="text-sm font-medium">Date of Birth</label>
+      <DatePicker
+        selected={dob}
+        onChange={(date: any) => setDob(date)}
+        dateFormat="dd/MM/yyyy"
+        showYearDropdown
+        scrollableYearDropdown
+        yearDropdownItemNumber={100}
+        maxDate={new Date()}
+        placeholderText="Select your birth date"
+        className="p-2 border border-gray-300 rounded-md"
+      />
+    </div>
+  );
 }

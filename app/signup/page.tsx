@@ -36,6 +36,7 @@ import axios from "axios";
 import { AppRoutes } from "@/app/constant/constant";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Calendar } from "@/components/ui/calendar";
 
 interface RegisterModalProps {
   open: boolean;
@@ -51,7 +52,6 @@ export default function Signup({
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
-
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     const data = {
@@ -60,7 +60,7 @@ export default function Signup({
       email: e.target.email.value,
       gender: e.target.gender.value,
       phone: e.target.phone.value,
-      age: e.target.age.value,
+      dob: e.target.dob.value,
       app: e.target.app.value,
       suitableTime: e.target.suitableTime.value,
       course: e.target.course.value,
@@ -173,7 +173,6 @@ export default function Signup({
                     <SelectContent>
                       <SelectItem value="male">Male</SelectItem>
                       <SelectItem value="female">Female</SelectItem>
-
                     </SelectContent>
                   </Select>
                 </div>
@@ -216,15 +215,18 @@ export default function Signup({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="age" className="text-blue-900">
+                  <Label htmlFor="dob" className="text-blue-900">
                     Date of Birth
                   </Label>
-                  <Select name="age" required>
+                  <Select name="dob" required>
                     <SelectTrigger className="border-blue-200 focus:border-blue-400">
-                      <SelectValue placeholder="Date of Birth" />
+                      <SelectValue placeholder="DATE OF BIRTH" />
                     </SelectTrigger>
-                    {/* <CalendarRangeIcon /> */}
-
+                    <SelectContent>
+                      <SelectItem value="dob">
+                        <Calendar />
+                      </SelectItem>
+                    </SelectContent>
                   </Select>
                 </div>
 
@@ -253,11 +255,9 @@ export default function Signup({
                       <SelectValue placeholder="Select Your Timing" />
                     </SelectTrigger>
                     <SelectContent>
-
-
-                      <SelectItem value="time">12:00AM</SelectItem>
-                      <SelectItem value="time">12:30AM</SelectItem>
-                      <SelectItem value="time">01:00AM</SelectItem>
+                      <SelectItem value="1200">12:00AM</SelectItem>
+                      <SelectItem value="1230">12:30AM</SelectItem>
+                      <SelectItem value="0100">01:00AM</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -281,7 +281,6 @@ export default function Signup({
                   </Select>
                 </div>
               </div>
-
 
               <div className="relative">
                 <Label htmlFor="password" className="text-red-700 ">
@@ -346,6 +345,6 @@ export default function Signup({
           </CardContent>
         </Card>
       </div>
-    </div >
+    </div>
   );
 }
