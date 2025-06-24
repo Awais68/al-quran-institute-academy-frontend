@@ -45,6 +45,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import UploadImage from "@/components/UploadingImage";
 
 interface RegisterModalProps {
   open: boolean;
@@ -70,13 +71,14 @@ export default function Signup({
       email: e.target.email.value,
       gender: e.target.gender.value,
       phone: e.target.phone.value,
-      dob: e.target.dob.value,
+      // dob: e.target.dob.value,
       app: e.target.app.value,
       suitableTime: e.target.suitableTime.value,
       course: e.target.course.value,
       city: e.target.city.value,
       country: e.target.country.value,
       password: e.target.password.value,
+      image: e.target.image.value,
 
       //   role: "student",
     };
@@ -229,35 +231,7 @@ export default function Signup({
                     Date of Birth
                   </Label>
 
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start text-left font-normal border-blue-200"
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date ? (
-                          format(date, "PPP")
-                        ) : (
-                          <span className="text-muted-foreground">
-                            Select your DOB
-                          </span>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={date}
-                        onSelect={setDate}
-                        captionLayout="dropdown"
-                        fromYear={1950}
-                        toYear={2024}
-                        className="rounded-md border"
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  
                 </div>
 
                 <div>
@@ -311,6 +285,8 @@ export default function Signup({
                   </Select>
                 </div>
               </div>
+
+              <UploadImage/>
 
               <div className="relative">
                 <Label htmlFor="password" className="text-red-700 ">
