@@ -134,6 +134,11 @@
   background-color: hsl(var(--primary-900));
 }
 
+.react-day-picker .grid-cols-7 {
+  grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+}
+
+
 /* Add responsive utility classes for extra small screens */
 @layer utilities {
   .xs\:text-xs {

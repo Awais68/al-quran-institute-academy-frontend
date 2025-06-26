@@ -21,31 +21,19 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
-import {
-  CalendarIcon,
-  CalendarRangeIcon,
-  EyeIcon,
-  EyeOffIcon,
-  LucideLetterText,
-  MailIcon,
-  Moon,
-  Star,
-  UserIcon,
-} from "lucide-react";
-// import { IslamicBackground } from "@/components/islamic-background";
+import { EyeIcon, EyeOffIcon, MailIcon, UserIcon } from "lucide-react";
 import axios from "axios";
 import { AppRoutes } from "@/app/constant/constant";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Calendar28 } from "@/components/datepicker";
-import { Calendar } from "@/components/ui/calendar";
 
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+// import {
+//   Popover,
+//   PopoverContent,
+//   PopoverTrigger,
+// } from "@/components/ui/popover";
 import UploadImage from "@/components/UploadingImage";
+import { Calendar22 } from "@/components/datepicker";
 
 interface RegisterModalProps {
   open: boolean;
@@ -55,32 +43,66 @@ interface RegisterModalProps {
 
 export default function Signup({
   open,
-
   onOpenChange,
   onLoginClick,
 }: RegisterModalProps) {
   const [showPassword, setShowPassword] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
   const router = useRouter();
+  const [date, setDate] = useState<Date | undefined>();
+
   //  const [date, setDate] = React.useState<Date | undefined>(new Date());
-  const [date, setDate] = useState();
+  const daysOfWeek = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday", // ✔️ Correct spelling
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const dobtoage = (dob: Date | undefined) => {
+    if (!dob) return null;
+
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+      age--; // Birthday not yet reached this year
+    }
+
+    return age;
+  };
+
+  // const [date, setDate] = useState();
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+
+    // dobtoage(e.target.dob.value);
+    const formattedDOB = date ? date.toISOString().split("T")[0] : null;
+    const age = dobtoage(date);
+
     const data = {
       name: e.target.name.value,
       fatherName: e.target.fatherName.value,
       email: e.target.email.value,
       gender: e.target.gender.value,
       phone: e.target.phone.value,
-      // dob: e.target.dob.value,
+      dob: formattedDOB,
+      age: age,
+      // date: formattedDOB,
       app: e.target.app.value,
       suitableTime: e.target.suitableTime.value,
       course: e.target.course.value,
       city: e.target.city.value,
       country: e.target.country.value,
       password: e.target.password.value,
-      image: e.target.image.value,
-
-      //   role: "student",
+      image: imageUrl,
+      // classDays: selectedDays,
+        role: "student",
     };
     console.log("data==>>>", data);
 
@@ -102,7 +124,7 @@ export default function Signup({
     <div className="min-h-screen bg-white relative overflow-hidden">
       {/* <IslamicBackground /> */}
       <div className="relative z-2 min-h-screen flex items-center justify-center px-4 py-0">
-        <Card className="w-full max-w-md bg-white/70 backdrop-blur-sm border-blue-200/50 md:max-w-[70%]">
+        <Card className="w-full max-w-md bg-white/70 backdrop-blur-sm border-blue-100/50 md:max-w-[70%]">
           <CardHeader className="text-center">
             <Link
               href="/"
@@ -188,7 +210,6 @@ export default function Signup({
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div>
                   <Label htmlFor="phone" className="text-blue-900">
                     Phone Number
@@ -213,7 +234,6 @@ export default function Signup({
                     className="border-blue-200 focus:border-blue-400"
                   />
                 </div>
-
                 <div>
                   <Label htmlFor="country" className="text-blue-900">
                     Country
@@ -226,14 +246,15 @@ export default function Signup({
                     className="border-blue-200 focus:border-blue-400"
                   />
                 </div>
-                <div className="w-full max-w-sm space-y-2">
-                  <Label htmlFor="dob" className="text-blue-900">
-                    Date of Birth
-                  </Label>
-
-                  
+                <div className="">
+                  <Label htmlFor="dob" className="text-blue-900"></Label>
+                  <Calendar22 />
+                  {date && (
+                    <p className="text-blue-700 mt-1">
+                      Your Age: {dobtoage(date)} years
+                    </p>
+                  )}
                 </div>
-
                 <div>
                   <Label htmlFor="app" className="text-blue-900">
                     Class Application
@@ -265,7 +286,6 @@ export default function Signup({
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div>
                   <Label htmlFor="course" className="text-blue-900">
                     Course
@@ -284,9 +304,39 @@ export default function Signup({
                     </SelectContent>
                   </Select>
                 </div>
+                {/* <div>
+                  <Label htmlFor="day" className="text-blue-900">
+                    Class Days
+                  </Label>
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    {daysOfWeek.map((day) => (
+                      <label
+                        key={day}
+                        className="flex items-center gap-2 text-blue-800"
+                      >
+                        <Checkbox
+                          id={day}
+                          checked={selectedDays.includes(day)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setSelectedDays([...selectedDays, day]);
+                            } else {
+                              setSelectedDays(
+                                selectedDays.filter((d) => d !== day)
+                              );
+                            }
+                          }}
+                        />
+                        {day}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                console.log("classDays:", selectedDays) */}
+                <UploadImage
+                  onUploadComplete={(url: any) => setImageUrl(url)}
+                />
               </div>
-
-              <UploadImage/>
 
               <div className="relative">
                 <Label htmlFor="password" className="text-red-700 ">

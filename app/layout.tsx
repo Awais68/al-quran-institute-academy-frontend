@@ -5,6 +5,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import AuthContextProvider from "./context/AuthContext";
+import "react-day-picker/dist/style.css";
 
 const inter = Inter({
   subsets: ["latin"],
