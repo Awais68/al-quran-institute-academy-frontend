@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -26,14 +25,8 @@ import axios from "axios";
 import { AppRoutes } from "@/app/constant/constant";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
-// import {
-//   Popover,
-//   PopoverContent,
-//   PopoverTrigger,
-// } from "@/components/ui/popover";
-import UploadImage from "@/components/UploadingImage";
 import { Calendar22 } from "@/components/datepicker";
+import { uploadImage } from "@/components/UploadingImage";
 
 interface RegisterModalProps {
   open: boolean;
@@ -47,10 +40,11 @@ export default function Signup({
   onLoginClick,
 }: RegisterModalProps) {
   const [showPassword, setShowPassword] = useState(false);
-  const [imageUrl, setImageUrl] = useState("");
   const router = useRouter();
   const [date, setDate] = useState<Date | undefined>();
-
+  const [age, setAge] = useState<number | undefined>();
+  const [imageUrl, setImageUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
   //  const [date, setDate] = React.useState<Date | undefined>(new Date());
   const daysOfWeek = [
     "Monday",
@@ -63,6 +57,7 @@ export default function Signup({
   ];
 
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
+
   const dobtoage = (dob: Date | undefined) => {
     if (!dob) return null;
 
@@ -77,12 +72,24 @@ export default function Signup({
     return age;
   };
 
+  // Image upload handler
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUploading(true);
+    const file = e.target.files?.[0];
+    if (!file) {
+      setUploading(false);
+      return;
+    }
+    const url = await uploadImage(file);
+    setImageUrl(url);
+    setUploading(false);
+    console.log("imageUrl after upload:", url);
+  };
+
   // const [date, setDate] = useState();
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    // dobtoage(e.target.dob.value);
-    const formattedDOB = date ? date.toISOString().split("T")[0] : null;
     const age = dobtoage(date);
 
     const data = {
@@ -91,9 +98,9 @@ export default function Signup({
       email: e.target.email.value,
       gender: e.target.gender.value,
       phone: e.target.phone.value,
-      dob: formattedDOB,
+      dob: date,
       age: age,
-      // date: formattedDOB,
+
       app: e.target.app.value,
       suitableTime: e.target.suitableTime.value,
       course: e.target.course.value,
@@ -102,7 +109,7 @@ export default function Signup({
       password: e.target.password.value,
       image: imageUrl,
       // classDays: selectedDays,
-        role: "student",
+      // role: "student",
     };
     console.log("data==>>>", data);
 
@@ -246,9 +253,9 @@ export default function Signup({
                     className="border-blue-200 focus:border-blue-400"
                   />
                 </div>
-                <div className="">
+                <div>
                   <Label htmlFor="dob" className="text-blue-900"></Label>
-                  <Calendar22 />
+                  <Calendar22 date={date} onChange={setDate} />
                   {date && (
                     <p className="text-blue-700 mt-1">
                       Your Age: {dobtoage(date)} years
@@ -333,9 +340,16 @@ export default function Signup({
                   </div>
                 </div>
                 console.log("classDays:", selectedDays) */}
-                <UploadImage
-                  onUploadComplete={(url: any) => setImageUrl(url)}
-                />
+                <div className="space-y-4">
+                  <input type="file" onChange={handleUpload} />
+                  {imageUrl && (
+                    <img
+                      src={imageUrl}
+                      alt="Uploaded"
+                      className="w-40 h-40 object-cover"
+                    />
+                  )}
+                </div>
               </div>
 
               <div className="relative">
@@ -380,6 +394,7 @@ export default function Signup({
               <Button
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                disabled={uploading}
               >
                 Create Account
               </Button>

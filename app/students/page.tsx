@@ -11,10 +11,10 @@ export default function Students() {
     const getAllStudents = async () => {
       try {
         const response = await axios.get(AppRoutes.getStudent);
-        console.log("API Response:", response.data);
+        console.log("API Response:", response);
 
         // Adjust this based on your response shape
-        setStudents(response.data.students || response.data); 
+        setStudents(response.data.data);
       } catch (error) {
         console.error("Error fetching students:", error);
       }
@@ -22,6 +22,7 @@ export default function Students() {
 
     getAllStudents();
   }, []);
+  console.log(students);
 
   return (
     <div className="p-4">

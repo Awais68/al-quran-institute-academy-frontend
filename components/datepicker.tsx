@@ -12,9 +12,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-export function Calendar22() {
+export function Calendar22({ date, onChange }) {
   const [open, setOpen] = React.useState(false);
-  const [date, setDate] = React.useState<Date | undefined>(undefined);
 
   return (
     <div className="flex flex-col gap-2">
@@ -35,11 +34,11 @@ export function Calendar22() {
         <PopoverContent className="w-auto overflow-hidden p-0" align="start">
           <Calendar
             mode="single"
-            selected={date}
             captionLayout="dropdown"
+            selected={date}
             onSelect={(date) => {
-              setDate(date);
-              setOpen(false);
+              onChange(date); // 👈 send date to parent
+              setOpen(false); // close the popover
             }}
           />
         </PopoverContent>

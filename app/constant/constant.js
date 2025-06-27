@@ -5,6 +5,6 @@ export const BASE_URL = devURL;
 
 export const AppRoutes = {
   signup: BASE_URL + "/auth/signup",
-  getStudent: BASE_URL + "/student/getAllStudents",
+  getStudent: BASE_URL + "/user/getUser",
   addStudent: BASE_URL + "student",
 };
