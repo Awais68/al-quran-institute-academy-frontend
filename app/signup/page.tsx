@@ -28,8 +28,8 @@ import { useState } from "react";
 import { Calendar22 } from "@/components/datepicker";
 import PhoneInputWithCountrySelect from "react-phone-number-input";
 import CountryCitySelector from "@/components/StatCityTz";
-import Select from "react-select";
-import { Country } from "country-state-city";
+import ReactSelect from "react-select";
+import { Country, City } from "country-state-city";
 
 interface RegisterModalProps {
   open: boolean;
@@ -68,6 +68,14 @@ export default function Signup({
   ];
 
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
+
+  // Get city options based on selected country
+  const cityOptions = country
+    ? City.getCitiesOfCountry(country).map((c) => ({
+        value: c.name,
+        label: c.name,
+      }))
+    : [];
 
   const dobtoage = (dob: Date | undefined) => {
     if (!dob) return null;
@@ -271,27 +279,49 @@ export default function Signup({
                     onChange={(value) => setPhone(value || "")}
                     defaultCountry="PK"
                     name="phone"
-                    className="border-blue-200 focus:border-blue-400 mx-auto"
+                    className="border-blue-200 focus:border-blue-400 mx-auto my-phone-input"
                   />
                 </div>
                 <div>
                   <Label htmlFor="city" className="text-blue-900">
                     City
                   </Label>
+                  
                 </div>
                 <div>
                   <Label htmlFor="country" className="text-blue-900">
                     Country
                   </Label>
-                  <Select
+                  <ReactSelect
                     options={countryOptions}
-                    value={countryOptions.find((opt) => opt.value === country)}
+                    value={
+                      countryOptions.find((opt) => opt.value === country) ||
+                      null
+                    }
                     onChange={(option) =>
                       setCountry(option ? option.value : "")
                     }
                     placeholder="Select Country"
                     isSearchable
                     name="country"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="city" className="text-blue-900">
+                    City
+                  </Label>
+                  <ReactSelect
+                    options={cityOptions}
+                    value={
+                      cityOptions.find((opt) => opt.value === city) || null
+                    }
+                    onChange={(option) => setCity(option ? option.value : "")}
+                    placeholder={
+                      country ? "Select City" : "Select Country First"
+                    }
+                    isSearchable
+                    name="city"
+                    isDisabled={!country}
                   />
                 </div>
                 <div>
