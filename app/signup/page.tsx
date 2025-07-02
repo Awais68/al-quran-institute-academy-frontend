@@ -26,13 +26,21 @@ import { AppRoutes } from "@/app/constant/constant";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Calendar22 } from "@/components/datepicker";
-import { uploadImage } from "@/components/UploadingImage";
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import CountryCitySelector from "@/components/StatCityTz";
+import Select from "react-select";
+import { Country } from "country-state-city";
 
 interface RegisterModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onLoginClick: () => void;
 }
+
+const countryOptions = Country.getAllCountries().map((c) => ({
+  value: c.isoCode,
+  label: c.name,
+}));
 
 export default function Signup({
   open,
@@ -45,6 +53,9 @@ export default function Signup({
   const [age, setAge] = useState<number | undefined>();
   const [imageUrl, setImageUrl] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [country, setCountry] = useState("");
+  const [city, setCity] = useState("");
   //  const [date, setDate] = React.useState<Date | undefined>(new Date());
   const daysOfWeek = [
     "Monday",
@@ -72,23 +83,58 @@ export default function Signup({
     return age;
   };
 
+  const uploadImage = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "al-quran-institute"); // Replace with your Cloudinary upload preset
+
+    const cloudName = "dcp2soyzn"; // Replace with your Cloudinary cloud name
+
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Image upload failed");
+    }
+
+    const data = await response.json();
+    console.log("Cloudinary image url:", data.secure_url);
+    return data.secure_url;
+  };
+
   // Image upload handler
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setUploading(true);
     const file = e.target.files?.[0];
     if (!file) {
       setUploading(false);
       return;
     }
-    const url = await uploadImage(file);
-    setImageUrl(url);
-    setUploading(false);
-    console.log("imageUrl after upload:", url);
+    try {
+      const url = await uploadImage(file);
+      setImageUrl(url);
+      alert("Image uploaded successfully!");
+      console.log("Cloudinary image url:", url);
+    } catch (error) {
+      console.log("Image upload failed. Please try again.", error);
+    } finally {
+      setUploading(false);
+    }
   };
 
   // const [date, setDate] = useState();
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+
+    if (!imageUrl) {
+      alert("Please upload an image before submitting the form.");
+      return;
+    }
 
     const age = dobtoage(date);
 
@@ -97,15 +143,14 @@ export default function Signup({
       fatherName: e.target.fatherName.value,
       email: e.target.email.value,
       gender: e.target.gender.value,
-      phone: e.target.phone.value,
+      phone: phone,
       dob: date,
       age: age,
-
       app: e.target.app.value,
       suitableTime: e.target.suitableTime.value,
       course: e.target.course.value,
-      city: e.target.city.value,
-      country: e.target.country.value,
+      city: city,
+      country: country,
       password: e.target.password.value,
       image: imageUrl,
       // classDays: selectedDays,
@@ -221,11 +266,11 @@ export default function Signup({
                   <Label htmlFor="phone" className="text-blue-900">
                     Phone Number
                   </Label>
-                  <Input
-                    id="phone"
+                  <PhoneInputWithCountrySelect
+                    value={phone}
+                    onChange={(value) => setPhone(value || "")}
+                    defaultCountry="PK"
                     name="phone"
-                    type="tel"
-                    placeholder="+1 (555) 123-4567"
                     className="border-blue-200 focus:border-blue-400 mx-auto"
                   />
                 </div>
@@ -233,25 +278,36 @@ export default function Signup({
                   <Label htmlFor="city" className="text-blue-900">
                     City
                   </Label>
-                  <Input
-                    id="city"
-                    name="city"
-                    //   type="string"
-                    placeholder="New York"
-                    className="border-blue-200 focus:border-blue-400"
-                  />
                 </div>
                 <div>
                   <Label htmlFor="country" className="text-blue-900">
                     Country
                   </Label>
-                  <Input
-                    id="country"
+                  <Select
+                    options={countryOptions}
+                    value={countryOptions.find((opt) => opt.value === country)}
+                    onChange={(option) =>
+                      setCountry(option ? option.value : "")
+                    }
+                    placeholder="Select Country"
+                    isSearchable
                     name="country"
-                    //   type="string"
-                    placeholder="United State"
-                    className="border-blue-200 focus:border-blue-400"
                   />
+                </div>
+                <div>
+                  <Label htmlFor="suitableTime" className="text-blue-900">
+                    Suitable Timing For Student
+                  </Label>
+                  <Select name="suitableTime" required>
+                    <SelectTrigger className="border-blue-200 focus:border-blue-400">
+                      <SelectValue placeholder="Select Your Timing" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1200">12:00AM</SelectItem>
+                      <SelectItem value="1230">12:30AM</SelectItem>
+                      <SelectItem value="0100">01:00AM</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
                   <Label htmlFor="dob" className="text-blue-900"></Label>
@@ -278,21 +334,7 @@ export default function Signup({
                     </SelectContent>
                   </Select>
                 </div>
-                <div>
-                  <Label htmlFor="suitableTime" className="text-blue-900">
-                    Suitable Timing For Student
-                  </Label>
-                  <Select name="suitableTime" required>
-                    <SelectTrigger className="border-blue-200 focus:border-blue-400">
-                      <SelectValue placeholder="Select Your Timing" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1200">12:00AM</SelectItem>
-                      <SelectItem value="1230">12:30AM</SelectItem>
-                      <SelectItem value="0100">01:00AM</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+
                 <div>
                   <Label htmlFor="course" className="text-blue-900">
                     Course
@@ -308,6 +350,10 @@ export default function Signup({
                       <SelectItem value="tajweed">Tajweed</SelectItem>
                       <SelectItem value="nazra">Nazra Quran</SelectItem>
                       <SelectItem value="hifz">Hifz zul Quran</SelectItem>
+                      <SelectItem value="namaz">Namaz Course</SelectItem>
+                      <SelectItem value="arabic">
+                        Arabic Language Course
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -341,7 +387,7 @@ export default function Signup({
                 </div>
                 console.log("classDays:", selectedDays) */}
                 <div className="space-y-4">
-                  <input type="file" onChange={handleUpload} />
+                  <input type="file" onChange={handleUploadImage} />
                   {imageUrl && (
                     <img
                       src={imageUrl}

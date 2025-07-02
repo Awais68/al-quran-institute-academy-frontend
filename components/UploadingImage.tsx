@@ -1,112 +1,104 @@
-// "use client";
+// import { useState } from "react";
 
-// import React, { useEffect, useState } from "react";
-// import { useDropzone } from "react-dropzone";
-// import { Button } from "./ui/button";
+// export default function UploadPage() {
+//   const [image, setImage] = useState(null);
+//   const [url, setUrl] = useState("");
+//   const [uploading, setUploading] = useState(false);
 
-// // Add basic inline styles (you can move this to Tailwind if you're using it)
-// const thumbsContainer: React.CSSProperties = {
-//   display: "flex",
-//   flexDirection: "row",
-//   flexWrap: "wrap",
-//   marginTop: 16,
-// };
+//   // Cloudinary configuration
+//   const cloudName = "dcp2soyzn"; // Replace with your Cloudinary Cloud Name
+//   const uploadPreset = "al-quran-institute"; // Replace with your Upload Preset Name
 
-// const thumb: React.CSSProperties = {
-//   display: "inline-flex",
-//   borderRadius: 2,
-//   border: "1px solid #eaeaea",
-//   marginBottom: 8,
-//   marginRight: 8,
-//   width: 100,
-//   height: 100,
-//   padding: 4,
-//   boxSizing: "border-box",
-// };
+//   // Handle file selection
+//   const handleFileSelect = (e) => {
+//     const file = e.target.files[0];
+//     if (file) {
+//       if (file.size > 10 * 1024 * 1024) {
+//         alert("File is too large! Max size is 10MB.");
+//         return;
+//       }
+//       if (!file.type.startsWith("image/")) {
+//         alert("Please select an image file!");
+//         return;
+//       }
+//       setImage(file);
+//     }
+//   };
 
-// const thumbInner: React.CSSProperties = {
-//   display: "flex",
-//   minWidth: 0,
-//   overflow: "hidden",
-// };
+//   // Handle image upload
+//   const handleUpload = async () => {
+//     if (!image) {
+//       alert("Please select an image first!");
+//       return;
+//     }
 
-// const img: React.CSSProperties = {
-//   display: "block",
-//   width: "auto",
-//   height: "100%",
-// };
+//     setUploading(true);
+//     const formData = new FormData();
+//     formData.append("file", image);
+//     formData.append("upload_preset", uploadPreset);
+//     formData.append("cloud_name", cloudName);
 
-// // Extend File type to include preview
-// type FileWithPreview = File & {
-//   preview: string;
-// };
-
-// const UploadImage: React.FC = () => {
-//   const [files, setFiles] = useState<FileWithPreview[]>([]);
-
-//   const { getRootProps, getInputProps } = useDropzone({
-//     accept: {
-//       "image/*": [],
-//     },
-//     onDrop: (acceptedFiles: File[]) => {
-//       const mappedFiles = acceptedFiles.map((file) =>
-//         Object.assign(file, {
-//           preview: URL.createObjectURL(file),
-//         })
+//     try {
+//       const response = await fetch(
+//         `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+//         {
+//           method: "POST",
+//           body: formData,
+//         }
 //       );
-//       setFiles(mappedFiles);
-//     },
-//   });
-
-//   const thumbs = files.map((file) => (
-//     <div style={thumb} key={file.name}>
-//       <div style={thumbInner}>
-//         <img
-//           src={file.preview}
-//           style={img}
-//           alt={file.name}
-//           onLoad={() => URL.revokeObjectURL(file.preview)}
-//         />
-//       </div>
-//     </div>
-//   ));
-
-//   useEffect(() => {
-//     return () => {
-//       files.forEach((file) => URL.revokeObjectURL(file.preview));
-//     };
-//   }, [files]);
+//       const data = await response.json();
+//       if (data.secure_url) {
+//         setUrl(data.secure_url);
+//         alert("Image uploaded successfully!");
+//       } else {
+//         alert("Upload failed. Please try again.");
+//       }
+//     } catch (error) {
+//       console.error("Error uploading image:", error);
+//       alert("Error uploading image. Check console for details.");
+//     } finally {
+//       setUploading(false);
+//     }
+//   };
+  
 
 //   return (
-//     <section className="container bg-blue-100 rounded-lg border-blue-200 shadow-lg ">
-//       <div {...getRootProps({ className: "dropzone" })}>
-//         <input {...getInputProps()} />
-//         <p className="">
-//           <div className="">
-//             <Button> Select Image</Button>
-//           </div>{" "}
-//         </p>
+//     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
+//       <h1 className="text-3xl font-bold mb-6 text-gray-800">
+//         Upload Image to Cloudinary
+//       </h1>
+//       <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
+//         <input
+//           type="file"
+//           accept="image/*"
+//           onChange={handleFileSelect}
+//           className="w-full mb-4 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+//         />
+//         <button
+//           onClick={handleUpload}
+//           disabled={uploading}
+//           className={`w-full py-2 px-4 text-white font-semibold rounded ${
+//             uploading
+//               ? "bg-gray-400 cursor-not-allowed"
+//               : "bg-blue-500 hover:bg-blue-600"
+//           } transition-colors duration-200`}
+//         >
+//           {uploading ? "Uploading..." : "Upload Image"}
+//         </button>
 //       </div>
-//       <aside style={thumbsContainer} className="">
-//         {thumbs}
-//       </aside>
-//     </section>
+//       {url && (
+//         <div className="mt-6 w-full max-w-md">
+//           <h3 className="text-xl font-semibold text-gray-800 mb-2">
+//             Uploaded Image:
+//           </h3>
+//           <img
+//             src={url}
+//             alt="Uploaded"
+//             className="w-full rounded-lg shadow-md mb-4"
+//           />
+//           <p className="text-sm text-gray-600 break-all">Image URL: {url}</p>
+//         </div>
+//       )}
+//     </div>
 //   );
-// };
-
-// export default UploadImage;
-
-
-export const uploadImage = async (file: File) => {
-    const formData = new FormData();
-    formData.append("image", file);
-  
-    const res = await fetch("http://localhost:4000/upload", {
-      method: "POST",
-      body: formData,
-    });
-  
-    const data = await res.json();
-    return data.url; // Cloudinary image URL
-  };
-  
+// }
