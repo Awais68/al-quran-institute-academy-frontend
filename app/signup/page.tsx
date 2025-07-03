@@ -26,21 +26,16 @@ import { AppRoutes } from "@/app/constant/constant";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Calendar22 } from "@/components/datepicker";
-import PhoneInputWithCountrySelect from "react-phone-number-input";
-import CountryCitySelector from "@/components/StatCityTz";
-import ReactSelect from "react-select";
-import { Country, City } from "country-state-city";
+import PhoneInput from "react-phone-number-input";
+
+import PhoneNumberInput from "@/components/npmPhone";
+import CountryCitySelector from "@/components/country-city";
 
 interface RegisterModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onLoginClick: () => void;
 }
-
-const countryOptions = Country.getAllCountries().map((c) => ({
-  value: c.isoCode,
-  label: c.name,
-}));
 
 export default function Signup({
   open,
@@ -54,8 +49,8 @@ export default function Signup({
   const [imageUrl, setImageUrl] = useState("");
   const [uploading, setUploading] = useState(false);
   const [phone, setPhone] = useState("");
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
   //  const [date, setDate] = React.useState<Date | undefined>(new Date());
   const daysOfWeek = [
     "Monday",
@@ -68,14 +63,6 @@ export default function Signup({
   ];
 
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
-
-  // Get city options based on selected country
-  const cityOptions = country
-    ? City.getCitiesOfCountry(country).map((c) => ({
-        value: c.name,
-        label: c.name,
-      }))
-    : [];
 
   const dobtoage = (dob: Date | undefined) => {
     if (!dob) return null;
@@ -126,7 +113,7 @@ export default function Signup({
     try {
       const url = await uploadImage(file);
       setImageUrl(url);
-      alert("Image uploaded successfully!");
+      // alert("Image uploaded successfully!");
       console.log("Cloudinary image url:", url);
     } catch (error) {
       console.log("Image upload failed. Please try again.", error);
@@ -151,14 +138,14 @@ export default function Signup({
       fatherName: e.target.fatherName.value,
       email: e.target.email.value,
       gender: e.target.gender.value,
-      phone: phone,
+      phone: e.target.phone.value,
       dob: date,
       age: age,
       app: e.target.app.value,
       suitableTime: e.target.suitableTime.value,
       course: e.target.course.value,
-      city: city,
-      country: country,
+      city: selectedCity,
+      country: selectedCountry,
       password: e.target.password.value,
       image: imageUrl,
       // classDays: selectedDays,
@@ -271,59 +258,12 @@ export default function Signup({
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="phone" className="text-blue-900">
+                  {/* <Label htmlFor="phone" className="text-blue-900">
                     Phone Number
-                  </Label>
-                  <PhoneInputWithCountrySelect
-                    value={phone}
-                    onChange={(value) => setPhone(value || "")}
-                    defaultCountry="PK"
-                    name="phone"
-                    className="border-blue-200 focus:border-blue-400 mx-auto my-phone-input"
-                  />
+                  </Label> */}
+                  <PhoneNumberInput />
                 </div>
-                <div>
-                  <Label htmlFor="city" className="text-blue-900">
-                    City
-                  </Label>
-                  
-                </div>
-                <div>
-                  <Label htmlFor="country" className="text-blue-900">
-                    Country
-                  </Label>
-                  <ReactSelect
-                    options={countryOptions}
-                    value={
-                      countryOptions.find((opt) => opt.value === country) ||
-                      null
-                    }
-                    onChange={(option) =>
-                      setCountry(option ? option.value : "")
-                    }
-                    placeholder="Select Country"
-                    isSearchable
-                    name="country"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="city" className="text-blue-900">
-                    City
-                  </Label>
-                  <ReactSelect
-                    options={cityOptions}
-                    value={
-                      cityOptions.find((opt) => opt.value === city) || null
-                    }
-                    onChange={(option) => setCity(option ? option.value : "")}
-                    placeholder={
-                      country ? "Select City" : "Select Country First"
-                    }
-                    isSearchable
-                    name="city"
-                    isDisabled={!country}
-                  />
-                </div>
+
                 <div>
                   <Label htmlFor="suitableTime" className="text-blue-900">
                     Suitable Timing For Student
@@ -416,6 +356,14 @@ export default function Signup({
                   </div>
                 </div>
                 console.log("classDays:", selectedDays) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="col-span-2">
+                    <CountryCitySelector
+                      onCountryChange={setSelectedCountry}
+                      onCityChange={setSelectedCity}
+                    />
+                  </div>
+                </div>
                 <div className="space-y-4">
                   <input type="file" onChange={handleUploadImage} />
                   {imageUrl && (
