@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Country, City } from "country-state-city";
 import { formatInTimeZone } from "date-fns-tz";
 
@@ -70,14 +70,11 @@ export default function CountryCitySelector({
     const country = countries.find((c) => c.name === selectedCountry);
     if (country) {
       setCities(country.cities);
-      if (onCountryChange) onCountryChange(selectedCountry);
       updateTime(country.timezone || "UTC");
+      if (onCountryChange) onCountryChange(selectedCountry);
     } else {
       setCities([]);
     }
-    setSelectedCity("");
-    if (onCityChange) onCityChange("");
-    // eslint-disable-next-line
   }, [selectedCountry, countries]);
 
   // Update city selection
@@ -109,9 +106,9 @@ export default function CountryCitySelector({
   }, [selectedCountry, countries]);
 
   // Handle country selection
-  const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCountry(e.target.value);
-  };
+  const handleCountryChange = useCallback((country: string) => {
+    setSelectedCountry(country);
+  }, []);
 
   return (
     <div className="p-0 w-full">
@@ -121,7 +118,7 @@ export default function CountryCitySelector({
           Select Country
         </label>
         <select
-          onChange={handleCountryChange}
+          onChange={(e) => handleCountryChange(e.target.value)}
           className="border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={selectedCountry}
         >
