@@ -58,7 +58,7 @@ export default function Header() {
         <Link href="/" className="flex items-center z-20 cursor-pointer">
           <div className="relative h-16 w-16 md:h-32 md:w-32">
             <Image
-              src="/images/mainlogo.png"
+              src="/images/logotp.png"
               alt="Al-Quran Institute Online"
               fill={true}
               className="object-contain"

@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
+import { useEffect } from "react";
 
-import { useState, useRef } from "react"
-import Image from "next/image"
-import { motion, useInView } from "framer-motion"
-import { X, ChevronLeft, ChevronRight } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { useMediaQuery } from "@/hooks/use-media-query"
+import { useState, useRef } from "react";
+import Image from "next/image";
+import { motion, useInView } from "framer-motion";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 const galleryImages = [
   {
@@ -40,14 +40,14 @@ const galleryImages = [
   },
   {
     id: 5,
-    src: "/images/calligraphy.png",
+    src: "/images/single2.png",
     alt: "Islamic calligraphy class",
     caption: "Students learning Islamic calligraphy",
     category: "Classes",
   },
   {
     id: 6,
-    src: "/images/eid.png",
+    src: "/images/single.png",
     alt: "Community event",
     caption: "Eid celebration with community",
     category: "Events",
@@ -66,64 +66,69 @@ const galleryImages = [
     caption: "Main prayer hall",
     category: "Campus",
   },
-]
+];
 
-const categories = ["All", "Classes", "Campus", "Events"]
+const categories = ["All", "Classes", "Campus", "Events"];
 
 export default function Gallery() {
-  const [selectedImage, setSelectedImage] = useState<number | null>(null)
-  const [activeCategory, setActiveCategory] = useState("All")
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, amount: 0.2 })
-  const isMobile = useMediaQuery("(max-width: 639px)")
+  const [selectedImage, setSelectedImage] = useState<number | null>(null);
+  const [activeCategory, setActiveCategory] = useState("All");
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const isMobile = useMediaQuery("(max-width: 639px)");
 
   const filteredImages =
-    activeCategory === "All" ? galleryImages : galleryImages.filter((img) => img.category === activeCategory)
+    activeCategory === "All"
+      ? galleryImages
+      : galleryImages.filter((img) => img.category === activeCategory);
 
   const openLightbox = (id: number) => {
-    setSelectedImage(id)
-    document.body.style.overflow = "hidden"
-  }
+    setSelectedImage(id);
+    document.body.style.overflow = "hidden";
+  };
 
   const closeLightbox = () => {
-    setSelectedImage(null)
-    document.body.style.overflow = "auto"
-  }
+    setSelectedImage(null);
+    document.body.style.overflow = "auto";
+  };
 
   const navigateLightbox = (direction: "next" | "prev") => {
-    if (selectedImage === null) return
+    if (selectedImage === null) return;
 
-    const currentIndex = filteredImages.findIndex((img) => img.id === selectedImage)
-    let newIndex
+    const currentIndex = filteredImages.findIndex(
+      (img) => img.id === selectedImage
+    );
+    let newIndex;
 
     if (direction === "next") {
-      newIndex = (currentIndex + 1) % filteredImages.length
+      newIndex = (currentIndex + 1) % filteredImages.length;
     } else {
-      newIndex = (currentIndex - 1 + filteredImages.length) % filteredImages.length
+      newIndex =
+        (currentIndex - 1 + filteredImages.length) % filteredImages.length;
     }
 
-    setSelectedImage(filteredImages[newIndex].id)
-  }
+    setSelectedImage(filteredImages[newIndex].id);
+  };
 
-  const currentImage = galleryImages.find((img) => img.id === selectedImage)
+  const currentImage = galleryImages.find((img) => img.id === selectedImage);
 
   // Handle keyboard navigation for lightbox
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (selectedImage === null) return
+      if (selectedImage === null) return;
 
       if (e.key === "Escape") {
-        closeLightbox()
+        closeLightbox();
       } else if (e.key === "ArrowRight") {
-        navigateLightbox("next")
+        navigateLightbox("next");
       } else if (e.key === "ArrowLeft") {
-        navigateLightbox("prev")
+        navigateLightbox("prev");
       }
-    }
+    };
 
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [selectedImage])
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedImage]);
 
   return (
     <section id="gallery" ref={ref} className="py-16 md:py-24 bg-white">
@@ -134,13 +139,16 @@ export default function Gallery() {
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6 }}
         >
-          <h6 className="text-primary-600 font-medium mb-2 uppercase tracking-wider text-xs sm:text-sm">Gallery</h6>
+          <h6 className="text-primary-600 font-medium mb-2 uppercase tracking-wider text-xs sm:text-sm">
+            Gallery
+          </h6>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
             Glimpses of Madarsa Hajira
           </h2>
           <div className="w-16 md:w-20 h-1 bg-primary-600 mx-auto mb-3 sm:mb-4 md:mb-6"></div>
           <p className="text-gray-600 max-w-2xl mx-auto text-sm md:text-base">
-            Take a glimpse into the life and activities at Madarsa Hajira through our photo gallery.
+            Take a glimpse into the life and activities at Madarsa Hajira
+            through our photo gallery.
           </p>
         </motion.div>
 
@@ -160,7 +168,7 @@ export default function Gallery() {
                     "px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 rounded-md text-xs sm:text-sm font-medium transition-all duration-300",
                     activeCategory === category
                       ? "bg-primary-600 text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200",
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   )}
                 >
                   {category}
@@ -182,7 +190,9 @@ export default function Gallery() {
               className="relative overflow-hidden rounded-lg shadow-md group cursor-pointer h-48 sm:h-56 md:h-64"
               onClick={() => openLightbox(image.id)}
               initial={{ opacity: 0, scale: 0.9 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+              animate={
+                isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }
+              }
               transition={{ duration: 0.5, delay: 0.1 * index }}
               whileHover={{ scale: 1.02 }}
             >
@@ -194,8 +204,12 @@ export default function Gallery() {
                 className="object-cover transition-transform duration-500 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                <span className="text-xs text-primary-300 uppercase tracking-wider mb-1">{image.category}</span>
-                <h4 className="text-white font-medium text-sm sm:text-base">{image.caption}</h4>
+                <span className="text-xs text-primary-300 uppercase tracking-wider mb-1">
+                  {image.category}
+                </span>
+                <h4 className="text-white font-medium text-sm sm:text-base">
+                  {image.caption}
+                </h4>
               </div>
             </motion.div>
           ))}
@@ -223,7 +237,7 @@ export default function Gallery() {
 
           <div className="relative w-[90vw] h-[60vh] sm:h-[70vh] md:w-[80vw] md:h-[70vh]">
             <Image
-              src={currentImage.src }
+              src={currentImage.src}
               alt={currentImage.alt}
               fill
               sizes="90vw"
@@ -240,11 +254,15 @@ export default function Gallery() {
           </button>
 
           <div className="absolute bottom-2 sm:bottom-4 left-0 right-0 text-center bg-black/60 py-2 px-4">
-            <p className="text-white text-sm sm:text-base md:text-lg font-medium">{currentImage.caption}</p>
-            <p className="text-primary-300 text-xs sm:text-sm">{currentImage.category}</p>
+            <p className="text-white text-sm sm:text-base md:text-lg font-medium">
+              {currentImage.caption}
+            </p>
+            <p className="text-primary-300 text-xs sm:text-sm">
+              {currentImage.category}
+            </p>
           </div>
         </div>
       )}
     </section>
-  )
+  );
 }
