@@ -19,16 +19,16 @@ const galleryImages = [
   },
   {
     id: 2,
-    src: "/images/masjid.png",
+    src: "/images/ab.jpg",
     alt: "Madarsa building",
-    caption: "Our main campus",
-    category: "Campus",
+    caption: "Our Online Student",
+    category: "Classes",
   },
   {
     id: 3,
-    src: "/images/celebration.png",
+    src: "/images/mubashir.png",
     alt: "Graduation ceremony",
-    caption: "Annual graduation ceremony",
+    caption: "Students in Hifz class",
     category: "Events",
   },
   {
@@ -54,21 +54,36 @@ const galleryImages = [
   },
   {
     id: 7,
-    src: "/images/library.png",
-    alt: "Library",
-    caption: "Our extensive Islamic library",
-    category: "Campus",
+    src: "/images/person3.png",
+    alt: "Community event",
+    caption: "Reciting Quran",
+    category: "Events",
   },
+
   {
     id: 8,
-    src: "/images/prayar.png",
-    alt: "Prayer hall",
-    caption: "Main prayer hall",
-    category: "Campus",
+    src: "/images/single.png",
+    alt: "Community event",
+    caption: "Eid celebration with community",
+    category: "Events",
   },
+  // {
+  //   id: 7,
+  //   src: "/images/library.png",
+  //   alt: "Library",
+  //   caption: "Our extensive Islamic library",
+  //   category: "Campus",
+  // },
+  // {
+  //   id: 8,
+  //   src: "/images/prayar.png",
+  //   alt: "Prayer hall",
+  //   caption: "Main prayer hall",
+  //   category: "Campus",
+  // },
 ];
 
-const categories = ["All", "Classes", "Campus", "Events"];
+const categories = ["All", "Classes", "Events"];
 
 export default function Gallery() {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
@@ -143,12 +158,11 @@ export default function Gallery() {
             Gallery
           </h6>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
-            Glimpses of Madarsa Hajira
+            Glimpses of Al-Quran Institute Online
           </h2>
           <div className="w-16 md:w-20 h-1 bg-primary-600 mx-auto mb-3 sm:mb-4 md:mb-6"></div>
           <p className="text-gray-600 max-w-2xl mx-auto text-sm md:text-base">
-            Take a glimpse into the life and activities at Madarsa Hajira
-            through our photo gallery.
+            Take a glimpse into the life through our photo gallery.
           </p>
         </motion.div>
 
@@ -214,6 +228,40 @@ export default function Gallery() {
             </motion.div>
           ))}
         </motion.div>
+      </div>
+      <div className="container mx-10 px-4 my-6 rounded-lg inline-flex gap-6  justify-center border-blue-400">
+        <video
+          width="220"
+          height="220"
+          controls
+          preload="none"
+          className="rounded-lg w-96 h-64 "
+        >
+          <source src="/images/cd.mp4" type="video/mp4" />
+          <track
+            src="../public/images/cd.mp4"
+            kind="subtitles"
+            srcLang="en"
+            label="English"
+          />{" "}
+          Your browser does not support the video tag.
+        </video>
+        <video
+          width="220"
+          height="220"
+          controls
+          preload="none"
+          className="rounded-lg w-96 h-64 "
+        >
+          <source src="/images/ef.mp4" type="video/mp4" />
+          <track
+            src="../public/images/ef.mp4"
+            kind="subtitles"
+            srcLang="en"
+            label="English"
+          />{" "}
+          Your browser does not support the video tag.
+        </video>
       </div>
 
       {/* Lightbox */}

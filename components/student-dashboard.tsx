@@ -30,6 +30,17 @@ import { AppRoutes } from "@/app/constant/constant";
 export function StudentDashboard() {
   const [students, setStudents] = useState<any[]>([]);
 
+  const getAStudent = async (sid: any) => {
+    try {
+      const response = await axios.get(AppRoutes.getAStudent, {
+        params: { id: sid },
+      });
+      console.log(response);
+    } catch (error: any) {
+      console.log("message-===>>", error.message);
+    }
+  };
+
   useEffect(() => {
     const getAllStudents = async () => {
       try {
@@ -151,6 +162,10 @@ export function StudentDashboard() {
                 <p className="text-blue-700">
                   Continue your Quranic journey and track your progress.
                 </p>
+                <Button onClick={() => getAStudent(student._id)}>
+                  {" "}
+                  Click Me
+                </Button>
               </div>
 
               {/* Quick Stats */}

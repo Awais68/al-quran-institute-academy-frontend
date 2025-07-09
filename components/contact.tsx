@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { cn } from "@/lib/utils";
+import { AppRoutes } from "@/app/constant/constant";
 
 type FormData = {
   name: string;
@@ -86,7 +87,7 @@ export default function Contact() {
 
     // Simulate form submission
     try {
-      const response = await axios.post("/contactForm", data);
+      const response = await axios.post(AppRoutes.contact, data);
       console.log("Response from API:", response.data);
 
       setSubmitSuccess(true);
