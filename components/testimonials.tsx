@@ -1,77 +1,80 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import Image from "next/image"
-import { motion, useInView } from "framer-motion"
-import { ChevronLeft, ChevronRight, Quote } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { useMediaQuery } from "@/hooks/use-media-query"
+import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
+import { motion, useInView } from "framer-motion";
+import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 const testimonials = [
   {
     id: 1,
     name: "Ahmed Khan",
     role: "Parent",
+    country: "London, UK",
     image: "/images/person1.png",
     quote:
-      " has transformed my child's understanding of Islam. The teachers are knowledgeable and caring, creating an environment where students thrive both academically and spiritually.",
-    // urduQuote:
-      // "مدرسہ حاجرہ نے میرے بچے کی اسلام کی سمجھ کو بدل دیا ہے۔ اساتذہ علم رکھتے ہیں اور خیال رکھتے ہیں، ایک ایسا ماحول بناتے ہیں جہاں طلباء تعلیمی اور روحانی طور پر پروان چڑھتے ہیں۔",
+      " Al Quran Institute Online has transformed my understanding of the Quran. The Teachers are knowlegeable and patient.",
   },
   {
     id: 2,
-    name: "Ali Raza",
+    name: "Fatima Ali",
+    country: "Toronto, Canada",
     role: "Former Student",
     image: "/images/person2.png",
     quote:
-      "The years I spent at Madarsa Hajira were the most formative of my life. The comprehensive curriculum and supportive teachers helped me build a strong foundation in Islamic studies that continues to guide me today.",
-    // urduQuote:
-    //   "مدرسہ حاجرہ میں گزارے گئے سال میری زندگی کے سب سے زیادہ تشکیلی تھے۔ جامع نصاب اور معاون اساتذہ نے مجھے اسلامی تعلیمات میں ایک مضبوط بنیاد بنانے میں مدد کی جو آج بھی میری رہنمائی کرتی ہے۔",
+      "My children love their online Quran classes. The interactive teaching methods are excellent.",
   },
   {
     id: 3,
-    name: "Mohammad Siddiqui",
+    name: "Abdullah Rahman",
+    country: "Sydney, Australia",
     role: "Community Leader",
     image: "/images/person3.png",
     quote:
-      "Madarsa Hajira is a pillar in our community. Their commitment to excellence in Islamic education and character development has produced graduates who are well-rounded individuals and positive contributors to society.",
-    // urduQuote:
-    //   "مدرسہ حاجرہ ہماری کمیونٹی کا ایک ستون ہے۔ اسلامی تعلیم اور کردار سازی میں ان کی عمدگی کے لیے عزم نے ایسے فارغین پیدا کیے ہیں جو ہمہ جہت افراد ہیں اور معاشرے میں مثبت کردار ادا کرتے ہیں۔",
+      "Flexible scheduling and quality education. Highly recommend for busy professionals.",
   },
-]
+];
 
 export default function Testimonials() {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [autoplay, setAutoplay] = useState(true)
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, amount: 0.3 })
-  const isMobile = useMediaQuery("(max-width: 639px)")
-  const autoplayRef = useRef<NodeJS.Timeout | null>(null)
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [autoplay, setAutoplay] = useState(true);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.3 });
+  const isMobile = useMediaQuery("(max-width: 639px)");
+  const autoplayRef = useRef<NodeJS.Timeout | null>(null);
 
   const nextTestimonial = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length)
-  }
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
+  };
 
   const prevTestimonial = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + testimonials.length) % testimonials.length)
-  }
+    setCurrentIndex(
+      (prevIndex) => (prevIndex - 1 + testimonials.length) % testimonials.length
+    );
+  };
 
   useEffect(() => {
     if (autoplay) {
       autoplayRef.current = setInterval(() => {
-        nextTestimonial()
-      }, 6000)
+        nextTestimonial();
+      }, 6000);
     }
 
     return () => {
       if (autoplayRef.current) {
-        clearInterval(autoplayRef.current)
+        clearInterval(autoplayRef.current);
       }
-    }
-  }, [autoplay, currentIndex])
+    };
+  }, [autoplay, currentIndex]);
 
   return (
-    <section id="testimonials" ref={ref} className="py-16 md:py-24 bg-primary-50 islamic-pattern">
+    <section
+      id="testimonials"
+      ref={ref}
+      className="py-16 md:py-24 bg-primary-50 islamic-pattern"
+    >
       <div className="container mx-auto px-4">
         <motion.div
           className="text-center mb-10 sm:mb-12 md:mb-16"
@@ -87,7 +90,8 @@ export default function Testimonials() {
           </h2>
           <div className="islamic-divider w-20 sm:w-24 mx-auto mb-4 sm:mb-6"></div>
           <p className="text-gray-600 max-w-2xl mx-auto text-sm md:text-base">
-            Hear what our students, parents, and community members have to say about Madarsa Hajira.
+            Hear what our students, parents, and community members have to say
+            about Madarsa Hajira.
           </p>
         </motion.div>
 
@@ -110,7 +114,9 @@ export default function Testimonials() {
                   key={testimonial.id}
                   className={cn(
                     "transition-opacity duration-500",
-                    index === currentIndex ? "block opacity-100" : "hidden opacity-0",
+                    index === currentIndex
+                      ? "block opacity-100"
+                      : "hidden opacity-0"
                   )}
                 >
                   <blockquote className="text-gray-700 text-sm sm:text-base md:text-lg italic mb-3 sm:mb-4 md:mb-6 text-center max-w-2xl mx-auto">
@@ -132,8 +138,15 @@ export default function Testimonials() {
                       />
                     </div>
                     <div className="text-center">
-                      <h4 className="font-bold text-primary-800 text-sm sm:text-base md:text-lg">{testimonial.name}</h4>
-                      <p className="text-gray-600 text-xs sm:text-sm">{testimonial.role}</p>
+                      <h4 className="font-bold text-primary-800 text-sm sm:text-base md:text-lg">
+                        {testimonial.name}
+                      </h4>
+                      <p className="text-gray-600 text-xs sm:text-sm">
+                        {testimonial.role}
+                      </p>
+                      <p className="text-gray-600 text-xs sm:text-sm">
+                        {testimonial.country}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -156,7 +169,9 @@ export default function Testimonials() {
                   onClick={() => setCurrentIndex(index)}
                   className={cn(
                     "w-2 sm:w-2.5 md:w-3 h-2 sm:h-2.5 md:h-3 rounded-full transition-all duration-300",
-                    index === currentIndex ? "bg-accent-500 w-5 sm:w-6 md:w-8" : "bg-primary-200",
+                    index === currentIndex
+                      ? "bg-accent-500 w-5 sm:w-6 md:w-8"
+                      : "bg-primary-200"
                   )}
                   aria-label={`Go to testimonial ${index + 1}`}
                 />
@@ -173,5 +188,5 @@ export default function Testimonials() {
         </motion.div>
       </div>
     </section>
-  )
+  );
 }

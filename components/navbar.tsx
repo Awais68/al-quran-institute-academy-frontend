@@ -21,20 +21,20 @@ export default function Navbar() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          <Link href="/#about" className="text-gray-700 hover:text-blue-600 transition-colors">
+          <Link href="/about" className="text-gray-700 hover:text-blue-600 transition-colors">
             About
           </Link>
-          <Link href="/#courses" className="text-gray-700 hover:text-blue-600 transition-colors">
+          <Link href="/courses" className="text-gray-700 hover:text-blue-600 transition-colors">
             Courses
           </Link>
-          <Link href="/#gallery" className="text-gray-700 hover:text-blue-600 transition-colors">
+          <Link href="/gallery" className="text-gray-700 hover:text-blue-600 transition-colors">
             Gallery
           </Link>
-          <Link href="/#testimonials" className="text-gray-700 hover:text-blue-600 transition-colors">
+          <Link href="/testimonials" className="text-gray-700 hover:text-blue-600 transition-colors">
             Testimonials
           </Link>
           <Link
-            href="/#contact"
+            href="/contact"
             className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
           >
             Contact Us
@@ -60,35 +60,35 @@ export default function Navbar() {
       >
         <nav className="flex flex-col items-center space-y-6">
           <Link
-            href="/#about"
+            href="/about"
             className="text-xl text-gray-700 hover:text-blue-600 transition-colors"
             onClick={toggleMenu}
           >
             About
           </Link>
           <Link
-            href="/#courses"
+            href="/courses"
             className="text-xl text-gray-700 hover:text-blue-600 transition-colors"
             onClick={toggleMenu}
           >
             Courses
           </Link>
           <Link
-            href="/#gallery"
+            href="/gallery"
             className="text-xl text-gray-700 hover:text-blue-600 transition-colors"
             onClick={toggleMenu}
           >
             Gallery
           </Link>
           <Link
-            href="/#testimonials"
+            href="/testimonials"
             className="text-xl text-gray-700 hover:text-blue-600 transition-colors"
             onClick={toggleMenu}
           >
             Testimonials
           </Link>
           <Link
-            href="/#contact"
+            href="/contact"
             className="bg-blue-600 text-white px-6 py-3 rounded-md text-xl hover:bg-blue-700 transition-colors"
             onClick={toggleMenu}
           >

@@ -1,10 +1,19 @@
-"use client"
+"use client";
 
-import { useState, useRef } from "react"
-import { motion, useInView } from "framer-motion"
-import { Book, BookOpen, Bookmark, FileText, Users, Clock, Calendar } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { useMediaQuery } from "@/hooks/use-media-query"
+import { useState, useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import {
+  Book,
+  BookOpen,
+  Bookmark,
+  FileText,
+  Users,
+  Clock,
+  Calendar,
+  BookOpenCheck,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 const programsData = [
   {
@@ -26,13 +35,15 @@ const programsData = [
       "Certification upon completion",
     ],
   },
+
   {
     id: 2,
     title: "Tajweed",
     urduTitle: "تجوید",
     description:
       "Learn the proper pronunciation and recitation rules of the Holy Quran. This program focuses on the correct articulation of Arabic letters, proper application of Tajweed rules, and beautiful recitation of the Quran.",
-    urduDescription: "Master the art of Quranic recitation with accurate Arabic pronunciation",
+    urduDescription:
+      "Master the art of Quranic recitation with accurate Arabic pronunciation",
     duration: "1-2 years",
     ageGroup: "All ages",
     schedule: "3 days a week",
@@ -51,7 +62,8 @@ const programsData = [
     urduTitle: "اسلامی تعلیمات",
     description:
       "Comprehensive study of Islamic principles, history, and practices. This program covers various aspects of Islam including Aqeedah (beliefs), Fiqh (jurisprudence), Seerah (Prophetic biography), and Islamic history.",
-    urduDescription: "A comprehensive study of Islamic principles, history, and practical life",
+    urduDescription:
+      "A comprehensive study of Islamic principles, history, and practical life",
     duration: "Ongoing",
     ageGroup: "All ages",
     schedule: "Weekends",
@@ -70,7 +82,8 @@ const programsData = [
     urduTitle: "عربی زبان",
     description:
       "Learn to read, write, and speak Arabic with focus on Quranic Arabic. This program is designed to help students understand the language of the Quran and develop communication skills in Modern Standard Arabic.",
-    urduDescription: "Master Arabic communication with dedicated focus on Quranic Arabic",
+    urduDescription:
+      "Master Arabic communication with dedicated focus on Quranic Arabic",
     duration: "2-3 years",
     ageGroup: "10+ years",
     schedule: "Twice a week",
@@ -112,7 +125,9 @@ const programsData = [
     duration: "4-6 months",
     ageGroup: "30 minutes",
     schedule: "5 Days a week",
-    icon: <Users className="h-8 w-8 sm:h-10 sm:w-10 text-primary-600" />,
+    icon: (
+      <BookOpenCheck className="h-8 w-8 sm:h-10 sm:w-10 text-primary-600" />
+    ),
     features: [
       "Basic Tajweed & Rules.",
       "Arabic Alaphabate and Pronunciontion.",
@@ -121,17 +136,21 @@ const programsData = [
       "Gaining confidence in reciting the Quran accurately.",
     ],
   },
-]
+];
 
 export default function Programs() {
-  const [activeTab, setActiveTab] = useState(1)
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, amount: 0.2 })
-  const isMobile = useMediaQuery("(max-width: 639px)")
-  const isTablet = useMediaQuery("(max-width: 1023px)")
+  const [activeTab, setActiveTab] = useState(1);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const isMobile = useMediaQuery("(max-width: 639px)");
+  const isTablet = useMediaQuery("(max-width: 1023px)");
 
   return (
-    <section id="programs" ref={ref} className="py-16 sm:py-20 md:py-24 bg-primary-50">
+    <section
+      id="programs"
+      ref={ref}
+      className="py-16 sm:py-20 md:py-24 bg-primary-50"
+    >
       <div className="container mx-auto px-4">
         <motion.div
           className="text-center mb-10 sm:mb-12 md:mb-16"
@@ -147,8 +166,9 @@ export default function Programs() {
           </h2>
           <div className="islamic-divider w-20 sm:w-24 mx-auto mb-4 sm:mb-6"></div>
           <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base">
-            Al-Quran Institute Online offers a variety of programs designed to provide comprehensive Islamic education for students
-            of all ages and backgrounds.
+            Al-Quran Institute Online offers a variety of programs designed to
+            provide comprehensive Islamic education for students of all ages and
+            backgrounds.
           </p>
         </motion.div>
 
@@ -168,7 +188,7 @@ export default function Programs() {
                     "px-3 sm:px-4 md:px-5 py-2 sm:py-3 rounded-md text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap",
                     activeTab === program.id
                       ? "bg-primary-600 text-white shadow-lg shadow-primary-600/20"
-                      : "bg-white text-gray-700 hover:bg-primary-50 hover:text-primary-600",
+                      : "bg-white text-gray-700 hover:bg-primary-50 hover:text-primary-600"
                   )}
                 >
                   {program.title}
@@ -189,7 +209,9 @@ export default function Programs() {
               key={program.id}
               className={cn(
                 "transition-opacity duration-300",
-                activeTab === program.id ? "block opacity-100" : "hidden opacity-0",
+                activeTab === program.id
+                  ? "block opacity-100"
+                  : "hidden opacity-0"
               )}
             >
               <div className="grid grid-cols-1 lg:grid-cols-3">
@@ -208,24 +230,36 @@ export default function Programs() {
                     <div className="flex items-center gap-3">
                       <Clock className="h-5 w-5 text-primary-600 flex-shrink-0" />
                       <div>
-                        <h4 className="font-medium text-gray-900 text-xs sm:text-sm">Duration</h4>
-                        <p className="text-gray-600 text-sm sm:text-base">{program.duration}</p>
+                        <h4 className="font-medium text-gray-900 text-xs sm:text-sm">
+                          Duration
+                        </h4>
+                        <p className="text-gray-600 text-sm sm:text-base">
+                          {program.duration}
+                        </p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-3">
                       <Users className="h-5 w-5 text-primary-600 flex-shrink-0" />
                       <div>
-                        <h4 className="font-medium text-gray-900 text-xs sm:text-sm">Class Duration</h4>
-                        <p className="text-gray-600 text-sm sm:text-base">{program.ageGroup}</p>
+                        <h4 className="font-medium text-gray-900 text-xs sm:text-sm">
+                          Class Duration
+                        </h4>
+                        <p className="text-gray-600 text-sm sm:text-base">
+                          {program.ageGroup}
+                        </p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-3">
                       <Calendar className="h-5 w-5 text-primary-600 flex-shrink-0" />
                       <div>
-                        <h4 className="font-medium text-gray-900 text-xs sm:text-sm">Schedule</h4>
-                        <p className="text-gray-600 text-sm sm:text-base">{program.schedule}</p>
+                        <h4 className="font-medium text-gray-900 text-xs sm:text-sm">
+                          Schedule
+                        </h4>
+                        <p className="text-gray-600 text-sm sm:text-base">
+                          {program.schedule}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -243,17 +277,30 @@ export default function Programs() {
                     {program.description}
                   </p>
 
-                  <h4 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">Program Features</h4>
+                  <h4 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">
+                    Program Features
+                  </h4>
                   <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3">
                     {program.features.map((feature, index) => (
                       <li key={index} className="flex items-start gap-2">
                         <div className="bg-primary-100 p-1 rounded-full mt-0.5 flex-shrink-0">
                           <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-primary-600" />
                         </div>
-                        <span className="text-gray-700 text-sm sm:text-base">{feature}</span>
+                        <span className="text-gray-700 text-sm sm:text-base">
+                          {feature}
+                        </span>
                       </li>
                     ))}
                   </ul>
+                  <div className="bg-primary-600 my-8 hover:bg-primary-700 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-md text-xs sm:text-sm font-medium transition-colors w-full">
+                    <h1 className=" font-normal flex justify-center text-sm">
+                      Available in Both{" "}
+                      <span className="font-bold text-normal">
+                        &nbsp; URDU & ENGLISH &nbsp;
+                      </span>{" "}
+                      Languages
+                    </h1>
+                  </div>
                 </div>
               </div>
             </div>
@@ -261,7 +308,7 @@ export default function Programs() {
         </motion.div>
       </div>
     </section>
-  )
+  );
 }
 
 function CheckCircle(props: any) {
@@ -281,5 +328,5 @@ function CheckCircle(props: any) {
       <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
       <polyline points="22 4 12 14.01 9 11.01" />
     </svg>
-  )
+  );
 }

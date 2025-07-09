@@ -81,9 +81,9 @@ export default function Signup({
   const uploadImage = async (file: File): Promise<string> => {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "al-quran-institute"); // Replace with your Cloudinary upload preset
+    formData.append("upload_preset", "al-quran-institute"); 
 
-    const cloudName = "dcp2soyzn"; // Replace with your Cloudinary cloud name
+    const cloudName = "dcp2soyzn"; 
 
     const response = await fetch(
       `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,

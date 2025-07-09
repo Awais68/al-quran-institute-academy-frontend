@@ -64,12 +64,11 @@ export default function Header() {
               className="object-contain"
             />
           </div>
-
         </Link>
 
         <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8">
           <Link
-            href="/#about"
+            href="/about"
             className={cn(
               "text-sm font-medium hover:text-primary-700 transition-colors",
               isScrolled ? "text-gray-900" : "text-white"
@@ -78,7 +77,7 @@ export default function Header() {
             About
           </Link>
           <Link
-            href="/#programs"
+            href="/programs"
             className={cn(
               "text-sm font-medium hover:text-primary-700 transition-colors",
               isScrolled ? "text-gray-900" : "text-white"
@@ -87,7 +86,7 @@ export default function Header() {
             Programs
           </Link>
           <Link
-            href="/#gallery"
+            href="/gallery"
             className={cn(
               "text-sm font-medium hover:text-primary-700 transition-colors",
               isScrolled ? "text-gray-900" : "text-white"
@@ -96,7 +95,7 @@ export default function Header() {
             Gallery
           </Link>
           <Link
-            href="/#faculty"
+            href="/faculty"
             className={cn(
               "text-sm font-medium hover:text-primary-700 transition-colors",
               isScrolled ? "text-gray-900" : "text-white"
@@ -105,7 +104,7 @@ export default function Header() {
             Faculty
           </Link>
           <Link
-            href="/#testimonials"
+            href="/testimonials"
             className={cn(
               "text-sm font-medium hover:text-primary-700 transition-colors",
               isScrolled ? "text-gray-900" : "text-white"
@@ -114,7 +113,7 @@ export default function Header() {
             Testimonials
           </Link>
           <Link
-            href="/#contact"
+            href="/contact"
             className={cn(
               "text-sm font-medium hover:text-primary-700 transition-colors",
               isScrolled ? "text-gray-900" : "text-white"
@@ -145,42 +144,42 @@ export default function Header() {
       >
         <nav className="flex flex-col items-center space-y-5 py-8">
           <Link
-            href="/#about"
+            href="/about"
             className="text-lg text-gray-700 hover:text-primary-700 transition-colors w-full text-center py-2"
             onClick={() => setIsMenuOpen(false)}
           >
             About
           </Link>
           <Link
-            href="/#programs"
+            href="/programs"
             className="text-lg text-gray-700 hover:text-primary-700 transition-colors w-full text-center py-2"
             onClick={() => setIsMenuOpen(false)}
           >
             Programs
           </Link>
           <Link
-            href="/#gallery"
+            href="/gallery"
             className="text-lg text-gray-700 hover:text-primary-700 transition-colors w-full text-center py-2"
             onClick={() => setIsMenuOpen(false)}
           >
             Gallery
           </Link>
           <Link
-            href="/#faculty"
+            href="/faculty"
             className="text-lg text-gray-700 hover:text-primary-700 transition-colors w-full text-center py-2"
             onClick={() => setIsMenuOpen(false)}
           >
             Faculty
           </Link>
           <Link
-            href="/#testimonials"
+            href="/testimonials"
             className="text-lg text-gray-700 hover:text-primary-700 transition-colors w-full text-center py-2"
             onClick={() => setIsMenuOpen(false)}
           >
             Testimonials
           </Link>
           <Link
-            href="/#contact"
+            href="/contact"
             className="text-lg text-gray-700 hover:text-primary-700 transition-colors w-full text-center py-2"
             onClick={() => setIsMenuOpen(false)}
           >
