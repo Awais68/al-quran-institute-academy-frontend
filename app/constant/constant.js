@@ -9,5 +9,5 @@ export const AppRoutes = {
   addStudent: BASE_URL + "student",
   uploadImage: BASE_URL + "/upload",
   contact: BASE_URL + "/contactForm",
-  getAStudent: BASE_URL + "/studentById/getAStudent",
+  getAStudent: BASE_URL + `/studentById/getAStudent`,
 };

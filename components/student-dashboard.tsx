@@ -27,15 +27,15 @@ import {
 } from "lucide-react";
 import { AppRoutes } from "@/app/constant/constant";
 
-export function StudentDashboard() {
+export function StudentDashboard(id: string) {
   const [students, setStudents] = useState<any[]>([]);
-
-  const getAStudent = async (sid: any) => {
+  const [singleStudent, setSingleStudent] = useState<any>({});
+  const getAStudent = async (id: string) => {
     try {
-      const response = await axios.get(AppRoutes.getAStudent, {
-        params: { id: sid },
-      });
-      console.log(response);
+      const response = await axios.get(`${AppRoutes.getAStudent}/${id}`);
+      console.log(response?.data.data, "student api response");
+      return response?.data.data;
+      setSingleStudent(response?.data.data);
     } catch (error: any) {
       console.log("message-===>>", error.message);
     }
@@ -157,13 +157,65 @@ export function StudentDashboard() {
             <div key={index} className="mb-2 p-2 border-b">
               <div className="mb-8">
                 <h1 className="text-3xl font-bold text-blue-900 mb-2">
-                  Welcome back, {firstName}!
+                  Welcome back, {singleStudent.name || "Student"}!
                 </h1>
                 <p className="text-blue-700">
                   Continue your Quranic journey and track your progress.
                 </p>
+
+                {/* Render student details if available */}
+                {singleStudent && singleStudent._id && (
+                  <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <p>
+                        <strong>Father Name:</strong> {singleStudent.fatherName}
+                      </p>
+                      <p>
+                        <strong>Email:</strong> {singleStudent.email}
+                      </p>
+                      <p>
+                        <strong>Phone:</strong> {singleStudent.phone}
+                      </p>
+                      <p>
+                        <strong>Age:</strong> {singleStudent.age}
+                      </p>
+                      <p>
+                        <strong>Gender:</strong> {singleStudent.gender}
+                      </p>
+                      <p>
+                        <strong>Country:</strong> {singleStudent.country}
+                      </p>
+                      <p>
+                        <strong>City:</strong> {singleStudent.city}
+                      </p>
+                      <p>
+                        <strong>Course:</strong> {singleStudent.course}
+                      </p>
+                      <p>
+                        <strong>Suitable Time:</strong>{" "}
+                        {singleStudent.suitableTime}
+                      </p>
+                      <p>
+                        <strong>App:</strong> {singleStudent.app}
+                      </p>
+                      <p>
+                        <strong>DOB:</strong>{" "}
+                        {singleStudent.dob
+                          ? new Date(singleStudent.dob).toLocaleDateString()
+                          : ""}
+                      </p>
+                    </div>
+                    <div className="flex justify-center items-center">
+                      <img
+                        src={singleStudent.image}
+                        alt={singleStudent.name}
+                        className="w-40 h-40 rounded-full object-cover border-4 border-blue-400"
+                      />
+                    </div>
+                  </div>
+                )}
+
                 <Button onClick={() => getAStudent(student._id)}>
-                  {" "}
                   Click Me
                 </Button>
               </div>
