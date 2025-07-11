@@ -26,7 +26,7 @@ import {
   Star,
 } from "lucide-react";
 import { AppRoutes } from "@/app/constant/constant";
-import ColoredSpinner from "./loader";
+import Spinner from "./loader";
 
 export function StudentDashboard(id: string) {
   const [students, setStudents] = useState<any[]>([]);
@@ -142,10 +142,10 @@ export function StudentDashboard(id: string) {
   // ];
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 justify-center">
       {/* Welcome Section */}
       {students.length === 0 || loading ? (
-        <ColoredSpinner />
+        <Spinner />
       ) : (
         students.map((student: any, index: number) => {
           // Use student data or fallback to empty arrays

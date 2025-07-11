@@ -18,8 +18,10 @@ export default function Student() {
   }, []);
 
   return (
-    <div>
-      <h1>Well Come To Student Dashboard</h1>
+    <div className="bg-blue-50 mx-auto justify-center">
+      <h1 className="bg-blue-300 border-gray-400 mx-2 p-6 text-white font-bold text-center text-4xl shadow-inner shadow-black ">
+        Well Come To Student Portal
+      </h1>
       <StudentDashboard />
     </div>
   );
