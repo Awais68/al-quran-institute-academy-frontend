@@ -98,7 +98,7 @@ export default function Signup({
     }
 
     const data = await response.json();
-    console.log("Cloudinary image url:", data.secure_url);
+    // console.log("Cloudinary image url:", data.secure_url);
     return data.secure_url;
   };
 
@@ -151,14 +151,14 @@ export default function Signup({
       // classDays: selectedDays,
       // role: "student",
     };
-    console.log("data==>>>", data);
+    // console.log("data==>>>", data);
 
     try {
       const response = await axios.post(AppRoutes.signup, data);
 
-      console.log("Signup URL ===>", AppRoutes.signup);
+      // console.log("Signup URL ===>", AppRoutes.signup);
 
-      console.log(response);
+      // console.log(response);
       if (response.status === 200 || response.status === 201) {
         router.push("/students");
       }

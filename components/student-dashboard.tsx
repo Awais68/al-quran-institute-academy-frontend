@@ -26,10 +26,12 @@ import {
   Star,
 } from "lucide-react";
 import { AppRoutes } from "@/app/constant/constant";
+import ColoredSpinner from "./loader";
 
 export function StudentDashboard(id: string) {
   const [students, setStudents] = useState<any[]>([]);
   const [singleStudent, setSingleStudent] = useState<any>({});
+  const [loading, setLoading] = useState<any>([]);
   const getAStudent = async (id: string) => {
     try {
       const response = await axios.get(`${AppRoutes.getAStudent}/${id}`);
@@ -48,6 +50,7 @@ export function StudentDashboard(id: string) {
         console.log("API Response:", response);
 
         // Adjust this based on your response shape
+        setLoading(false);
         setStudents(response.data.data);
       } catch (error) {
         console.error("Error fetching students:", error);
@@ -56,8 +59,8 @@ export function StudentDashboard(id: string) {
 
     getAllStudents();
   }, []);
-  console.log(students);
-  // const enrolledCourses = [
+  // console.log(students);
+
   //   {
   //     id: "tajweed-mastery",
   //     title: "Tajweed Mastery",
@@ -141,8 +144,8 @@ export function StudentDashboard(id: string) {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Welcome Section */}
-      {students.length === 0 ? (
-        <p>No students found.</p>
+      {students.length === 0 || loading ? (
+        <ColoredSpinner />
       ) : (
         students.map((student: any, index: number) => {
           // Use student data or fallback to empty arrays
