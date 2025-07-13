@@ -57,7 +57,7 @@ export default function Courses() {
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Our Programs</h2>
           <div className="w-20 h-1 bg-blue-600 mx-auto mb-6"></div>
           <p className="text-gray-700 max-w-2xl mx-auto">
-            Madarsa Hajira offers a variety of programs designed to provide comprehensive Islamic education for students
+            Al-Quran Institute Online offers a variety of programs designed to provide comprehensive Islamic education for students
             of all ages and backgrounds.
           </p>
         </div>

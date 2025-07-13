@@ -10,4 +10,6 @@ export const AppRoutes = {
   uploadImage: BASE_URL + "/upload",
   contact: BASE_URL + "/contactForm",
   getAStudent: BASE_URL + `/studentById/getAStudent`,
+  CURRENT_STUDENT_API: BASE_URL + `/currentStudent`,
 };
+// src/constants/api.js

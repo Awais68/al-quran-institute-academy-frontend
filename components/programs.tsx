@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import Link from "next/link";
 
 const programsData = [
   {
@@ -264,9 +265,13 @@ export default function Programs() {
                     </div>
                   </div>
 
-                  <button className="bg-primary-600 hover:bg-primary-700 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-md text-xs sm:text-sm font-medium transition-colors w-full">
-                    Enroll Now
-                  </button>
+                  <Link
+                    className="bg-primary-600 flex justify-center hover:bg-primary-700 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-md text-xs sm:text-sm font-medium transition-colors w-full"
+                    href={"/signup"}
+                  >
+                    {" "}
+                    Enroll Now{" "}
+                  </Link>
                 </div>
 
                 <div className="col-span-2 p-6 sm:p-8 lg:p-12">

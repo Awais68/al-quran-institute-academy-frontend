@@ -32,6 +32,11 @@ export default function CountryCitySelector({
   const [cities, setCities] = useState<string[]>([]);
   const [selectedCity, setSelectedCity] = useState<string>(initialCity);
   const [currentTime, setCurrentTime] = useState<string>("");
+  // Hydration mismatch fix: Only render current time on client
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Load JSON data and enhance with country codes and timezones
   useEffect(() => {
@@ -69,7 +74,9 @@ export default function CountryCitySelector({
   useEffect(() => {
     const country = countries.find((c) => c.name === selectedCountry);
     if (country) {
-      setCities(country.cities);
+      // Defensive: limit cities to 200, fallback to [] if not array
+      const safeCities = (country?.cities ?? []).slice(0, 200);
+      setCities(safeCities);
       updateTime(country.timezone || "UTC");
       if (onCountryChange) onCountryChange(selectedCountry);
     } else {
@@ -143,17 +150,21 @@ export default function CountryCitySelector({
             onChange={handleCityChange}
           >
             <option value="">Select a city</option>
-            {cities.map((city) => (
-              <option key={city} value={city}>
-                {city}
-              </option>
-            ))}
+            {cities.length === 0 ? (
+              <option value="">No cities found</option>
+            ) : (
+              cities.map((city, idx) => (
+                <option key={city + "-" + idx} value={city}>
+                  {city}
+                </option>
+              ))
+            )}
           </select>
         </div>
       )}
 
       {/* Current Time */}
-      {currentTime && (
+      {mounted && currentTime && (
         <div className="mb-4">
           <label className="block mb-2 text-sm font-medium text-gray-700">
             Current Time

@@ -30,6 +30,7 @@ import PhoneInput from "react-phone-number-input";
 
 import PhoneNumberInput from "@/components/npmPhone";
 import CountryCitySelector from "@/components/country-city";
+import { useEffect } from "react";
 
 interface RegisterModalProps {
   open: boolean;
@@ -62,7 +63,13 @@ export default function Signup({
     "Sunday",
   ];
 
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [selectedDays, setSelectedDays] = useState<string[]>([
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+  ]);
 
   const dobtoage = (dob: Date | undefined) => {
     if (!dob) return null;
@@ -81,9 +88,9 @@ export default function Signup({
   const uploadImage = async (file: File): Promise<string> => {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "al-quran-institute"); 
+    formData.append("upload_preset", "al-quran-institute");
 
-    const cloudName = "dcp2soyzn"; 
+    const cloudName = "dcp2soyzn";
 
     const response = await fetch(
       `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
@@ -122,6 +129,20 @@ export default function Signup({
     }
   };
 
+  // Generate 24-hour time slots in 30-minute intervals
+  const timeSlots = Array.from({ length: 48 }, (_, i) => {
+    const hour = Math.floor(i / 2);
+    const minute = i % 2 === 0 ? "00" : "30";
+    const value = `${hour.toString().padStart(2, "0")}${minute}`;
+    // Format to 12-hour with AM/PM
+    const hour12 = hour % 12 === 0 ? 12 : hour % 12;
+    const ampm = hour < 12 ? "AM" : "PM";
+    return {
+      value,
+      label: `${hour12.toString().padStart(2, "0")}:${minute}${ampm}`,
+    };
+  });
+
   // const [date, setDate] = useState();
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -144,14 +165,15 @@ export default function Signup({
       app: e.target.app.value,
       suitableTime: e.target.suitableTime.value,
       course: e.target.course.value,
-      city: selectedCity,
+      city: selectedCity || null,
       country: selectedCountry,
       password: e.target.password.value,
       image: imageUrl,
+      classDays: selectedDays,
       // classDays: selectedDays,
       // role: "student",
     };
-    // console.log("data==>>>", data);
+    console.log("data==>>>", data);
 
     try {
       const response = await axios.post(AppRoutes.signup, data);
@@ -166,6 +188,12 @@ export default function Signup({
       console.log("api error==>", err.response?.data || err.message);
     }
   };
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  if (!mounted) return null; // Ya skeleton/loader
 
   return (
     <div className="min-h-screen bg-white relative overflow-hidden">
@@ -263,19 +291,20 @@ export default function Signup({
                   </Label> */}
                   <PhoneNumberInput />
                 </div>
-
                 <div>
                   <Label htmlFor="suitableTime" className="text-blue-900">
-                    Suitable Timing For Student
+                    Suitable Class Timing For Students (Pakistan Time)
                   </Label>
                   <Select name="suitableTime" required>
                     <SelectTrigger className="border-blue-200 focus:border-blue-400">
                       <SelectValue placeholder="Select Your Timing" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1200">12:00AM</SelectItem>
-                      <SelectItem value="1230">12:30AM</SelectItem>
-                      <SelectItem value="0100">01:00AM</SelectItem>
+                      {timeSlots.map((slot) => (
+                        <SelectItem key={slot.value} value={slot.value}>
+                          {slot.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -304,7 +333,6 @@ export default function Signup({
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div>
                   <Label htmlFor="course" className="text-blue-900">
                     Course
@@ -327,8 +355,9 @@ export default function Signup({
                     </SelectContent>
                   </Select>
                 </div>
-                {/* <div>
-                  <Label htmlFor="day" className="text-blue-900">
+                {/* Class Days Section */}
+                <div>
+                  <Label htmlFor="classDays" className="text-blue-900">
                     Class Days
                   </Label>
                   <div className="grid grid-cols-2 gap-2 mt-2">
@@ -355,7 +384,6 @@ export default function Signup({
                     ))}
                   </div>
                 </div>
-                console.log("classDays:", selectedDays) */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="col-span-2">
                     <CountryCitySelector
