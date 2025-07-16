@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Country, City } from "country-state-city";
 import { formatInTimeZone } from "date-fns-tz";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface CountryData {
   name: string;
@@ -58,14 +59,17 @@ export default function CountryCitySelector({
       .catch((error) => {
         console.error("Error loading JSON:", error);
         // Fallback to country-state-city if JSON fails
-        const fallbackCountries = Country.getAllCountries().map((c) => ({
-          name: c.name,
-          cities: Array.isArray(City.getCitiesOfCountry(c.isoCode))
-            ? City.getCitiesOfCountry(c.isoCode).map((city) => city.name)
-            : [],
-          code: c.isoCode,
-          timezone: c.timezones?.[0]?.zoneName || "UTC",
-        }));
+        const fallbackCountries = Country.getAllCountries().map((c) => {
+          const citiesArr = City.getCitiesOfCountry(c.isoCode);
+          return {
+            name: c.name,
+            cities: Array.isArray(citiesArr)
+              ? citiesArr.map((city) => city.name)
+              : [],
+            code: c.isoCode,
+            timezone: c.timezones?.[0]?.zoneName || "UTC",
+          };
+        });
         setCountries(fallbackCountries);
       });
   }, []);

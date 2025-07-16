@@ -1,65 +1,103 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { EyeIcon, EyeOffIcon, LockIcon, MailIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
-import Link from "next/link"
+import { useContext, useEffect, useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { EyeIcon, EyeOffIcon, LockIcon, MailIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
+import axios from "axios";
+import { AppRoutes } from "@/app/constant/constant";
+import { useRouter } from "next/navigation";
+import { AuthContext } from "@/app/context/AuthContext";
 
 interface LoginModalProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onRegisterClick: () => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onRegisterClick: () => void;
 }
 
-export default function LoginModal({ open, onOpenChange, onRegisterClick }: LoginModalProps) {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
-
+export default function LoginModal({
+  open,
+  onOpenChange,
+  onRegisterClick,
+}: LoginModalProps) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
+  const { user } = useContext(AuthContext);
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
+    e.preventDefault();
+    setError("");
 
     if (!email || !password) {
-      setError("Please fill in all fields")
-      return
+      setError("Please fill in all fields");
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      // For demo purposes, just close the modal on success
-      onOpenChange(false)
-
-      // Reset form
-      setEmail("")
-      setPassword("")
-    } catch (err) {
-      setError("Invalid email or password")
+      // Replace with your backend login API endpoint
+      const response = await axios.post(AppRoutes.login, {
+        email,
+        password,
+      });
+      // If login is successful, close modal and reset form
+      // if (response.status === 200 || response.status === 201) {
+      //   onOpenChange(false);
+      //   setEmail("");
+      //   setPassword("");
+      // } else {
+      //   setError("Invalid email or password");
+      // }
+      console.log("response==>", response);
+      localStorage.setItem("token", response.data?.data?.token);
+      router.push("/currentStudent");
+    } catch (err: any) {
+      setError(
+        err.response?.data?.message ||
+          (typeof err.response?.data === "string"
+            ? err.response?.data
+            : JSON.stringify(err.response?.data)) ||
+          err.message ||
+          "Login failed. Please try again later."
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
+
+  useEffect(() => {
+    if (user) router.push("/currentStudent");
+  });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] p-6 md:p-8">
         <DialogHeader>
-          <DialogTitle className="text-center text-2xl font-bold text-primary-800">Login to Madarsa Hajira</DialogTitle>
+          <DialogTitle className="text-center text-2xl font-bold text-primary-800">
+            Login to Al-Quran Institute Online
+          </DialogTitle>
         </DialogHeader>
 
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">{error}</div>}
+        {error && (
+          <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleLogin} className="space-y-4 pt-4">
           <div className="space-y-2">
@@ -83,7 +121,10 @@ export default function LoginModal({ open, onOpenChange, onRegisterClick }: Logi
           <div className="space-y-2">
             <div className="flex justify-between">
               <Label htmlFor="password">Password</Label>
-              <Link href="#" className="text-sm text-primary-600 hover:text-primary-800">
+              <Link
+                href="/forgetPassword"
+                className="text-sm text-primary-600 hover:text-primary-800"
+              >
                 Forgot password?
               </Link>
             </div>
@@ -116,7 +157,10 @@ export default function LoginModal({ open, onOpenChange, onRegisterClick }: Logi
 
           <Button
             type="submit"
-            className={cn("w-full bg-primary-600 hover:bg-primary-700", isLoading && "opacity-70 cursor-not-allowed")}
+            className={cn(
+              "w-full bg-primary-600 hover:bg-primary-700",
+              isLoading && "opacity-70 cursor-not-allowed"
+            )}
             disabled={isLoading}
           >
             {isLoading ? "Logging in..." : "Login"}
@@ -135,5 +179,5 @@ export default function LoginModal({ open, onOpenChange, onRegisterClick }: Logi
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

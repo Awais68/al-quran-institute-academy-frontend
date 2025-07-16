@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import LoginModal from "./login-modal";
-import Signup from "@/app/signup/page";
 import Link from "next/link";
 
 interface AuthButtonsProps {
@@ -39,7 +38,7 @@ export default function AuthButtons({
         </Button>
         <Link
           href="/signup"
-          className="w-full bg-accent-500 hover:bg-accent-600"
+          className="w-full bg-accent-500 hover:bg-accent-600 text-white border-black"
         >
           Register
         </Link>

@@ -5,11 +5,13 @@ export const BASE_URL = devURL;
 
 export const AppRoutes = {
   signup: BASE_URL + "/auth/signup",
+  login: BASE_URL + "/auth/login",
+
   getStudent: BASE_URL + "/user/getUser",
   addStudent: BASE_URL + "student",
   uploadImage: BASE_URL + "/upload",
   contact: BASE_URL + "/contactForm",
   getAStudent: BASE_URL + `/studentById/getAStudent`,
-  CURRENT_STUDENT_API: BASE_URL + `/currentStudent`,
+  getCurrentUser: BASE_URL + `/getCurrentUser`,
 };
 // src/constants/api.js

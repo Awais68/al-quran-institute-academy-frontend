@@ -12,7 +12,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-export function Calendar22({ date, onChange }) {
+export function Calendar22({
+  date,
+  onChange,
+}: {
+  date: Date | undefined;
+  onChange: (date: Date | undefined) => void;
+}) {
   const [open, setOpen] = React.useState(false);
 
   return (

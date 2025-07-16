@@ -26,23 +26,16 @@ import { AppRoutes } from "@/app/constant/constant";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Calendar22 } from "@/components/datepicker";
-import PhoneInput from "react-phone-number-input";
-
 import PhoneNumberInput from "@/components/npmPhone";
 import CountryCitySelector from "@/components/country-city";
 import { useEffect } from "react";
 
-interface RegisterModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onLoginClick: () => void;
-}
-
-export default function Signup({
-  open,
-  onOpenChange,
-  onLoginClick,
-}: RegisterModalProps) {
+export default function Signup({}: // params,
+// searchParams,
+{
+  params?: any;
+  searchParams?: any;
+}) {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const [date, setDate] = useState<Date | undefined>();
@@ -57,7 +50,7 @@ export default function Signup({
     "Monday",
     "Tuesday",
     "Wednesday",
-    "Thursday", // ✔️ Correct spelling
+    "Thursday",
     "Friday",
     "Saturday",
     "Sunday",
@@ -144,11 +137,15 @@ export default function Signup({
   });
 
   // const [date, setDate] = useState();
+  const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
 
     if (!imageUrl) {
-      alert("Please upload an image before submitting the form.");
+      setError("Please upload an image before submitting the form.");
       return;
     }
 
@@ -177,15 +174,23 @@ export default function Signup({
 
     try {
       const response = await axios.post(AppRoutes.signup, data);
-
-      // console.log("Signup URL ===>", AppRoutes.signup);
-
-      // console.log(response);
       if (response.status === 200 || response.status === 201) {
-        router.push("/students");
+        setSuccess("Signup successful! Welcome to Al Quran Institute Online.");
+        setTimeout(() => {
+          router.push("/students");
+        }, 2000);
+      } else {
+        setError("Signup failed. Please try again later.");
       }
     } catch (err: any) {
-      console.log("api error==>", err.response?.data || err.message);
+      setError(
+        err.response?.data?.message ||
+          (typeof err.response?.data === "string"
+            ? err.response?.data
+            : JSON.stringify(err.response?.data)) ||
+          err.message ||
+          "Signup failed. Please try again later."
+      );
     }
   };
 
@@ -226,6 +231,17 @@ export default function Signup({
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Show error or success message */}
+            {error && (
+              <div className="bg-red-100 text-red-700 p-3 mb-4 rounded-md text-center">
+                {typeof error === "string" ? error : JSON.stringify(error)}
+              </div>
+            )}
+            {success && (
+              <div className="bg-green-100 text-green-700 p-3 mb-4 rounded-md text-center">
+                {success}
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="relative">

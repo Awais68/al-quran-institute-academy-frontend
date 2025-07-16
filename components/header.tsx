@@ -45,6 +45,9 @@ export default function Header() {
     };
   }, [isMenuOpen]);
 
+  // After all hooks, conditionally render
+  if (isMobile === undefined) return null;
+
   return (
     <header
       className={cn(
