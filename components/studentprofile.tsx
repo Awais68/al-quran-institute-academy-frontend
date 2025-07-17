@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -39,6 +39,9 @@ import {
   Eye,
 } from "lucide-react";
 import Link from "next/link";
+import { AppRoutes } from "@/app/constant/constant";
+import axios from "axios";
+import getAllStudents from "@/app/admin/page";
 
 interface StudentProfileProps {
   studentId: string;
@@ -76,54 +79,54 @@ const getStudentData = (id: string) => {
       "Needs more practice with Qalqalah",
       "Speed control during recitation",
     ],
-    assignments: [
-      {
-        id: "1",
-        title: "Noon Sakinah Practice Recording",
-        dueDate: "2024-01-20",
-        status: "pending",
-        description:
-          "Record recitation of Surah Al-Fatiha focusing on Noon Sakinah rules",
-      },
-      {
-        id: "2",
-        title: "Makharij Exercise Sheet",
-        dueDate: "2024-01-18",
-        status: "completed",
-        description: "Complete the articulation points practice worksheet",
-        submittedDate: "2024-01-17",
-        grade: "A",
-      },
-    ],
-    sessionHistory: [
-      {
-        date: "2024-01-12T10:00:00",
-        duration: 60,
-        topic: "Noon Sakinah Rules - Ikhfa",
-        attendance: "present",
-        notes:
-          "Excellent progress on Ikhfa rule. Needs practice with specific letters.",
-        rating: 5,
-      },
-      {
-        date: "2024-01-10T10:00:00",
-        duration: 60,
-        topic: "Makharij Review",
-        attendance: "present",
-        notes:
-          "Good understanding of articulation points. Ready for advanced rules.",
-        rating: 4,
-      },
-      {
-        date: "2024-01-08T10:00:00",
-        duration: 60,
-        topic: "Qalqalah Practice",
-        attendance: "present",
-        notes:
-          "Needs more practice with Qalqalah letters. Assigned extra exercises.",
-        rating: 3,
-      },
-    ],
+    // assignments: [
+    //   {
+    //     id: "1",
+    //     title: "Noon Sakinah Practice Recording",
+    //     dueDate: "2024-01-20",
+    //     status: "pending",
+    //     description:
+    //       "Record recitation of Surah Al-Fatiha focusing on Noon Sakinah rules",
+    //   },
+    //   {
+    //     id: "2",
+    //     title: "Makharij Exercise Sheet",
+    //     dueDate: "2024-01-18",
+    //     status: "completed",
+    //     description: "Complete the articulation points practice worksheet",
+    //     submittedDate: "2024-01-17",
+    //     grade: "A",
+    //   },
+    // ],
+    // sessionHistory: [
+    //   {
+    //     date: "2024-01-12T10:00:00",
+    //     duration: 60,
+    //     topic: "Noon Sakinah Rules - Ikhfa",
+    //     attendance: "present",
+    //     notes:
+    //       "Excellent progress on Ikhfa rule. Needs practice with specific letters.",
+    //     rating: 5,
+    //   },
+    //   {
+    //     date: "2024-01-10T10:00:00",
+    //     duration: 60,
+    //     topic: "Makharij Review",
+    //     attendance: "present",
+    //     notes:
+    //       "Good understanding of articulation points. Ready for advanced rules.",
+    //     rating: 4,
+    //   },
+    //   {
+    //     date: "2024-01-08T10:00:00",
+    //     duration: 60,
+    //     topic: "Qalqalah Practice",
+    //     attendance: "present",
+    //     notes:
+    //       "Needs more practice with Qalqalah letters. Assigned extra exercises.",
+    //     rating: 3,
+    //   },
+    // ],
     progressData: {
       overall: 65,
       tajweedRules: 70,
@@ -135,6 +138,25 @@ const getStudentData = (id: string) => {
 };
 
 export function StudentProfile({ studentId }: StudentProfileProps) {
+  const [students, setStudents] = useState<any[]>([]);
+
+  useEffect(() => {
+    const getAllStudents = async () => {
+      try {
+        const response = await axios.get(AppRoutes.getAllStudents);
+        console.log("API Response:", response);
+
+        // Adjust this based on your response shape
+        setStudents(response.data.data);
+      } catch (error) {
+        console.error("Error fetching students:", error);
+      }
+    };
+
+    getAllStudents();
+  }, []);
+  console.log("Student in the Teacher", students);
+
   const [isEditing, setIsEditing] = useState(false);
   const [newNote, setNewNote] = useState("");
 

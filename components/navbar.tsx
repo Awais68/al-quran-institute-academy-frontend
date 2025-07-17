@@ -27,10 +27,10 @@ export default function Navbar() {
           <Link href="/courses" className="text-gray-700 hover:text-blue-600 transition-colors">
             Courses
           </Link>
-          <Link href="/gallery" className="text-gray-700 hover:text-blue-600 transition-colors">
+          <Link href="/#gallery" className="text-gray-700 hover:text-blue-600 transition-colors">
             Gallery
           </Link>
-          <Link href="/testimonials" className="text-gray-700 hover:text-blue-600 transition-colors">
+          <Link href="/#testimonials" className="text-gray-700 hover:text-blue-600 transition-colors">
             Testimonials
           </Link>
           <Link

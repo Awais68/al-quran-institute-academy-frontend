@@ -24,7 +24,7 @@ export default function Home() {
       <Contact />
       <Footer />
 
-      <ChatWidget />
+      {/* <ChatWidget /> */}
     </main>
   );
 }

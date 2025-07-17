@@ -152,8 +152,8 @@ export default function Signup({}: // params,
     const age = dobtoage(date);
 
     const data = {
-      name: e.target.name.value,
-      fatherName: e.target.fatherName.value,
+      name: e.target.name.value.toUpperCase(),
+      fatherName: e.target.fatherName.value.toUpperCase(),
       email: e.target.email.value,
       gender: e.target.gender.value,
       phone: e.target.phone.value,
@@ -167,8 +167,8 @@ export default function Signup({}: // params,
       password: e.target.password.value,
       image: imageUrl,
       classDays: selectedDays,
-      // classDays: selectedDays,
-      // role: "student",
+      role: "Student",
+      // roll_no: student?.length + 1,
     };
     console.log("data==>>>", data);
 
@@ -195,6 +195,23 @@ export default function Signup({}: // params,
   };
 
   const [mounted, setMounted] = useState(false);
+  const [student, setStudent] = useState(null);
+
+  useEffect(() => {
+    const getAllStudents = async () => {
+      try {
+        const response = await axios.get(AppRoutes.getStudent);
+        // Adjust this based on your response shape
+        setStudent(response?.data?.data);
+      } catch (error) {
+        console.error("Error fetching students:", error);
+      }
+    };
+
+    getAllStudents();
+  }, []);
+  console.log("student ki length==>", student?.length);
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -255,7 +272,7 @@ export default function Signup({}: // params,
                     id="name"
                     name="name"
                     placeholder="Full Name"
-                    className="border-blue-200 focus:border-blue-400 pl-10"
+                    className="border-blue-200 focus:border-blue-400 pl-10   uppercase"
                   />
                 </div>
                 <div>
@@ -266,7 +283,7 @@ export default function Signup({}: // params,
                     id="fatherName"
                     name="fatherName"
                     placeholder="Father Name"
-                    className="border-blue-200 focus:border-blue-400"
+                    className="border-blue-200 focus:border-blue-400 uppercase"
                   />
                 </div>
               </div>
@@ -342,10 +359,11 @@ export default function Signup({}: // params,
                       <SelectValue placeholder="Select Application" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="whatsApp">WhatsApp</SelectItem>
-                      <SelectItem value="teams">Teams</SelectItem>
-                      <SelectItem value="googleMeet">Google Meet</SelectItem>
-                      <SelectItem value="telegram">Telegram</SelectItem>
+                      <SelectItem value="WhatsApp">WhatsApp</SelectItem>
+                      <SelectItem value="Teams">Teams</SelectItem>
+                      <SelectItem value="Google Meet">Google Meet</SelectItem>
+                      <SelectItem value="Telegram">Telegram</SelectItem>
+                      <SelectItem value="Zoom">Zoom</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -361,11 +379,11 @@ export default function Signup({}: // params,
                       <SelectItem value="qaida">
                         Basic Rules of Qaida Course
                       </SelectItem>
-                      <SelectItem value="tajweed">Tajweed</SelectItem>
-                      <SelectItem value="nazra">Nazra Quran</SelectItem>
-                      <SelectItem value="hifz">Hifz zul Quran</SelectItem>
-                      <SelectItem value="namaz">Namaz Course</SelectItem>
-                      <SelectItem value="arabic">
+                      <SelectItem value="Tajweed">Tajweed</SelectItem>
+                      <SelectItem value="Nazra">Nazra Quran</SelectItem>
+                      <SelectItem value="Hifz">Hifz zul Quran</SelectItem>
+                      <SelectItem value="Namaz">Namaz Course</SelectItem>
+                      <SelectItem value="Arabic">
                         Arabic Language Course
                       </SelectItem>
                     </SelectContent>
@@ -474,7 +492,7 @@ export default function Signup({}: // params,
               <p className="text-blue-700 text-sm">
                 Already have an account?{" "}
                 <Link
-                  href=""
+                  href="/login"
                   className="text-blue-600 hover:text-blue-800 font-medium"
                 >
                   Sign in here

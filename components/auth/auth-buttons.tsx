@@ -47,6 +47,8 @@ export default function AuthButtons({
           open={loginOpen}
           onOpenChange={setLoginOpen}
           onRegisterClick={openSignupModal}
+         
+          
         />
         {/* <data
           open={signup}

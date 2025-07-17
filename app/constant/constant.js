@@ -13,5 +13,6 @@ export const AppRoutes = {
   contact: BASE_URL + "/contactForm",
   getAStudent: BASE_URL + `/studentById/getAStudent`,
   getCurrentUser: BASE_URL + `/getCurrentUser`,
+  getAllStudents: BASE_URL + `/getAllStudents`,
 };
 // src/constants/api.js
