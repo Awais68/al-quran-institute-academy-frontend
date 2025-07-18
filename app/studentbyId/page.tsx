@@ -5,23 +5,24 @@ import { AuthContext } from "@/app/context/AuthContext"; // adjust path
 import { AppRoutes } from "@/app/constant/constant";
 
 import StudentProfile from "@/app/components/StudentProfile"; // adjust path
+import Student from "../students/page";
 
 export default function DashboardPage() {
   return (
     <>
     
-  const { user } = useContext(AuthContext); // auth context se user mila
+  const { Student } = useContext(AuthContext); // auth context se user mila
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchStudent = async () => {
-      if (!user?._id) return; // context me user aaya?
+      if (!student?._id) return; // context me user aaya?
 
       try {
         const response = await axios.get(
-          `${AppRoutes.getAStudent}/${user._id}`
+          `${AppRoutes.getAStudent}/${Student._id}`
         );
         setStudent(response.data.data);
         setLoading(false);

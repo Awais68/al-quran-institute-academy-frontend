@@ -285,17 +285,7 @@ export default function Contact() {
 
               <div className="space-y-3 sm:space-y-4 md:space-y-6">
                 <div className="flex items-start">
-                  {/* <div className="bg-primary-800/50 p-2 rounded-full mr-3">
-                    <MapPin className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-accent-300" />
-                  </div> */}
-                  {/* <div>
-                    <h4 className="font-semibold text-primary-100 mb-0.5 sm:mb-1 text-xs sm:text-sm md:text-base">
-                      Address
-                    </h4>
-                    <p className="text-white text-xs md:text-sm">
-                      123 Islamic Education Street, City Name, Country
-                    </p>
-                  </div> */}
+        
                 </div>
 
                 <div className="flex items-start">
@@ -343,23 +333,6 @@ export default function Contact() {
                   </div>
                 </div>
 
-                {/* <div className="mt-4 sm:mt-6 md:mt-8">
-  <h4 className="font-semibold text-primary-100 mb-2 sm:mb-3 md:mb-4 text-xs sm:text-sm md:text-base">
-    Our Location
-  </h4>
-  <div className="h-[120px] sm:h-[150px] md:h-[180px] lg:h-[200px] bg-primary-800 rounded-lg overflow-hidden">
-    <iframe
-      width="100%"
-      height="100%"
-      frameBorder="0"
-      scrolling="no"
-      marginHeight={0}
-      marginWidth={0}
-      src="https://www.openstreetmap.org/export/embed.html?bbox=66.99%2C24.855%2C67.02%2C24.865&amp;layer=mapnik&amp;marker=24.8607%2C67.0011"
-      title="Our Location on OSM"
-    />
-  </div>
-</div> */}
               </div>
             </div>
           </motion.div>

@@ -1,9 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import LoginModal from "./login-modal";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { AuthContext } from "@/app/context/AuthContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import axios from "axios";
+import { AppRoutes } from "@/app/constant/constant.js";
 
 interface AuthButtonsProps {
   className?: string;
@@ -18,6 +23,37 @@ export default function AuthButtons({
 }: AuthButtonsProps) {
   const [loginOpen, setLoginOpen] = useState(false);
   const [signup, setSignup] = useState(false);
+  const { user, setUser } = useContext(AuthContext);
+  const router = useRouter();
+
+  // Debug logs
+  console.log("[AuthButtons] user:", user);
+  console.log(
+    "[AuthButtons] token in localStorage:",
+    typeof window !== "undefined" ? localStorage.getItem("token") : undefined
+  );
+
+  useEffect(() => {
+    const getCurrentUserInfo = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        console.log("AuthContext: token from localStorage", token);
+        if (!token) {
+          console.log("No token found");
+          return;
+        } else {
+          const response = await axios.get(AppRoutes.getCurrentUser, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          console.log("AuthContext: API response data: ", response?.data);
+          setUser(response?.data?.data);
+        }
+      } catch (error) {
+        console.log("AuthContext error: ", error);
+      }
+    };
+    getCurrentUserInfo();
+  }, []);
 
   const openLoginModal = () => {
     setSignup(false);
@@ -28,8 +64,38 @@ export default function AuthButtons({
     setLoginOpen(false);
     setSignup(true);
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+    router.push("/");
+  };
+
   const baseClass = isScrolled ? "text-gray-900" : "text-white";
 
+  // If user is logged in
+  if (user) {
+    const profileImg =
+      user.avatar || user.profileImage || user.image || undefined;
+    const userName = user.name || user.email || "U";
+    return (
+      <div className={`flex items-center gap-3 ${className}`}>
+        <Avatar>
+          <AvatarImage src={profileImg} alt={userName} />
+          <AvatarFallback>{userName[0]}</AvatarFallback>
+        </Avatar>
+        <Button
+          variant="outline"
+          className="bg-white text-primary-600 hover:bg-primary-50"
+          onClick={handleLogout}
+        >
+          Logout
+        </Button>
+      </div>
+    );
+  }
+
+  // Not logged in (default logic)
   if (variant === "mobile") {
     return (
       <div className={`flex flex-col gap-3 w-full ${className}`}>
@@ -47,14 +113,7 @@ export default function AuthButtons({
           open={loginOpen}
           onOpenChange={setLoginOpen}
           onRegisterClick={openSignupModal}
-         
-          
         />
-        {/* <data
-          open={signup}
-          onOpenChange={openSignupModal}
-          onLoginClick={openLoginModal}
-        /> */}
       </div>
     );
   }
@@ -77,11 +136,6 @@ export default function AuthButtons({
         onOpenChange={setLoginOpen}
         onRegisterClick={openSignupModal}
       />
-      {/* <RegisterModal
-        open={registerOpen}
-        onOpenChange={setRegisterOpen}
-        onLoginClick={openLoginModal}
-      /> */}
     </div>
   );
 }

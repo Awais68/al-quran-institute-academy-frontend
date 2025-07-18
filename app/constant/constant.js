@@ -10,7 +10,7 @@ export const AppRoutes = {
   getStudent: BASE_URL + "/user/getUser",
   addStudent: BASE_URL + "student",
   uploadImage: BASE_URL + "/upload",
-  contact: BASE_URL + "/contactForm",
+  contact: BASE_URL + "/contactForms",
   getAStudent: BASE_URL + `/studentById/getAStudent`,
   getCurrentUser: BASE_URL + `/getCurrentUser`,
   getAllStudents: BASE_URL + `/getAllStudents`,
