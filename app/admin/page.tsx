@@ -1,3 +1,4 @@
+"use client";
 import AdminContent from "@/components/adminContent";
 import ProtectedRoute from "@/components/ProtectedRoute";
 

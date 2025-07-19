@@ -58,6 +58,7 @@ interface StudentData {
   app?: string;
   dob?: string;
   image?: string;
+  averageRating?: number; // <-- Add this line
 }
 
 export default function InstructorDashboard() {

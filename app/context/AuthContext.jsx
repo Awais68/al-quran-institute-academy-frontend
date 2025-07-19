@@ -9,28 +9,36 @@ export const AuthContext = createContext();
 
 export default function AuthContextProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
+
+  // Listen for token changes in localStorage
+  useEffect(() => {
+    const handleStorage = () => {
+      setToken(localStorage.getItem("token"));
+    };
+    window.addEventListener("storage", handleStorage);
+    setToken(localStorage.getItem("token"));
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   useEffect(() => {
     const getCurrentUserInfo = async () => {
       try {
-        // Use localStorage for web
         const token = localStorage.getItem("token");
         if (!token) {
-          console.log("No token found");
+          setUser(null);
           return;
-        } else {
-          const response = await axios.get(AppRoutes.getCurrentUser, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          console.log("API response data: ", response?.data);
-          setUser(response?.data?.user);
         }
+        const response = await axios.get(AppRoutes.getCurrentUser, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUser(response.data?.data); // <-- Make sure this matches your API!
       } catch (error) {
-        console.log("no token==>", error.message);
+        setUser(null);
       }
     };
     getCurrentUserInfo();
-  }, []);
+  }, [token]);
 
   return (
     <AuthContext.Provider value={{ user, setUser }}>

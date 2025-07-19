@@ -40,6 +40,10 @@ export default function Student() {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [currentUser, setCurrentUser] = useState<any[]>([]);
+  const [enrolledCourses, setEnrolledCourses] = useState<any[]>([]); // <-- Add this line
+  const [upcomingSessions, setUpcomingSessions] = useState<any[]>([]); // <-- Add this line
+  const [achievements, setAchievements] = useState<any[]>([]); // <-- Add this line
+  const [recentActivities, setRecentActivities] = useState<any[]>([]); // <-- Add this line
 
   const handleCountryChange = useCallback((country: string) => {
     setSelectedCountry(country);

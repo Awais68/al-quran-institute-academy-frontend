@@ -19,6 +19,7 @@ import axios from "axios";
 import { AppRoutes } from "@/app/constant/constant";
 import { useRouter } from "next/navigation";
 import { AuthContext } from "@/app/context/AuthContext";
+import { LoadingSpinner } from "../loader";
 
 interface LoginModalProps {
   open: boolean;
@@ -65,7 +66,7 @@ export default function LoginModal({
       // }
       console.log("response==>", response);
       localStorage.setItem("token", response.data?.data?.token);
-      router.push("/currentStudent");
+      router.push("/currentUser");
     } catch (err: any) {
       setError(
         err.response?.data?.message ||
@@ -163,7 +164,7 @@ export default function LoginModal({
             )}
             disabled={isLoading}
           >
-            {isLoading ? "Logging in..." : "Login"}
+            {isLoading ? <LoadingSpinner /> : "Login"}
           </Button>
 
           <div className="text-center text-sm text-gray-500">

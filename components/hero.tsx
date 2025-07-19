@@ -162,7 +162,7 @@ export default function Hero() {
             {/* <p className="mt-2 text-sm sm:text-base text-primary-200 italic">"{slides[currentSlide].subtitle}"</p> */}
             <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <Link
-                href="/programs"
+                href="/#programs"
                 className="px-6 py-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-md text-sm sm:text-base w-full sm:w-auto text-center"
               >
                 Our Programs

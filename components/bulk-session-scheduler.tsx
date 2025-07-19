@@ -207,7 +207,7 @@ export function BulkSessionScheduler() {
   ];
 
   const generateSessionsPreview = (data: BulkSessionData) => {
-    const sessions = [];
+    const sessions: any[] = [];
     let currentDate = new Date(data.startDate);
     const endDate = data.endDate || addMonths(currentDate, 3);
     let sessionCount = 0;

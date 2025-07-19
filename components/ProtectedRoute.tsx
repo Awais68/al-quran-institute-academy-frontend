@@ -1,7 +1,7 @@
 "use client";
 import { useContext, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { AuthContext } from "@/app/context/AuthContext";
+import LoginModal from "@/components/auth/login-modal";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -13,25 +13,32 @@ export default function ProtectedRoute({
   allowedRoles,
 }: ProtectedRouteProps) {
   const { user } = useContext(AuthContext);
-  const router = useRouter();
-  const [checked, setChecked] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     if (!user) {
-      // Not logged in
-      router.replace("/");
-    } else if (!allowedRoles.includes(user.role)) {
-      // Wrong role
-      alert("You are not authorized to access this page.");
-      router.replace("/");
+      setShowLoginModal(true);
     } else {
-      setChecked(true);
+      setShowLoginModal(false);
     }
-  }, [user, allowedRoles, router]);
+  }, [user]);
 
-  // Show nothing or a loader until check is done
-  if (!user || !allowedRoles.includes(user.role) || !checked) {
-    return null;
+  if (!user) {
+    return (
+      <LoginModal
+        open={showLoginModal}
+        onOpenChange={setShowLoginModal}
+        onRegisterClick={() => {}}
+      />
+    );
+  }
+
+  if (!allowedRoles.includes(user.role)) {
+    return (
+      <div className="text-red-600 text-center mt-10 font-bold">
+        You are not authorized to access this page.
+      </div>
+    );
   }
 
   return <>{children}</>;

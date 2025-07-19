@@ -195,7 +195,7 @@ export default function Signup({}: // params,
   };
 
   const [mounted, setMounted] = useState(false);
-  const [student, setStudent] = useState(null);
+  const [student, setStudent] = useState<any[]>([]);
 
   useEffect(() => {
     const getAllStudents = async () => {
