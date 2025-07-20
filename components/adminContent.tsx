@@ -41,24 +41,9 @@ export default function AdminContent() {
   return (
     <div className="p-4">
       {/* Top bar with profile and logout */}
-      <div className="flex justify-end items-center mb-6 gap-4">
-        <div className="flex items-center gap-2">
-          <Avatar>
-            <AvatarImage src={profileImg} alt={userName} />
-            <AvatarFallback>{userName[0]}</AvatarFallback>
-          </Avatar>
-          <span className="font-medium text-gray-800">{userName}</span>
-        </div>
-        <button
-          onClick={handleLogout}
-          className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow text-sm"
-        >
-          Logout
-        </button>
-      </div>
 
       {/* Stats Cards */}
-      <div className="flex flex-wrap gap-6 justify-center my-4">
+      <div className="flex flex-wrap gap-6 justify-around my-4">
         <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50 min-w-[220px]">
           <CardContent className="p-6">
             <div className="flex items-center space-x-4">
@@ -69,7 +54,7 @@ export default function AdminContent() {
                 <p className="text-2xl font-bold text-blue-900">
                   {students.length}
                 </p>
-                <p className="text-blue-700 text-sm">Total Students</p>
+                <p className="text-blue-700 text-lg">Total Students</p>
               </div>
             </div>
           </CardContent>
@@ -83,7 +68,7 @@ export default function AdminContent() {
               </div>
               <div>
                 <p className="text-2xl font-bold text-blue-900">05</p>
-                <p className="text-blue-700 text-sm">Active Courses</p>
+                <p className="text-blue-700 text-lg">Active Courses</p>
               </div>
             </div>
           </CardContent>
@@ -97,7 +82,7 @@ export default function AdminContent() {
               </div>
               <div>
                 <p className="text-2xl font-bold text-blue-900">05</p>
-                <p className="text-blue-700 text-sm">Session</p>
+                <p className="text-blue-700 text-lg">Session</p>
               </div>
             </div>
           </CardContent>
@@ -110,8 +95,8 @@ export default function AdminContent() {
                 <Video className="h-6 w-6 text-purple-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-blue-900">--</p>
-                <p className="text-blue-700 text-sm">Sessions Completed</p>
+                <p className="text-2xl font-bold text-blue-900">02</p>
+                <p className="text-blue-700 text-lg">Sessions Completed</p>
               </div>
             </div>
           </CardContent>
@@ -133,7 +118,7 @@ export default function AdminContent() {
               />
             </div>
             <div className="p-2  ">
-              <h5 className="flex shadow-inner rounded-lg justify-center mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+              <h5 className="flex shadow-inner   rounded-lg justify-center mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
                 {data.name}
               </h5>
               <div className="flex justify-between text-md text-gray-700 dark:text-gray-400 mb-3">

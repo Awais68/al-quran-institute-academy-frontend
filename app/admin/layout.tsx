@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Separator } from "@radix-ui/react-separator";
 import { ReactNode } from "react";
+import UserMenu from "@/components/UserMenu";
 
 // import { Toaster } from "@/components/ui/toaster";
 // import { AppSidebar } from "@/components/appSideBar";
@@ -110,6 +111,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
+              <UserMenu />
             </header>
             <div className="flex-1 overflow-auto">{children}</div>
           </SidebarInset>
