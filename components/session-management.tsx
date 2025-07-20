@@ -48,8 +48,8 @@ import {
 import { format } from "date-fns";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// Add the BulkSessionScheduler import at the top
-import BulkSessionScheduler from "./bulk-session-scheduler";
+// Fix the import to use named import
+import { BulkSessionScheduler } from "./bulk-session-scheduler";
 
 export function SessionManagement() {
   const [selectedDate, setSelectedDate] = useState<Date>();

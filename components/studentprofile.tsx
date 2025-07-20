@@ -43,6 +43,8 @@ import { AppRoutes } from "@/app/constant/constant";
 import axios from "axios";
 import getAllStudents from "@/app/admin/page";
 
+
+
 interface StudentProfileProps {
   studentId: string;
 }
@@ -162,17 +164,17 @@ export function StudentProfile({ studentId }: StudentProfileProps) {
 
   const rawStudent = getStudentData(studentId);
   const student = rawStudent || {};
-  const sessionHistory = Array.isArray(student?.sessionHistory)
-    ? student.sessionHistory
-    : [];
+  // const sessionHistory = Array.isArray(student?.sessionHistory)
+  //   ? student.sessionHistory
+  //   : [];
 
   // When defining or fetching student, ensure sessionHistory is always present as an array:
-  const studentWithFallback = {
-    ...student,
-    sessionHistory: Array.isArray(student.sessionHistory)
-      ? student.sessionHistory
-      : [],
-  };
+  // const studentWithFallback = {
+  //   ...student,
+  //   sessionHistory: Array.isArray(student.sessionHistory)
+  //     ? student.sessionHistory
+  //     : [],
+  // };
 
   const getPerformanceColor = (performance: string) => {
     switch (performance) {
@@ -517,7 +519,7 @@ export function StudentProfile({ studentId }: StudentProfileProps) {
                     Complete record of all sessions with this student
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                {/* <CardContent>
                   <div className="space-y-4">
                     {sessionHistory.map((session, index) => (
                       <div
@@ -570,7 +572,7 @@ export function StudentProfile({ studentId }: StudentProfileProps) {
                       </div>
                     ))}
                   </div>
-                </CardContent>
+                </CardContent> */}
               </Card>
             </TabsContent>
 
@@ -592,7 +594,7 @@ export function StudentProfile({ studentId }: StudentProfileProps) {
                     </Button>
                   </div>
                 </CardHeader>
-                <CardContent>
+                {/* <CardContent>
                   <div className="space-y-4">
                     {student.assignments.map((assignment) => (
                       <div
@@ -658,7 +660,7 @@ export function StudentProfile({ studentId }: StudentProfileProps) {
                       </div>
                     ))}
                   </div>
-                </CardContent>
+                </CardContent> */}
               </Card>
             </TabsContent>
 

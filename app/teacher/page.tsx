@@ -111,139 +111,139 @@ export default function InstructorDashboard() {
   }, []);
   console.log("Student in the Teacher", allStudents);
 
-  //   Mock data - in real app, this would come from an API
-  //   const instructorStats = {
-  //     totalStudents: 45,
-  //     activeCourses: 3,
-  //     completedSessions: 128,
-  //     averageRating: 4.9,
-  //     totalHours: 256,
-  //     monthlyEarnings: 3200,
-  //   };
+  // Mock data - in real app, this would come from an API
+  // const instructorStats = {
+  //   totalStudents: 45,
+  //   activeCourses: 3,
+  //   completedSessions: 128,
+  //   averageRating: 4.9,
+  //   totalHours: 256,
+  //   monthlyEarnings: 3200,
+  // };
 
-  //   const students = [
-  //     {
-  //       id: "1",
-  //       name: "Ahmad Hassan",
-  //       email: "ahmad.hassan@email.com",
-  //       course: "Tajweed Mastery",
-  //       progress: 65,
-  //       lastSession: "2024-01-12T10:00:00",
-  //       nextSession: "2024-01-15T10:00:00",
-  //       status: "active",
-  //       level: "Intermediate",
-  //       joinDate: "2023-11-15",
-  //       totalSessions: 24,
-  //       avatar: "/placeholder.svg?height=40&width=40",
-  //       performance: "excellent",
-  //       notes: "Shows great improvement in Noon Sakinah rules",
-  //     },
-  //     {
-  //       id: "2",
-  //       name: "Fatima Al-Zahra",
-  //       email: "fatima.zahra@email.com",
-  //       course: "Quran Memorization",
-  //       progress: 40,
-  //       lastSession: "2024-01-11T15:00:00",
-  //       nextSession: "2024-01-16T15:00:00",
-  //       status: "active",
-  //       level: "Beginner",
-  //       joinDate: "2023-12-01",
-  //       totalSessions: 18,
-  //       avatar: "/placeholder.svg?height=40&width=40",
-  //       performance: "good",
-  //       notes: "Needs more practice with memorization techniques",
-  //     },
-  //     {
-  //       id: "3",
-  //       name: "Muhammad Ali",
-  //       email: "muhammad.ali@email.com",
-  //       course: "Tajweed Mastery",
-  //       progress: 85,
-  //       lastSession: "2024-01-10T14:00:00",
-  //       nextSession: "2024-01-17T14:00:00",
-  //       status: "active",
-  //       level: "Advanced",
-  //       joinDate: "2023-10-20",
-  //       totalSessions: 32,
-  //       avatar: "/placeholder.svg?height=40&width=40",
-  //       performance: "excellent",
-  //       notes: "Ready for advanced Qira'at studies",
-  //     },
-  //     {
-  //       id: "4",
-  //       name: "Aisha Rahman",
-  //       email: "aisha.rahman@email.com",
-  //       course: "Kids Quran Program",
-  //       progress: 30,
-  //       lastSession: "2024-01-09T16:00:00",
-  //       nextSession: "2024-01-14T16:00:00",
-  //       status: "needs_attention",
-  //       level: "Beginner",
-  //       joinDate: "2024-01-05",
-  //       totalSessions: 8,
-  //       avatar: "/placeholder.svg?height=40&width=40",
-  //       performance: "needs_improvement",
-  //       notes: "Missed last two sessions, need to follow up with parents",
-  //     },
-  //   ];
+  // const students = [
+  //   {
+  //     id: "1",
+  //     name: "Ahmad Hassan",
+  //     email: "ahmad.hassan@email.com",
+  //     course: "Tajweed Mastery",
+  //     progress: 65,
+  //     lastSession: "2024-01-12T10:00:00",
+  //     nextSession: "2024-01-15T10:00:00",
+  //     status: "active",
+  //     level: "Intermediate",
+  //     joinDate: "2023-11-15",
+  //     totalSessions: 24,
+  //     avatar: "/placeholder.svg?height=40&width=40",
+  //     performance: "excellent",
+  //     notes: "Shows great improvement in Noon Sakinah rules",
+  //   },
+  //   {
+  //     id: "2",
+  //     name: "Fatima Al-Zahra",
+  //     email: "fatima.zahra@email.com",
+  //     course: "Quran Memorization",
+  //     progress: 40,
+  //     lastSession: "2024-01-11T15:00:00",
+  //     nextSession: "2024-01-16T15:00:00",
+  //     status: "active",
+  //     level: "Beginner",
+  //     joinDate: "2023-12-01",
+  //     totalSessions: 18,
+  //     avatar: "/placeholder.svg?height=40&width=40",
+  //     performance: "good",
+  //     notes: "Needs more practice with memorization techniques",
+  //   },
+  //   {
+  //     id: "3",
+  //     name: "Muhammad Ali",
+  //     email: "muhammad.ali@email.com",
+  //     course: "Tajweed Mastery",
+  //     progress: 85,
+  //     lastSession: "2024-01-10T14:00:00",
+  //     nextSession: "2024-01-17T14:00:00",
+  //     status: "active",
+  //     level: "Advanced",
+  //     joinDate: "2023-10-20",
+  //     totalSessions: 32,
+  //     avatar: "/placeholder.svg?height=40&width=40",
+  //     performance: "excellent",
+  //     notes: "Ready for advanced Qira'at studies",
+  //   },
+  //   {
+  //     id: "4",
+  //     name: "Aisha Rahman",
+  //     email: "aisha.rahman@email.com",
+  //     course: "Kids Quran Program",
+  //     progress: 30,
+  //     lastSession: "2024-01-09T16:00:00",
+  //     nextSession: "2024-01-14T16:00:00",
+  //     status: "needs_attention",
+  //     level: "Beginner",
+  //     joinDate: "2024-01-05",
+  //     totalSessions: 8,
+  //     avatar: "/placeholder.svg?height=40&width=40",
+  //     performance: "needs_improvement",
+  //     notes: "Missed last two sessions, need to follow up with parents",
+  //   },
+  // ];
 
-  //   const upcomingSessions = [
-  //     {
-  //       id: "1",
-  //       student: "Ahmad Hassan",
-  //       course: "Tajweed Mastery",
-  //       date: "2024-01-15T10:00:00",
-  //       duration: 60,
-  //       type: "One-on-One",
-  //       topic: "Noon Sakinah Rules - Advanced",
-  //       status: "scheduled",
-  //     },
-  //     {
-  //       id: "2",
-  //       student: "Fatima Al-Zahra",
-  //       course: "Quran Memorization",
-  //       date: "2024-01-15T15:00:00",
-  //       duration: 45,
-  //       type: "One-on-One",
-  //       topic: "Surah Al-Mulk - Verses 1-10",
-  //       status: "scheduled",
-  //     },
-  //     {
-  //       id: "3",
-  //       student: "Group Session",
-  //       course: "Tajweed Mastery",
-  //       date: "2024-01-15T18:00:00",
-  //       duration: 90,
-  //       type: "Group",
-  //       topic: "Practical Recitation Practice",
-  //       status: "scheduled",
-  //     },
-  //   ];
+  // const upcomingSessions = [
+  //   {
+  //     id: "1",
+  //     student: "Ahmad Hassan",
+  //     course: "Tajweed Mastery",
+  //     date: "2024-01-15T10:00:00",
+  //     duration: 60,
+  //     type: "One-on-One",
+  //     topic: "Noon Sakinah Rules - Advanced",
+  //     status: "scheduled",
+  //   },
+  //   {
+  //     id: "2",
+  //     student: "Fatima Al-Zahra",
+  //     course: "Quran Memorization",
+  //     date: "2024-01-15T15:00:00",
+  //     duration: 45,
+  //     type: "One-on-One",
+  //     topic: "Surah Al-Mulk - Verses 1-10",
+  //     status: "scheduled",
+  //   },
+  //   {
+  //     id: "3",
+  //     student: "Group Session",
+  //     course: "Tajweed Mastery",
+  //     date: "2024-01-15T18:00:00",
+  //     duration: 90,
+  //     type: "Group",
+  //     topic: "Practical Recitation Practice",
+  //     status: "scheduled",
+  //   },
+  // ];
 
-  //   const recentActivities = [
-  //     {
-  //       type: "feedback_given",
-  //       student: "Ahmad Hassan",
-  //       action: "Provided feedback on recitation recording",
-  //       time: "2 hours ago",
-  //       icon: <MessageCircle className="h-4 w-4 text-blue-600" />,
-  //     },
-  //     {
-  //       type: "session_completed",
-  //       student: "Muhammad Ali",
-  //       action: "Completed advanced Tajweed session",
-  //       time: "1 day ago",
-  //       icon: <Video className="h-4 w-4 text-green-600" />,
-  //     },
-  //     {
-  //       type: "assignment_reviewed",
-  //       student: "Fatima Al-Zahra",
-  //       action: "Reviewed memorization assignment",
-  //       time: "2 days ago",
-  //       icon: <FileText className="h-4 w-4 text-purple-600" />,
-  //     },
-  //   ];
+  // const recentActivities = [
+  //   {
+  //     type: "feedback_given",
+  //     student: "Ahmad Hassan",
+  //     action: "Provided feedback on recitation recording",
+  //     time: "2 hours ago",
+  //     icon: <MessageCircle className="h-4 w-4 text-blue-600" />,
+  //   },
+  //   {
+  //     type: "session_completed",
+  //     student: "Muhammad Ali",
+  //     action: "Completed advanced Tajweed session",
+  //     time: "1 day ago",
+  //     icon: <Video className="h-4 w-4 text-green-600" />,
+  //   },
+  //   {
+  //     type: "assignment_reviewed",
+  //     student: "Fatima Al-Zahra",
+  //     action: "Reviewed memorization assignment",
+  //     time: "2 days ago",
+  //     icon: <FileText className="h-4 w-4 text-purple-600" />,
+  //   },
+  // ];
 
   const filteredAllStudents = (allStudents || []).filter((student: any) => {
     const matchesSearch =
@@ -314,7 +314,7 @@ export default function InstructorDashboard() {
               </div>
               <div>
                 <p className="text-2xl font-bold text-blue-900">
-                  {getAllStudents.length}
+                  {allStudents?.length}
                 </p>
                 <p className="text-blue-700 text-sm">Total Students</p>
               </div>
@@ -497,7 +497,7 @@ export default function InstructorDashboard() {
                     <div className="flex items-center space-x-4">
                       <Avatar className="h-12 w-12">
                         <AvatarImage
-                          src={student?.avatar || "/placeholder.svg"}
+                          src={student?.image || "/placeholder.svg"}
                           alt={student.name}
                         />
                         <AvatarFallback className="bg-blue-100 text-blue-600">
@@ -518,10 +518,11 @@ export default function InstructorDashboard() {
                           </Badge>
                           <Badge
                             className={`text-xs ${getStatusColor(
-                              student.status
+                              student.country
                             )}`}
                           >
-                            {student?.status?.replace("_", " ") || "Unknown"}
+                            {/* {student?.status?.replace("_", " ") || "Unknown"} */}
+                            {student?.country?.replace("_", " ") || "Unknown"}
                           </Badge>
                           <Badge
                             className={`text-xs ${getPerformanceColor(
@@ -934,6 +935,35 @@ export default function InstructorDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                    <div>
+                      <h4 className="font-semibold text-blue-900">
+                        Namaz Course
+                      </h4>
+                      <p className="text-blue-700 text-sm">
+                        {
+                          allStudents?.filter(
+                            (student) => student.course === "namaz"
+                          ).length
+                        }{" "}
+                        Namaz Course Students
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-blue-900">
+                        {" "}
+                        {allStudents && allStudents.length > 0
+                          ? `${Math.round(
+                              (allStudents.filter((s) => s.course === "namaz")
+                                .length /
+                                allStudents.length) *
+                                100
+                            )}%`
+                          : "0%"}
+                        <Progress value={56} className="w-20 h-2" />
+                      </p>
+                    </div>
+                  </div>
                   <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                     <div>
                       <h4 className="font-semibold text-blue-900">
@@ -952,15 +982,29 @@ export default function InstructorDashboard() {
                   <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                     <div>
                       <h4 className="font-semibold text-blue-900">
-                        Quran Memorization
+                        Nazra Quran
                       </h4>
                       <p className="text-blue-700 text-sm">
-                        12 students enrolled
+                        {
+                          allStudents?.filter(
+                            (student) => student.course === "nazra"
+                          ).length
+                        }{" "}
+                        Nazra Students
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-2xl font-bold text-blue-900">27%</p>
-                      <Progress value={27} className="w-20 h-2" />
+                      <p className="text-2xl font-bold text-blue-900">
+                        {" "}
+                        {allStudents && allStudents.length > 0
+                          ? `${Math.round(
+                              (allStudents.filter((s) => s.course === "nazra")
+                                .length /
+                                allStudents.length) *
+                                100
+                            )}%`
+                          : "0%"}
+                      </p>
                     </div>
                   </div>
 
@@ -970,11 +1014,26 @@ export default function InstructorDashboard() {
                         Kids Quran Program
                       </h4>
                       <p className="text-blue-700 text-sm">
-                        8 students enrolled
+                        {
+                          allStudents?.filter(
+                            (student) => student.course === "Hifz"
+                          ).length
+                        }{" "}
+                        Hifz Students
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-2xl font-bold text-blue-900">17%</p>
+                      <p className="text-2xl font-bold text-blue-900">
+                        {" "}
+                        {allStudents && allStudents.length > 0
+                          ? `${Math.round(
+                              (allStudents.filter((s) => s.course === "Hifz")
+                                .length /
+                                allStudents.length) *
+                                100
+                            )}%`
+                          : "0%"}
+                      </p>
                       <Progress value={17} className="w-20 h-2" />
                     </div>
                   </div>

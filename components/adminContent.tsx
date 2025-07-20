@@ -1,18 +1,23 @@
-"use client"; // only if you're using this inside Next.js app/page component
-import React, { useEffect, useState } from "react";
+"use client";
+
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { AppRoutes } from "@/app/constant/constant";
+import { Card, CardContent } from "./ui/card";
+import { Video, Users, BookOpen } from "lucide-react";
+import { AuthContext } from "@/app/context/AuthContext";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useRouter } from "next/navigation";
 
 export default function AdminContent() {
   const [students, setStudents] = useState<any[]>([]);
+  const { user, setUser } = useContext(AuthContext);
+  const router = useRouter();
 
   useEffect(() => {
     const getAllStudents = async () => {
       try {
         const response = await axios.get(AppRoutes.getStudent);
-        console.log("API Response:", response);
-
-        // Adjust this based on your response shape
         setStudents(response.data.data);
       } catch (error) {
         console.error("Error fetching students:", error);
@@ -21,46 +26,135 @@ export default function AdminContent() {
 
     getAllStudents();
   }, []);
-  console.log(students);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+    router.push(`/studentbyId/${students}`);
+  };
+
+  // Get user image and name fallback
+  const profileImg =
+    user?.avatar || user?.profileImage || user?.image || undefined;
+  const userName = user?.name || user?.email || "U";
+
   return (
-    <>
-      {/* <Header /> */}
-      <div>
-        <div className="grid grid-cols-3 justify-center w-full  mt-16 relative">
-          {students.map((data, index) => (
-            <div className="max-w-screen-sm bg-blue-200 m-5 px-4 py-6  border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
-              <a href="#">
-                <div className="flex justify-center mb-4">
-                  <img
-                    className="rounded-full h-40 w-40 object-cover"
-                    src={data.image}
-                    alt="Student Image"
-                  />
-                </div>
-              </a>
-              <div className="p-5">
-                <a href="#">
-                  <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                    {data.name}
-                  </h5>
-                </a>
-                <div className=" flex m-2 justify-between">
-                  <div className=" flex  font-normal text-gray-700 dark:text-gray-400 ">
-                    {data.course}
-                  </div>
-                  <div className="  ">{data.country}</div>
-                </div>
-                <a
-                  href="/studentbyId"
-                  className="flex items-center px-3 py-2  font-medium text-center text-white bg-blue-400 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                >
-                  See Profile
-                </a>
+    <div className="p-4">
+      {/* Top bar with profile and logout */}
+      <div className="flex justify-end items-center mb-6 gap-4">
+        <div className="flex items-center gap-2">
+          <Avatar>
+            <AvatarImage src={profileImg} alt={userName} />
+            <AvatarFallback>{userName[0]}</AvatarFallback>
+          </Avatar>
+          <span className="font-medium text-gray-800">{userName}</span>
+        </div>
+        <button
+          onClick={handleLogout}
+          className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow text-sm"
+        >
+          Logout
+        </button>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="flex flex-wrap gap-6 justify-center my-4">
+        <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50 min-w-[220px]">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-green-100 rounded-lg">
+                <Users className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-blue-900">
+                  {students.length}
+                </p>
+                <p className="text-blue-700 text-sm">Total Students</p>
               </div>
             </div>
-          ))}
-        </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50 min-w-[220px]">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-green-100 rounded-lg">
+                <BookOpen className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-blue-900">05</p>
+                <p className="text-blue-700 text-sm">Active Courses</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50 min-w-[220px]">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <BookOpen className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-blue-900">05</p>
+                <p className="text-blue-700 text-sm">Session</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50 min-w-[220px]">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-purple-100 rounded-lg">
+                <Video className="h-6 w-6 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-blue-900">--</p>
+                <p className="text-blue-700 text-sm">Sessions Completed</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </>
+
+      {/* Students Grid */}
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 mt-10">
+        {students.map((data, index) => (
+          <div
+            key={index}
+            className="bg-blue-50 px-4 py-6 border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700"
+          >
+            <div className="flex justify-center mb-4">
+              <img
+                className="rounded-full h-40 w-40 object-cover"
+                src={data.image}
+                alt="Student Image"
+              />
+            </div>
+            <div className="p-2">
+              <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                {data.name}
+              </h5>
+              <div className="flex justify-between text-sm text-gray-700 dark:text-gray-400 mb-3">
+                <span>{data.email}</span>
+                <span>{data.course}</span>
+                <span>{data.country}</span>
+                <span>{data?.city}</span>
+                <span>{data.suitableTime}</span>
+                <span>{data.phone}</span>
+                <span>{data.gender}</span>
+              </div>
+              {/* <a
+                href={`/studentbyId?id=${data?._id}`}
+                className="block text-center px-3 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-300"
+              >
+                See Profile
+              </a> */}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
