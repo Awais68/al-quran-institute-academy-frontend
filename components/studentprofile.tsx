@@ -160,7 +160,19 @@ export function StudentProfile({ studentId }: StudentProfileProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [newNote, setNewNote] = useState("");
 
-  const student = getStudentData(studentId);
+  const rawStudent = getStudentData(studentId);
+  const student = rawStudent || {};
+  const sessionHistory = Array.isArray(student?.sessionHistory)
+    ? student.sessionHistory
+    : [];
+
+  // When defining or fetching student, ensure sessionHistory is always present as an array:
+  const studentWithFallback = {
+    ...student,
+    sessionHistory: Array.isArray(student.sessionHistory)
+      ? student.sessionHistory
+      : [],
+  };
 
   const getPerformanceColor = (performance: string) => {
     switch (performance) {
@@ -507,7 +519,7 @@ export function StudentProfile({ studentId }: StudentProfileProps) {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {student.sessionHistory.map((session, index) => (
+                    {sessionHistory.map((session, index) => (
                       <div
                         key={index}
                         className="border border-blue-200 rounded-lg p-4"

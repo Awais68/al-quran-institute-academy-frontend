@@ -29,6 +29,7 @@ import { Calendar22 } from "@/components/datepicker";
 import PhoneNumberInput from "@/components/npmPhone";
 import CountryCitySelector from "@/components/country-city";
 import { useEffect } from "react";
+import { LoadingSpinner } from "@/components/loader";
 
 export default function Signup({}: // params,
 // searchParams,
@@ -42,6 +43,7 @@ export default function Signup({}: // params,
   const [age, setAge] = useState<number | undefined>();
   const [imageUrl, setImageUrl] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [phone, setPhone] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
@@ -143,9 +145,11 @@ export default function Signup({}: // params,
     e.preventDefault();
     setError("");
     setSuccess("");
+    setIsSubmitting(true);
 
     if (!imageUrl) {
       setError("Please upload an image before submitting the form.");
+      setIsSubmitting(false);
       return;
     }
 
@@ -175,9 +179,14 @@ export default function Signup({}: // params,
     try {
       const response = await axios.post(AppRoutes.signup, data);
       if (response.status === 200 || response.status === 201) {
-        setSuccess("Signup successful! Welcome to Al Quran Institute Online.");
+        setSuccess(
+          "Signup successful! Welcome to Al Quran Institute Online. You can now login with your credentials."
+        );
         setTimeout(() => {
-          router.push("/students");
+          // Redirect to home page with query parameters to show login modal
+          router.push(
+            `/?showLogin=true&email=${encodeURIComponent(e.target.email.value)}`
+          );
         }, 2000);
       } else {
         setError("Signup failed. Please try again later.");
@@ -191,6 +200,8 @@ export default function Signup({}: // params,
           err.message ||
           "Signup failed. Please try again later."
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -318,14 +329,14 @@ export default function Signup({}: // params,
                     </SelectContent>
                   </Select>
                 </div>
-                <div>
+                <div className="mb-4">
                   {/* <Label htmlFor="phone" className="text-blue-900">
                     Phone Number
                   </Label> */}
                   <PhoneNumberInput />
                 </div>
                 <div>
-                  <Label htmlFor="suitableTime" className="text-blue-900">
+                  <Label htmlFor="suitableTime" className="text-blue-900 ">
                     Suitable Class Timing For Students (Pakistan Time)
                   </Label>
                   <Select name="suitableTime" required>
@@ -463,7 +474,7 @@ export default function Signup({}: // params,
                 </button>
               </div>
 
-              <div className="flex items-center space-x-2">
+              {/* <div className="flex items-center space-x-2">
                 <Checkbox id="terms" />
                 <Label htmlFor="terms" className="text-sm text-blue-700">
                   I agree to the{" "}
@@ -475,14 +486,21 @@ export default function Signup({}: // params,
                     Privacy Policy
                   </Link>
                 </Label>
-              </div>
+              </div> */}
 
               <Button
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                disabled={uploading}
+                disabled={uploading || isSubmitting}
               >
-                Create Account
+                {isSubmitting ? (
+                  <div className="flex items-center gap-2">
+                    <LoadingSpinner />
+                    Creating Account...
+                  </div>
+                ) : (
+                  "Create Account"
+                )}
               </Button>
             </form>
 
@@ -492,7 +510,7 @@ export default function Signup({}: // params,
               <p className="text-blue-700 text-sm">
                 Already have an account?{" "}
                 <Link
-                  href="/login"
+                  href="openLoginModal"
                   className="text-blue-600 hover:text-blue-800 font-medium"
                 >
                   Sign in here

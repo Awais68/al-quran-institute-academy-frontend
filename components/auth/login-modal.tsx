@@ -25,12 +25,14 @@ interface LoginModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onRegisterClick: () => void;
+  preFilledEmail?: string;
 }
 
 export default function LoginModal({
   open,
   onOpenChange,
   onRegisterClick,
+  preFilledEmail,
 }: LoginModalProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,6 +41,23 @@ export default function LoginModal({
   const [error, setError] = useState("");
   const router = useRouter();
   const { user } = useContext(AuthContext);
+
+  // Pre-fill email when modal opens with preFilledEmail prop
+  useEffect(() => {
+    if (open && preFilledEmail) {
+      setEmail(preFilledEmail);
+      // Focus on password field after a short delay to allow the modal to render
+      setTimeout(() => {
+        const passwordInput = document.getElementById(
+          "password"
+        ) as HTMLInputElement;
+        if (passwordInput) {
+          passwordInput.focus();
+        }
+      }, 100);
+    }
+  }, [open, preFilledEmail]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -164,7 +183,14 @@ export default function LoginModal({
             )}
             disabled={isLoading}
           >
-            {isLoading ? <LoadingSpinner /> : "Login"}
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <LoadingSpinner />
+                Logging in...
+              </div>
+            ) : (
+              "Login"
+            )}
           </Button>
 
           <div className="text-center text-sm text-gray-500">

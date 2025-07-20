@@ -4,7 +4,7 @@ import { useState, useContext, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import LoginModal from "./login-modal";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AuthContext } from "@/app/context/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import axios from "axios";
@@ -14,17 +14,20 @@ interface AuthButtonsProps {
   className?: string;
   variant?: "default" | "mobile";
   isScrolled?: boolean;
+  preFilledEmail?: string;
 }
 
 export default function AuthButtons({
   className,
   variant = "default",
   isScrolled,
+  preFilledEmail,
 }: AuthButtonsProps) {
   const [loginOpen, setLoginOpen] = useState(false);
   const [signup, setSignup] = useState(false);
   const { user, setUser } = useContext(AuthContext);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Debug logs
   console.log("[AuthButtons] user:", user);
@@ -55,6 +58,21 @@ export default function AuthButtons({
     getCurrentUserInfo();
   }, []);
 
+  // Check for login query parameter and pre-filled email
+  useEffect(() => {
+    const showLogin = searchParams.get("showLogin");
+    const email = searchParams.get("email");
+
+    if (showLogin === "true" && email) {
+      setLoginOpen(true);
+      // Clear the URL parameters to prevent reopening on refresh
+      const url = new URL(window.location.href);
+      url.searchParams.delete("showLogin");
+      url.searchParams.delete("email");
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, [searchParams]);
+
   const openLoginModal = () => {
     setSignup(false);
     setLoginOpen(true);
@@ -72,6 +90,9 @@ export default function AuthButtons({
   };
 
   const baseClass = isScrolled ? "text-gray-900" : "text-white";
+
+  // Get email from props or search params
+  const emailToPreFill = preFilledEmail || searchParams.get("email") || "";
 
   // If user is logged in
   if (user) {
@@ -113,6 +134,7 @@ export default function AuthButtons({
           open={loginOpen}
           onOpenChange={setLoginOpen}
           onRegisterClick={openSignupModal}
+          preFilledEmail={emailToPreFill}
         />
       </div>
     );
@@ -135,6 +157,7 @@ export default function AuthButtons({
         open={loginOpen}
         onOpenChange={setLoginOpen}
         onRegisterClick={openSignupModal}
+        preFilledEmail={emailToPreFill}
       />
     </div>
   );

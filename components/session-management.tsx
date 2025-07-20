@@ -1,15 +1,25 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Dialog,
   DialogContent,
@@ -17,7 +27,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   CalendarIcon,
   Clock,
@@ -34,18 +44,18 @@ import {
   Square,
   MessageCircle,
   FileText,
-} from "lucide-react"
-import { format } from "date-fns"
-import Link from "next/link"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+} from "lucide-react";
+import { format } from "date-fns";
+import Link from "next/link";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // Add the BulkSessionScheduler import at the top
-import { BulkSessionScheduler } from "./bulk-session-scheduler"
+import BulkSessionScheduler from "./bulk-session-scheduler";
 
 export function SessionManagement() {
-  const [selectedDate, setSelectedDate] = useState<Date>()
-  const [searchTerm, setSearchTerm] = useState("")
-  const [filterStatus, setFilterStatus] = useState("all")
-  const [isNewSessionOpen, setIsNewSessionOpen] = useState(false)
+  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [isNewSessionOpen, setIsNewSessionOpen] = useState(false);
 
   // Mock session data
   const sessions = [
@@ -114,36 +124,41 @@ export function SessionManagement() {
       notes: "Student did not attend, need to follow up with parents",
       studentAvatar: "/placeholder.svg?height=40&width=40",
     },
-  ]
+  ];
 
   const filteredSessions = sessions.filter((session) => {
     const matchesSearch =
       session.student.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      session.topic.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = filterStatus === "all" || session.status === filterStatus
-    return matchesSearch && matchesStatus
-  })
+      session.topic.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus =
+      filterStatus === "all" || session.status === filterStatus;
+    return matchesSearch && matchesStatus;
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "scheduled":
-        return "bg-blue-100 text-blue-700"
+        return "bg-blue-100 text-blue-700";
       case "completed":
-        return "bg-green-100 text-green-700"
+        return "bg-green-100 text-green-700";
       case "in_progress":
-        return "bg-yellow-100 text-yellow-700"
+        return "bg-yellow-100 text-yellow-700";
       case "missed":
-        return "bg-red-100 text-red-700"
+        return "bg-red-100 text-red-700";
       case "cancelled":
-        return "bg-gray-100 text-gray-700"
+        return "bg-gray-100 text-gray-700";
       default:
-        return "bg-blue-100 text-blue-700"
+        return "bg-blue-100 text-blue-700";
     }
-  }
+  };
 
   const getTypeIcon = (type: string) => {
-    return type === "Group" ? <Users className="h-4 w-4" /> : <Video className="h-4 w-4" />
-  }
+    return type === "Group" ? (
+      <Users className="h-4 w-4" />
+    ) : (
+      <Video className="h-4 w-4" />
+    );
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -151,12 +166,18 @@ export function SessionManagement() {
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center space-x-4">
           <Link href="/instructor">
-            <Button variant="outline" size="sm" className="border-blue-600 text-blue-600 hover:bg-blue-50">
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-blue-600 text-blue-600 hover:bg-blue-50"
+            >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Dashboard
             </Button>
           </Link>
-          <h1 className="text-3xl font-bold text-blue-900">Session Management</h1>
+          <h1 className="text-3xl font-bold text-blue-900">
+            Session Management
+          </h1>
         </div>
         <Dialog open={isNewSessionOpen} onOpenChange={setIsNewSessionOpen}>
           <DialogTrigger asChild>
@@ -167,8 +188,12 @@ export function SessionManagement() {
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle className="text-blue-900">Schedule New Session</DialogTitle>
-              <DialogDescription>Create a new session for your student</DialogDescription>
+              <DialogTitle className="text-blue-900">
+                Schedule New Session
+              </DialogTitle>
+              <DialogDescription>
+                Create a new session for your student
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-6 py-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -214,11 +239,18 @@ export function SessionManagement() {
                         className="w-full justify-start text-left font-normal border-blue-200 focus:border-blue-400"
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
+                        {selectedDate
+                          ? format(selectedDate, "PPP")
+                          : "Pick a date"}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
-                      <Calendar mode="single" selected={selectedDate} onSelect={setSelectedDate} initialFocus />
+                      <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={setSelectedDate}
+                        initialFocus
+                      />
                     </PopoverContent>
                   </Popover>
                 </div>
@@ -226,7 +258,11 @@ export function SessionManagement() {
                   <Label htmlFor="time" className="text-blue-900">
                     Time *
                   </Label>
-                  <Input id="time" type="time" className="border-blue-200 focus:border-blue-400" />
+                  <Input
+                    id="time"
+                    type="time"
+                    className="border-blue-200 focus:border-blue-400"
+                  />
                 </div>
               </div>
 
@@ -257,7 +293,9 @@ export function SessionManagement() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="tajweed">Tajweed Mastery</SelectItem>
-                      <SelectItem value="memorization">Quran Memorization</SelectItem>
+                      <SelectItem value="memorization">
+                        Quran Memorization
+                      </SelectItem>
                       <SelectItem value="kids">Kids Quran Program</SelectItem>
                     </SelectContent>
                   </Select>
@@ -288,10 +326,15 @@ export function SessionManagement() {
               </div>
 
               <div className="flex justify-end space-x-3">
-                <Button variant="outline" onClick={() => setIsNewSessionOpen(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsNewSessionOpen(false)}
+                >
                   Cancel
                 </Button>
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">Schedule Session</Button>
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                  Schedule Session
+                </Button>
               </div>
             </div>
           </DialogContent>
@@ -300,12 +343,18 @@ export function SessionManagement() {
 
       <Tabs defaultValue="single" className="w-full">
         <TabsList>
-          <TabsTrigger value="single" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+          <TabsTrigger
+            value="single"
+            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+          >
             Single Schedule
           </TabsTrigger>
           {/* Add a new tab for bulk scheduling in the existing session management
           // In the TabsList, add a new TabsTrigger: */}
-          <TabsTrigger value="bulk" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+          <TabsTrigger
+            value="bulk"
+            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+          >
             Bulk Schedule
           </TabsTrigger>
         </TabsList>
@@ -344,13 +393,20 @@ export function SessionManagement() {
           {/* Sessions List */}
           <div className="space-y-4">
             {filteredSessions.map((session) => (
-              <Card key={session.id} className="bg-white/80 backdrop-blur-sm border-blue-200/50">
+              <Card
+                key={session.id}
+                className="bg-white/80 backdrop-blur-sm border-blue-200/50"
+              >
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      <div className="p-3 bg-blue-100 rounded-lg">{getTypeIcon(session.type)}</div>
+                      <div className="p-3 bg-blue-100 rounded-lg">
+                        {getTypeIcon(session.type)}
+                      </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-blue-900">{session.topic}</h3>
+                        <h3 className="text-lg font-semibold text-blue-900">
+                          {session.topic}
+                        </h3>
                         <p className="text-blue-700">
                           {session.student} • {session.course}
                         </p>
@@ -361,16 +417,23 @@ export function SessionManagement() {
                           </span>
                           <span className="flex items-center">
                             <Clock className="h-4 w-4 mr-1" />
-                            {new Date(session.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                            {new Date(session.date).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
                           </span>
                           <span>{session.duration} min</span>
-                          <Badge className={getStatusColor(session.status)}>{session.status.replace("_", " ")}</Badge>
+                          <Badge className={getStatusColor(session.status)}>
+                            {session.status.replace("_", " ")}
+                          </Badge>
                           <Badge variant="outline" className="text-xs">
                             {session.type}
                           </Badge>
                         </div>
                         {session.participants && (
-                          <p className="text-sm text-blue-600 mt-1">Participants: {session.participants.join(", ")}</p>
+                          <p className="text-sm text-blue-600 mt-1">
+                            Participants: {session.participants.join(", ")}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -378,7 +441,10 @@ export function SessionManagement() {
                     <div className="flex items-center space-x-2">
                       {session.status === "scheduled" && (
                         <>
-                          <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+                          <Button
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                          >
                             <Play className="h-4 w-4 mr-1" />
                             Start
                           </Button>
@@ -393,7 +459,10 @@ export function SessionManagement() {
                       )}
                       {session.status === "in_progress" && (
                         <>
-                          <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white">
+                          <Button
+                            size="sm"
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                          >
                             <Square className="h-4 w-4 mr-1" />
                             End
                           </Button>
@@ -407,15 +476,27 @@ export function SessionManagement() {
                         </>
                       )}
                       {session.status === "completed" && (
-                        <Button size="sm" variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                        >
                           <FileText className="h-4 w-4 mr-1" />
                           Report
                         </Button>
                       )}
-                      <Button size="sm" variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                      >
                         <MessageCircle className="h-4 w-4" />
                       </Button>
-                      <Button size="sm" variant="outline" className="border-red-600 text-red-600 hover:bg-red-50">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-red-600 text-red-600 hover:bg-red-50"
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -435,13 +516,18 @@ export function SessionManagement() {
             <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50">
               <CardContent className="p-12 text-center">
                 <CalendarIcon className="h-12 w-12 text-blue-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-blue-900 mb-2">No sessions found</h3>
+                <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                  No sessions found
+                </h3>
                 <p className="text-blue-700 mb-4">
                   {searchTerm || filterStatus !== "all"
                     ? "Try adjusting your search or filter criteria"
                     : "You haven't scheduled any sessions yet"}
                 </p>
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => setIsNewSessionOpen(true)}>
+                <Button
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={() => setIsNewSessionOpen(true)}
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Schedule Your First Session
                 </Button>
@@ -455,5 +541,5 @@ export function SessionManagement() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
