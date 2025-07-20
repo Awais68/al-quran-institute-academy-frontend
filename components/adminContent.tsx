@@ -132,25 +132,32 @@ export default function AdminContent() {
                 alt="Student Image"
               />
             </div>
-            <div className="p-2">
-              <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+            <div className="p-2  ">
+              <h5 className="flex shadow-inner rounded-lg justify-center mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
                 {data.name}
               </h5>
-              <div className="flex justify-between text-sm text-gray-700 dark:text-gray-400 mb-3">
-                <span>{data.email}</span>
-                <span>{data.course}</span>
-                <span>{data.country}</span>
-                <span>{data?.city}</span>
-                <span>{data.suitableTime}</span>
-                <span>{data.phone}</span>
-                <span>{data.gender}</span>
+              <div className="flex justify-between text-md text-gray-700 dark:text-gray-400 mb-3">
+                <h3>{data.fatherName}</h3>
+
+                <h3>{data.course}</h3>
               </div>
-              {/* <a
-                href={`/studentbyId?id=${data?._id}`}
-                className="block text-center px-3 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-300"
-              >
-                See Profile
-              </a> */}
+              <div className="flex justify-between text-md text-gray-700 dark:text-gray-400 mb-3">
+                <h3>{data.email}</h3>
+                <h3>{data.suitableTime}</h3>
+              </div>
+              <div className="flex justify-between text-md text-gray-700 dark:text-gray-400 mb-3">
+                <h3>{data.country}</h3>
+                <h3>{data?.city}</h3>
+              </div>
+
+              <div className="flex justify-between text-md text-gray-700 dark:text-gray-400 mb-3">
+                <h3>{data.dob}</h3>
+                <h3>{data?.age}</h3>
+              </div>
+              <div className="flex justify-between shadow-lg rounded-lg  text-gray-700 dark:text-gray-400 mb-3">
+                <h3>{data.gender}</h3>
+                <h3>{data.phone}</h3>
+              </div>
             </div>
           </div>
         ))}
