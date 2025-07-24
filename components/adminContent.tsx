@@ -40,7 +40,7 @@ export default function AdminContent() {
 
   return (
     <div className="p-4">
-      {/* Top bar with profile and logout */}
+    
 
       {/* Stats Cards */}
       <div className="flex flex-wrap gap-6 justify-around my-4">

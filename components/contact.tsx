@@ -83,7 +83,7 @@ export default function Contact() {
 
     setIsSubmitting(true);
     const data = { ...formData };
-    console.log("Contact form ===>>>", data);
+ 
 
     // Simulate form submission
     try {
@@ -92,7 +92,7 @@ export default function Contact() {
 
       setSubmitSuccess(true);
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
-      console.log("Contact form ===>>>", FormData);
+
 
       // Reset success message after 5 seconds
       setTimeout(() => {

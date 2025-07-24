@@ -47,7 +47,7 @@ export default function Signup({}: // params,
   const [phone, setPhone] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
-  //  const [date, setDate] = React.useState<Date | undefined>(new Date());
+
   const daysOfWeek = [
     "Monday",
     "Tuesday",
@@ -100,7 +100,7 @@ export default function Signup({}: // params,
     }
 
     const data = await response.json();
-    // console.log("Cloudinary image url:", data.secure_url);
+
     return data.secure_url;
   };
 
@@ -174,7 +174,6 @@ export default function Signup({}: // params,
       role: "Student",
       // roll_no: student?.length + 1,
     };
-    console.log("data==>>>", data);
 
     try {
       const response = await axios.post(AppRoutes.signup, data);
@@ -212,7 +211,7 @@ export default function Signup({}: // params,
     const getAllStudents = async () => {
       try {
         const response = await axios.get(AppRoutes.getStudent);
-        // Adjust this based on your response shape
+
         setStudent(response?.data?.data);
       } catch (error) {
         console.error("Error fetching students:", error);
@@ -221,7 +220,6 @@ export default function Signup({}: // params,
 
     getAllStudents();
   }, []);
-  console.log("student ki length==>", student?.length);
 
   useEffect(() => {
     setMounted(true);
@@ -473,21 +471,6 @@ export default function Signup({}: // params,
                   )}
                 </button>
               </div>
-
-              {/* <div className="flex items-center space-x-2">
-                <Checkbox id="terms" />
-                <Label htmlFor="terms" className="text-sm text-blue-700">
-                  I agree to the{" "}
-                  <Link href=" " className="text-blue-600 hover:text-blue-800">
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link href="#" className="text-blue-600 hover:text-blue-800">
-                    Privacy Policy
-                  </Link>
-                </Label>
-              </div> */}
-
               <Button
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white"

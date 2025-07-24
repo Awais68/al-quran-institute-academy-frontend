@@ -404,209 +404,213 @@ export default function InstructorDashboard() {
       </div>
 
       <Tabs defaultValue="students" className="w-full">
-        <TabsList className="grid w-full grid-cols-5 bg-blue-50">
-          <TabsTrigger
-            value="students"
-            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
-          >
-            My Students
-          </TabsTrigger>
-          <TabsTrigger
-            value="sessions"
-            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
-          >
-            Sessions
-          </TabsTrigger>
-          <TabsTrigger
-            value="progress"
-            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
-          >
-            Progress Reports
-          </TabsTrigger>
-          <TabsTrigger
-            value="feedback"
-            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
-          >
-            Feedback
-          </TabsTrigger>
-          <TabsTrigger
-            value="analytics"
-            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
-          >
-            Analytics
-          </TabsTrigger>
-        </TabsList>
+        <div className="mb-6">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 bg-blue-50 h-auto p-1">
+            {/* <Tabs defaultValue="students" className="w-full"> */}
+            {/* <TabsList className="grid w-full grid-cols-5 bg-blue-50"> */}
+            <TabsTrigger
+              value="students"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+            >
+              My Students
+            </TabsTrigger>
+            <TabsTrigger
+              value="sessions"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+            >
+              Sessions
+            </TabsTrigger>
+            <TabsTrigger
+              value="progress"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+            >
+              Progress Reports
+            </TabsTrigger>
+            <TabsTrigger
+              value="feedback"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+            >
+              Feedback
+            </TabsTrigger>
+            <TabsTrigger
+              value="analytics"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+            >
+              Analytics
+            </TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="students" className="mt-8">
-          <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-xl text-blue-900">
-                    Student Management
-                  </CardTitle>
-                  <CardDescription>
-                    Monitor and manage your students' progress
-                  </CardDescription>
+          <TabsContent value="students" className="mt-8">
+            <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-xl text-blue-900">
+                      Student Management
+                    </CardTitle>
+                    <CardDescription>
+                      Monitor and manage your students' progress
+                    </CardDescription>
+                  </div>
+                  <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Student
+                  </Button>
                 </div>
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Student
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {/* Search and Filter */}
-              <div className="flex flex-col md:flex-row gap-4 mb-6">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-400" />
-                  <Input
-                    placeholder="Search students by name or email..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 border-blue-200 focus:border-blue-400"
-                  />
+              </CardHeader>
+              <CardContent>
+                {/* Search and Filter */}
+                <div className="flex flex-col md:flex-row gap-4 mb-6">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-400" />
+                    <Input
+                      placeholder="Search students by name or email..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 border-blue-200 focus:border-blue-400"
+                    />
+                  </div>
+                  <Select value={filterCourse} onValueChange={setFilterCourse}>
+                    <SelectTrigger className="w-full md:w-48 border-blue-200 focus:border-blue-400">
+                      <Filter className="h-4 w-4 mr-2" />
+                      <SelectValue placeholder="Filter by course" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Courses</SelectItem>
+                      <SelectItem value="Tajweed Mastery">
+                        Tajweed Mastery
+                      </SelectItem>
+                      <SelectItem value="Quran Memorization">
+                        Quran Memorization
+                      </SelectItem>
+                      <SelectItem value="Kids Quran Program">
+                        Kids Quran Program
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-                <Select value={filterCourse} onValueChange={setFilterCourse}>
-                  <SelectTrigger className="w-full md:w-48 border-blue-200 focus:border-blue-400">
-                    <Filter className="h-4 w-4 mr-2" />
-                    <SelectValue placeholder="Filter by course" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Courses</SelectItem>
-                    <SelectItem value="Tajweed Mastery">
-                      Tajweed Mastery
-                    </SelectItem>
-                    <SelectItem value="Quran Memorization">
-                      Quran Memorization
-                    </SelectItem>
-                    <SelectItem value="Kids Quran Program">
-                      Kids Quran Program
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
 
-              {/* Students List */}
-              <div className="space-y-4">
-                {filteredAllStudents.map((student: any) => (
-                  <div
-                    key={student._id}
-                    className="flex items-center justify-between p-4 border border-blue-200 rounded-lg hover:shadow-md transition-shadow"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage
-                          src={student?.image || "/placeholder.svg"}
-                          alt={student.name}
-                        />
-                        <AvatarFallback className="bg-blue-100 text-blue-600">
-                          {student.name
-                            .split(" ")
-                            .map((n: any) => n[0])
-                            .join("")}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <h4 className="font-semibold text-blue-900">
-                          {student.name}
-                        </h4>
-                        <p className="text-blue-700 text-sm">{student.email}</p>
-                        <div className="flex items-center space-x-2 mt-1">
-                          <Badge variant="outline" className="text-xs">
-                            {student.course}
-                          </Badge>
-                          <Badge
-                            className={`text-xs ${getStatusColor(
-                              student.country
-                            )}`}
-                          >
-                            {/* {student?.status?.replace("_", " ") || "Unknown"} */}
-                            {student?.country?.replace("_", " ") || "Unknown"}
-                          </Badge>
-                          <Badge
-                            className={`text-xs ${getPerformanceColor(
-                              student.performance
-                            )}`}
-                          >
-                            {student?.performance?.replace("_", " ")}
-                          </Badge>
+                {/* Students List */}
+                <div className="space-y-4 px-4 sm:px-6 lg:px-8">
+                  {filteredAllStudents.map((student: any) => (
+                    <div
+                      key={student._id}
+                      className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border border-blue-200 rounded-lg hover:shadow-md transition-shadow bg-white"
+                    >
+                      <div className="flex items-center space-x-4 mb-4 sm:mb-0">
+                        <Avatar className="h-12 w-12">
+                          <AvatarImage
+                            src={student?.image || "/placeholder.svg"}
+                            alt={student.name}
+                          />
+                          <AvatarFallback className="bg-blue-100 text-blue-600">
+                            {student.name
+                              .split(" ")
+                              .map((n: any) => n[0])
+                              .join("")}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <h4 className="font-semibold text-blue-900 text-base sm:text-lg">
+                            {student.name}
+                          </h4>
+                          <p className="text-blue-700 text-sm">
+                            {student.email}
+                          </p>
+                          <div className="flex flex-wrap items-center space-x-2 mt-1 gap-y-2">
+                            <Badge variant="outline" className="text-xs">
+                              {student.course}
+                            </Badge>
+                            <Badge
+                              className={`text-xs ${getStatusColor(
+                                student.country
+                              )}`}
+                            >
+                              {student?.country?.replace("_", " ") || "Unknown"}
+                            </Badge>
+                            <Badge
+                              className={`text-xs ${getPerformanceColor(
+                                student.performance
+                              )}`}
+                            >
+                              {student?.performance?.replace("_", " ")}
+                            </Badge>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="flex items-center space-x-6">
-                      <div className="text-center">
-                        <p className="text-sm font-semibold text-blue-900">
-                          {student.progress}%
-                        </p>
-                        <Progress
-                          value={student.progress}
-                          className="w-20 h-2"
-                        />
-                        <p className="text-xs text-blue-600 mt-1">Progress</p>
-                      </div>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-4 sm:space-y-0">
+                        <div className="text-center">
+                          <p className="text-sm font-semibold text-blue-900">
+                            {student.progress}%
+                          </p>
+                          <Progress
+                            value={student.progress}
+                            className="w-20 h-2 mx-auto"
+                          />
+                          <p className="text-xs text-blue-600 mt-1">Progress</p>
+                        </div>
 
-                      <div className="text-center">
-                        <p className="text-sm font-semibold text-blue-900">
-                          {student.totalSessions}
-                        </p>
-                        <p className="text-xs text-blue-600">Sessions</p>
-                      </div>
+                        <div className="text-center">
+                          <p className="text-sm font-semibold text-blue-900">
+                            {student.totalSessions}
+                          </p>
+                          <p className="text-xs text-blue-600">Sessions</p>
+                        </div>
 
-                      <div className="text-center">
-                        <p className="text-sm font-semibold text-blue-900">
-                          {new Date(student.nextSession).toLocaleDateString()}
-                        </p>
-                        <p className="text-xs text-blue-600">Next Session</p>
-                      </div>
+                        <div className="text-center">
+                          <p className="text-sm font-semibold text-blue-900">
+                            {new Date(student.nextSession).toLocaleDateString()}
+                          </p>
+                          <p className="text-xs text-blue-600">Next Session</p>
+                        </div>
 
-                      <div className="flex space-x-2">
-                        <Link href={`/instructor/students/${student.id}`}>
+                        <div className="flex justify-center sm:justify-end space-x-2">
+                          <Link href={`/instructor/students/${student.id}`}>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </Link>
                           <Button
                             size="sm"
                             variant="outline"
                             className="border-blue-600 text-blue-600 hover:bg-blue-50"
                           >
-                            <Eye className="h-4 w-4" />
+                            <MessageCircle className="h-4 w-4" />
                           </Button>
-                        </Link>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="border-blue-600 text-blue-600 hover:bg-blue-50"
-                        >
-                          <MessageCircle className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          className="bg-blue-600 hover:bg-blue-700 text-white"
-                        >
-                          <Video className="h-4 w-4" />
-                        </Button>
+                          <Button
+                            size="sm"
+                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                          >
+                            <Video className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        <TabsContent value="sessions" className="mt-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50">
-              <CardHeader>
-                <CardTitle className="text-xl text-blue-900">
-                  Upcoming Sessions
-                </CardTitle>
-                <CardDescription>
-                  Your scheduled classes for today and tomorrow
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {/* {upcomingSessions.map((session) => (
+          <TabsContent value="sessions" className="mt-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50">
+                <CardHeader>
+                  <CardTitle className="text-xl text-blue-900">
+                    Upcoming Sessions
+                  </CardTitle>
+                  <CardDescription>
+                    Your scheduled classes for today and tomorrow
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {/* {upcomingSessions.map((session) => (
                     <div
                       key={session.id}
                       className="flex items-center justify-between p-4 border border-blue-200 rounded-lg"
@@ -651,30 +655,30 @@ export default function InstructorDashboard() {
                       </div>
                     </div>
                   ))} */}
-                </div>
-                <div className="mt-6">
-                  <Link href="/instructor/sessions">
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      Manage All Sessions
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
+                  </div>
+                  <div className="mt-6">
+                    <Link href="/instructor/sessions">
+                      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        Manage All Sessions
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
 
-            <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50">
-              <CardHeader>
-                <CardTitle className="text-xl text-blue-900">
-                  Recent Activity
-                </CardTitle>
-                <CardDescription>
-                  Your recent teaching activities
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {/* {recentActivities.map((activity, index) => (
+              <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50">
+                <CardHeader>
+                  <CardTitle className="text-xl text-blue-900">
+                    Recent Activity
+                  </CardTitle>
+                  <CardDescription>
+                    Your recent teaching activities
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {/* {recentActivities.map((activity, index) => (
                     <div
                       key={index}
                       className="flex items-center space-x-4 p-3 bg-blue-50 rounded-lg"
@@ -693,82 +697,82 @@ export default function InstructorDashboard() {
                       </span>
                     </div>
                   ))} */}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
-        <TabsContent value="progress" className="mt-8">
-          <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50">
-            <CardHeader>
-              <CardTitle className="text-xl text-blue-900">
-                Student Progress Overview
-              </CardTitle>
-              <CardDescription>
-                Track your students' learning progress across all courses
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filterAStudent.map((currentStudent) => (
-                  <Card
-                    key={currentStudent._id}
-                    className="border border-blue-200"
-                  >
-                    <CardContent className="p-6">
-                      <div className="flex items-center space-x-3 mb-4">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage
-                            src={currentStudent.image || "/placeholder.svg"}
-                            alt={currentStudent.name}
-                          />
-                          {/* <AvatarFallback className="bg-blue-100 text-blue-600">
+          <TabsContent value="progress" className="mt-8">
+            <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50">
+              <CardHeader>
+                <CardTitle className="text-xl text-blue-900">
+                  Student Progress Overview
+                </CardTitle>
+                <CardDescription>
+                  Track your students' learning progress across all courses
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filterAStudent.map((currentStudent) => (
+                    <Card
+                      key={currentStudent._id}
+                      className="border border-blue-200"
+                    >
+                      <CardContent className="p-6">
+                        <div className="flex items-center space-x-3 mb-4">
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage
+                              src={currentStudent.image || "/placeholder.svg"}
+                              alt={currentStudent.name}
+                            />
+                            {/* <AvatarFallback className="bg-blue-100 text-blue-600">
                             {currentStudent.name
                               .split(" ")
                               .map((n) => n[0])
                               .join("")}
                           </AvatarFallback> */}
-                        </Avatar>
-                        <div>
-                          <h4 className="font-semibold text-blue-900">
-                            {currentStudent.name}
-                          </h4>
-                          <p className="text-blue-700 text-sm">
-                            {currentStudent.course}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="space-y-3">
-                        <div>
-                          <div className="flex justify-between text-sm mb-1">
-                            <span className="text-blue-700">
-                              Overall Progress
-                            </span>
-                            <span className="text-blue-900 font-semibold">
-                              {/* {student.progress}% */}
-                            </span>
-                          </div>
-                          {/* <Progress value={student.progress} className="h-2" /> */}
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          </Avatar>
                           <div>
-                            <span className="text-blue-700">Sessions:</span>
-                            <p className="font-semibold text-blue-900">
-                              {/* {student.totalSessions} */}
-                            </p>
-                          </div>
-                          <div>
-                            <span className="text-blue-700">Level:</span>
-                            <p className="font-semibold text-blue-900">
-                              {/* {student.level} */}
+                            <h4 className="font-semibold text-blue-900">
+                              {currentStudent.name}
+                            </h4>
+                            <p className="text-blue-700 text-sm">
+                              {currentStudent.course}
                             </p>
                           </div>
                         </div>
 
-                        {/* <div className="pt-3 border-t border-blue-100">
+                        <div className="space-y-3">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span className="text-blue-700">
+                                Overall Progress
+                              </span>
+                              <span className="text-blue-900 font-semibold">
+                                {/* {student.progress}% */}
+                              </span>
+                            </div>
+                            {/* <Progress value={student.progress} className="h-2" /> */}
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                              <span className="text-blue-700">Sessions:</span>
+                              <p className="font-semibold text-blue-900">
+                                {/* {student.totalSessions} */}
+                              </p>
+                            </div>
+                            <div>
+                              <span className="text-blue-700">Level:</span>
+                              <p className="font-semibold text-blue-900">
+                                {/* {student.level} */}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* <div className="pt-3 border-t border-blue-100">
                           <Badge
                             className={`text-xs ${getPerformanceColor(
                               student.performance
@@ -777,27 +781,27 @@ export default function InstructorDashboard() {
                             {student.performance.replace("_", " ")}
                           </Badge>
                         </div> */}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        <TabsContent value="feedback" className="mt-8">
-          <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50">
-            <CardHeader>
-              <CardTitle className="text-xl text-blue-900">
-                Student Feedback & Communication
-              </CardTitle>
-              <CardDescription>
-                Provide feedback and communicate with your students
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {/* <div className="space-y-6">
+          <TabsContent value="feedback" className="mt-8">
+            <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50">
+              <CardHeader>
+                <CardTitle className="text-xl text-blue-900">
+                  Student Feedback & Communication
+                </CardTitle>
+                <CardDescription>
+                  Provide feedback and communicate with your students
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {/* <div className="space-y-6">
                 {students.slice(0, 3).map((student) => (
                   <div
                     key={student.id}
@@ -854,194 +858,200 @@ export default function InstructorDashboard() {
                   </div>
                 ))}
               </div> */}
-            </CardContent>
-          </Card>
-        </TabsContent>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        <TabsContent value="analytics" className="mt-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50">
-              <CardHeader>
-                <CardTitle className="text-xl text-blue-900">
-                  Teaching Performance
-                </CardTitle>
-                <CardDescription>
-                  Your teaching metrics and student satisfaction
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <span className="text-blue-700">Student Satisfaction</span>
-                    <div className="flex items-center space-x-2">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`h-4 w-4 ${
-                              i <
-                              Math.floor(currentStudent?.averageRating || 0) / 5
-                                ? "text-yellow-400 fill-current"
-                                : "text-gray-300"
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      {/* <span className="font-semibold text-blue-900">
+          <TabsContent value="analytics" className="mt-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50">
+                <CardHeader>
+                  <CardTitle className="text-xl text-blue-900">
+                    Teaching Performance
+                  </CardTitle>
+                  <CardDescription>
+                    Your teaching metrics and student satisfaction
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <span className="text-blue-700">
+                        Student Satisfaction
+                      </span>
+                      <div className="flex items-center space-x-2">
+                        <div className="flex items-center">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-4 w-4 ${
+                                i <
+                                Math.floor(currentStudent?.averageRating || 0) /
+                                  5
+                                  ? "text-yellow-400 fill-current"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        {/* <span className="font-semibold text-blue-900">
                         {instructorStats.averageRating}/5
                       </span> */}
+                      </div>
                     </div>
-                  </div>
 
-                  <div>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-blue-700">
-                        Student Retention Rate
-                      </span>
-                      <span className="text-blue-900 font-semibold">92%</span>
-                    </div>
-                    <Progress value={92} className="h-3" />
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-blue-700">
-                        Course Completion Rate
-                      </span>
-                      <span className="text-blue-900 font-semibold">78%</span>
-                    </div>
-                    <Progress value={78} className="h-3" />
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-blue-700">Session Attendance</span>
-                      <span className="text-blue-900 font-semibold">95%</span>
-                    </div>
-                    <Progress value={95} className="h-3" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50">
-              <CardHeader>
-                <CardTitle className="text-xl text-blue-900">
-                  Course Distribution
-                </CardTitle>
-                <CardDescription>
-                  Student enrollment across your courses
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                     <div>
-                      <h4 className="font-semibold text-blue-900">
-                        Namaz Course
-                      </h4>
-                      <p className="text-blue-700 text-sm">
-                        {
-                          allStudents?.filter(
-                            (student) => student.course === "namaz"
-                          ).length
-                        }{" "}
-                        Namaz Course Students
-                      </p>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span className="text-blue-700">
+                          Student Retention Rate
+                        </span>
+                        <span className="text-blue-900 font-semibold">92%</span>
+                      </div>
+                      <Progress value={92} className="h-3" />
                     </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-bold text-blue-900">
-                        {" "}
-                        {allStudents && allStudents.length > 0
-                          ? `${Math.round(
-                              (allStudents.filter((s) => s.course === "namaz")
-                                .length /
-                                allStudents.length) *
-                                100
-                            )}%`
-                          : "0%"}
+
+                    <div>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span className="text-blue-700">
+                          Course Completion Rate
+                        </span>
+                        <span className="text-blue-900 font-semibold">78%</span>
+                      </div>
+                      <Progress value={78} className="h-3" />
+                    </div>
+
+                    <div>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span className="text-blue-700">
+                          Session Attendance
+                        </span>
+                        <span className="text-blue-900 font-semibold">95%</span>
+                      </div>
+                      <Progress value={95} className="h-3" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50">
+                <CardHeader>
+                  <CardTitle className="text-xl text-blue-900">
+                    Course Distribution
+                  </CardTitle>
+                  <CardDescription>
+                    Student enrollment across your courses
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                      <div>
+                        <h4 className="font-semibold text-blue-900">
+                          Namaz Course
+                        </h4>
+                        <p className="text-blue-700 text-sm">
+                          {
+                            allStudents?.filter(
+                              (student) => student.course === "namaz"
+                            ).length
+                          }{" "}
+                          Namaz Course Students
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-2xl font-bold text-blue-900">
+                          {" "}
+                          {allStudents && allStudents.length > 0
+                            ? `${Math.round(
+                                (allStudents.filter((s) => s.course === "namaz")
+                                  .length /
+                                  allStudents.length) *
+                                  100
+                              )}%`
+                            : "0%"}
+                          <Progress value={56} className="w-20 h-2" />
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                      <div>
+                        <h4 className="font-semibold text-blue-900">
+                          Tajweed Mastery
+                        </h4>
+                        <p className="text-blue-700 text-sm">
+                          25 students enrolled
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-2xl font-bold text-blue-900">56%</p>
                         <Progress value={56} className="w-20 h-2" />
-                      </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                    <div>
-                      <h4 className="font-semibold text-blue-900">
-                        Tajweed Mastery
-                      </h4>
-                      <p className="text-blue-700 text-sm">
-                        25 students enrolled
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-bold text-blue-900">56%</p>
-                      <Progress value={56} className="w-20 h-2" />
-                    </div>
-                  </div>
 
-                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                    <div>
-                      <h4 className="font-semibold text-blue-900">
-                        Nazra Quran
-                      </h4>
-                      <p className="text-blue-700 text-sm">
-                        {
-                          allStudents?.filter(
-                            (student) => student.course === "nazra"
-                          ).length
-                        }{" "}
-                        Nazra Students
-                      </p>
+                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                      <div>
+                        <h4 className="font-semibold text-blue-900">
+                          Nazra Quran
+                        </h4>
+                        <p className="text-blue-700 text-sm">
+                          {
+                            allStudents?.filter(
+                              (student) => student.course === "nazra"
+                            ).length
+                          }{" "}
+                          Nazra Students
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-2xl font-bold text-blue-900">
+                          {" "}
+                          {allStudents && allStudents.length > 0
+                            ? `${Math.round(
+                                (allStudents.filter((s) => s.course === "nazra")
+                                  .length /
+                                  allStudents.length) *
+                                  100
+                              )}%`
+                            : "0%"}
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-bold text-blue-900">
-                        {" "}
-                        {allStudents && allStudents.length > 0
-                          ? `${Math.round(
-                              (allStudents.filter((s) => s.course === "nazra")
-                                .length /
-                                allStudents.length) *
-                                100
-                            )}%`
-                          : "0%"}
-                      </p>
-                    </div>
-                  </div>
 
-                  <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
-                    <div>
-                      <h4 className="font-semibold text-blue-900">
-                        Kids Quran Program
-                      </h4>
-                      <p className="text-blue-700 text-sm">
-                        {
-                          allStudents?.filter(
-                            (student) => student.course === "Hifz"
-                          ).length
-                        }{" "}
-                        Hifz Students
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-bold text-blue-900">
-                        {" "}
-                        {allStudents && allStudents.length > 0
-                          ? `${Math.round(
-                              (allStudents.filter((s) => s.course === "Hifz")
-                                .length /
-                                allStudents.length) *
-                                100
-                            )}%`
-                          : "0%"}
-                      </p>
-                      <Progress value={17} className="w-20 h-2" />
+                    <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                      <div>
+                        <h4 className="font-semibold text-blue-900">
+                          Kids Quran Program
+                        </h4>
+                        <p className="text-blue-700 text-sm">
+                          {
+                            allStudents?.filter(
+                              (student) => student.course === "Hifz"
+                            ).length
+                          }{" "}
+                          Hifz Students
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-2xl font-bold text-blue-900">
+                          {" "}
+                          {allStudents && allStudents.length > 0
+                            ? `${Math.round(
+                                (allStudents.filter((s) => s.course === "Hifz")
+                                  .length /
+                                  allStudents.length) *
+                                  100
+                              )}%`
+                            : "0%"}
+                        </p>
+                        <Progress value={17} className="w-20 h-2" />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </div>
       </Tabs>
     </div>
   );

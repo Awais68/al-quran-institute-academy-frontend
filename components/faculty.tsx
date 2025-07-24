@@ -81,33 +81,6 @@ export default function Faculty() {
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
             >
-              {/* <div className="relative h-48 sm:h-56 md:h-64 overflow-hidden">
-                <Image
-                  src={member.image}
-                  alt={member.name}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  className="object-cover object-center"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-primary-900/90 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                  <div className="flex gap-2">
-                    <a
-                      href={`mailto:${member.email}`}
-                      className="bg-white/20 backdrop-blur-sm p-2 rounded-full hover:bg-white/40 transition-colors"
-                      aria-label={`Email ${member.name}`}
-                    >
-                      <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                    </a>
-                    <a
-                      href={`tel:${member.phone}`}
-                      className="bg-white/20 backdrop-blur-sm p-2 rounded-full hover:bg-white/40 transition-colors"
-                      aria-label={`Call ${member.name}`}
-                    >
-                      <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                    </a>
-                  </div>
-                </div>
-              </div> */}
               <div className="p-4 sm:p-5 md:p-6">
                 <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-1">
                   {member.name}

@@ -1,5 +1,4 @@
 "use client";
-"use client";
 
 import axios from "axios";
 import { useEffect, useState, useContext } from "react";
@@ -40,14 +39,14 @@ export default function Student() {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [currentUser, setCurrentUser] = useState<any[]>([]);
-  const [enrolledCourses, setEnrolledCourses] = useState<any[]>([]); // <-- Add this line
-  const [upcomingSessions, setUpcomingSessions] = useState<any[]>([]); // <-- Add this line
-  const [achievements, setAchievements] = useState<any[]>([]); // <-- Add this line
-  const [recentActivities, setRecentActivities] = useState<any[]>([]); // <-- Add this line
+  const [enrolledCourses, setEnrolledCourses] = useState<any[]>([]);
+  const [upcomingSessions, setUpcomingSessions] = useState<any[]>([]);
+  const [achievements, setAchievements] = useState<any[]>([]);
+  const [recentActivities, setRecentActivities] = useState<any[]>([]);
 
   const handleCountryChange = useCallback((country: string) => {
     setSelectedCountry(country);
-    setSelectedCity(""); // Reset city when country changes
+    setSelectedCity("");
   }, []);
 
   const handleCityChange = useCallback((city: string) => {
@@ -61,19 +60,18 @@ export default function Student() {
         console.log("Api response", response);
         setCurrentUser(response.data.data);
       } catch (error) {
-        console.error("Error fetching currentStudent/user", error);
+        // console.error("Error fetching currentStudent/user", error);
       }
     };
     getCurrentUser();
   }, []);
-  console.log("CurrentStudentById", currentUser);
 
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Welcome Section */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-blue-900 mb-2">
-          Welcome back, Ahmad!
+          Welcome back, Ahmed!
         </h1>
         <p className="text-blue-700">
           Continue your Quranic journey and track your progress.

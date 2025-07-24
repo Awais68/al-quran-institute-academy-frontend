@@ -6,11 +6,25 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import * as THREE from "three";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | null>(null);
+  const isMobile = useIsMobile();
+
+  const mobSlides = [
+    {
+      id: 1,
+      image: "/images/mobile.png",
+      title: "Education with character-building, knowledge with action.",
+      // subtitle: "Education with nurturing, knowledge with practice",
+      urduText:
+        "Empowering modern education through the guidance of the Quran and Sunnah.",
+      color: "#4CAF50",
+    },
+  ];
 
   const slides = [
     {
@@ -22,6 +36,7 @@ export default function Hero() {
         "Empowering modern education through the guidance of the Quran and Sunnah.",
       color: "#4CAF50",
     },
+
     {
       id: 2,
       image: "/images/hero2.png",
@@ -39,6 +54,8 @@ export default function Hero() {
       color: "#9C27B0",
     },
   ];
+
+  const activeSlides = isMobile ? mobSlides : slides;
 
   // Three.js initialization omitted for brevity...
 
@@ -60,7 +77,7 @@ export default function Hero() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     const particles = new THREE.Group();
     const material = new THREE.MeshBasicMaterial({
-      color: new THREE.Color(slides[currentSlide].color),
+      color: new THREE.Color(activeSlides[currentSlide].color),
       transparent: true,
       opacity: 0.6,
     });
@@ -100,40 +117,46 @@ export default function Hero() {
       window.removeEventListener("resize", onResize);
       if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
-  }, [currentSlide]);
+  }, [currentSlide, activeSlides]);
 
   useEffect(() => {
     const id = setInterval(
-      () => setCurrentSlide((i) => (i + 1) % slides.length),
+      () => setCurrentSlide((i) => (i + 1) % activeSlides.length),
       6000
     );
     return () => clearInterval(id);
-  }, []);
+  }, [activeSlides.length]);
 
   return (
     <section className="relative w-full h-screen overflow-hidden bg-gradient-to-b from-slate-900 to-slate-800">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
-      <div className="absolute inset-0 bg-black/40" />
+      <div className="relative w-full h-screen overflow-hidden">
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/40" />
 
-      {/* Slides */}
-      {slides.map((slide, i) => (
-        <div
-          key={slide.id}
-          className={cn(
-            "absolute inset-0 transition-opacity duration-1000",
-            i === currentSlide ? "opacity-100" : "opacity-0"
-          )}
-        >
-          <Image
-            src={slide.image}
-            alt={slide.title}
-            fill
-            priority={i === 0}
-            sizes="100vw"
-            className="object-cover brightness-50"
-          />
-        </div>
-      ))}
+        {/* Slides with Responsive Background Images */}
+        {activeSlides.map((slide, i) => (
+          <div
+            key={slide.id}
+            className={cn(
+              "absolute inset-0 transition-opacity duration-1000",
+              i === currentSlide ? "opacity-100" : "opacity-0"
+            )}
+          >
+            <Image
+              src={slide.image}
+              alt={slide.title}
+              fill
+              priority={i === 0}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover brightness-50"
+              style={{ objectPosition: "center" }}
+            />
+          </div>
+        ))}
+      </div>
 
       {/* Content */}
       <div className="absolute inset-0 flex items-center justify-center px-4 md:px-8 lg:px-16">
@@ -154,10 +177,10 @@ export default function Hero() {
             </h1>
             <div className="mt-2 h-1 w-16 bg-accent-500 mx-auto md:mx-0" />
             <p className="mt-4 text-xl sm:text-2xl font-noto text-primary-200">
-              {slides[currentSlide].title}
+              {activeSlides[currentSlide].title}
             </p>
             <p className="mt-2 text-base sm:text-lg md:text-xl text-white">
-              {slides[currentSlide].urduText}
+              {activeSlides[currentSlide].urduText}
             </p>
             {/* <p className="mt-2 text-sm sm:text-base text-primary-200 italic">"{slides[currentSlide].subtitle}"</p> */}
             <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
@@ -221,7 +244,7 @@ export default function Hero() {
 
       {/* Indicators */}
       <div className="absolute bottom-6 w-full flex justify-center gap-2">
-        {slides.map((_, idx) => (
+        {activeSlides.map((_, idx) => (
           <button
             key={idx}
             onClick={() => setCurrentSlide(idx)}

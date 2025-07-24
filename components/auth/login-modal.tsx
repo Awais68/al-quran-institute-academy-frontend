@@ -42,11 +42,11 @@ export default function LoginModal({
   const router = useRouter();
   const { user } = useContext(AuthContext);
 
-  // Pre-fill email when modal opens with preFilledEmail prop
+
   useEffect(() => {
     if (open && preFilledEmail) {
       setEmail(preFilledEmail);
-      // Focus on password field after a short delay to allow the modal to render
+     
       setTimeout(() => {
         const passwordInput = document.getElementById(
           "password"
@@ -70,7 +70,7 @@ export default function LoginModal({
     setIsLoading(true);
 
     try {
-      // Replace with your backend login API endpoint
+    
       const response = await axios.post(AppRoutes.login, {
         email,
         password,
