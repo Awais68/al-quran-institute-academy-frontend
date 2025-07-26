@@ -27,7 +27,7 @@ const programsData = [
     duration: "3-5 years",
     ageGroup: "1 hour class & 1/2 half hour classes",
     schedule: "Daily, 5 days a week",
-    icon: <BookOpen className="h-8 w-8 sm:h-10 sm:w-10 text-primary-600" />,
+    icon: < Book className="h-8 w-8 sm:h-10 sm:w-10 text-primary-600" />,
     features: [
       "One-to-One classes individually",
       "Regular revision sessions",
@@ -47,8 +47,8 @@ const programsData = [
       "Master the art of Quranic recitation with accurate Arabic pronunciation",
     duration: "1-2 years",
     ageGroup: "All ages",
-    schedule: "3 days a week",
-    icon: <Book className="h-8 w-8 sm:h-10 sm:w-10 text-primary-600" />,
+    schedule: "Daily, 5 days a week",
+    icon: <BookOpen className="h-8 w-8 sm:h-10 sm:w-10 text-primary-600" />,
     features: [
       "Makharij (articulation points) training",
       "Rules of recitation",
@@ -67,7 +67,7 @@ const programsData = [
       "A comprehensive study of Islamic principles, history, and practical life",
     duration: "Ongoing",
     ageGroup: "All ages",
-    schedule: "Weekends",
+    schedule: "Daily, 5 days a week",
     icon: <Bookmark className="h-8 w-8 sm:h-10 sm:w-10 text-primary-600" />,
     features: [
       "Comprehensive curriculum",
@@ -87,7 +87,7 @@ const programsData = [
       "Master Arabic communication with dedicated focus on Quranic Arabic",
     duration: "2-3 years",
     ageGroup: "10+ years",
-    schedule: "Twice a week",
+    schedule: "Daily, 5 days a week",
     icon: <FileText className="h-8 w-8 sm:h-10 sm:w-10 text-primary-600" />,
     features: [
       "Grammar and vocabulary building",
@@ -106,7 +106,7 @@ const programsData = [
     urduDescription: "The Comprehensive Praxis of Islamic Prayer",
     duration: "02 months",
     ageGroup: "30 minutes",
-    schedule: "5 Days a week",
+    schedule: "Daily, 5 days a week",
     icon: <Users className="h-8 w-8 sm:h-10 sm:w-10 text-primary-600" />,
     features: [
       "Obligation of Salah.",
@@ -125,7 +125,7 @@ const programsData = [
     urduDescription: "Your First Step to Reading the Quran",
     duration: "4-6 months",
     ageGroup: "30 minutes",
-    schedule: "5 Days a week",
+    schedule: "Daily, 5 days a week",
     icon: (
       <BookOpenCheck className="h-8 w-8 sm:h-10 sm:w-10 text-primary-600" />
     ),

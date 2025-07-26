@@ -27,7 +27,7 @@ export default function Hero() {
     {
       id: 2,
       image: "/images/mobile2.png",
-      title: "Abdullah",
+      title: "",
       urduText: " ",
       color: "#673AB7",
     },

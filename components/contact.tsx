@@ -83,7 +83,6 @@ export default function Contact() {
 
     setIsSubmitting(true);
     const data = { ...formData };
- 
 
     // Simulate form submission
     try {
@@ -92,7 +91,6 @@ export default function Contact() {
 
       setSubmitSuccess(true);
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
-
 
       // Reset success message after 5 seconds
       setTimeout(() => {
@@ -284,9 +282,7 @@ export default function Contact() {
               </h3>
 
               <div className="space-y-3 sm:space-y-4 md:space-y-6">
-                <div className="flex items-start">
-        
-                </div>
+                <div className="flex items-start"></div>
 
                 <div className="flex items-start">
                   <div className="bg-primary-800/50 p-2 rounded-full mr-3">
@@ -325,14 +321,13 @@ export default function Contact() {
                       Office Hours
                     </h4>
                     <p className="text-white text-xs md:text-sm">
-                      Monday - Friday: 9:00 AM - 5:00 PM
+                      Always Open 24/7
                     </p>
-                    <p className="text-white text-xs md:text-sm">
+                    {/* <p className="text-white text-xs md:text-sm">
                       Saturday: 9:00 AM - 1:00 PM
-                    </p>
+                    </p> */}
                   </div>
                 </div>
-
               </div>
             </div>
           </motion.div>

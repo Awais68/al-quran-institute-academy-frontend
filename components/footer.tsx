@@ -346,7 +346,7 @@ export default function Footer() {
             <div className="mt-4 sm:mt-5 md:mt-6 pt-4 sm:pt-5 md:pt-6 border-t border-primary-800">
               <Link
                 href="/signup"
-                className="bg-accent-600 hover:bg-accent-500 text-white px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 md:py-3 rounded-md text-[10px] sm:text-xs md:text-sm lg:text-base font-medium transition-colors inline-block"
+                className="bg-accent-600 hover:bg-accent-500 border-2 text-white px-3 sm:px-4 border-2 md:px-5  py-1.5 sm:py-2 md:py-3 rounded-md text-[10px] sm:text-xs md:text-sm lg:text-base font-medium transition-colors inline-block"
               >
                 Enroll Now
               </Link>
