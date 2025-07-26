@@ -18,10 +18,12 @@ export default function Hero() {
     {
       id: 1,
       image: "/images/mobile.png",
-      title: "Education with character-building, knowledge with action.",
+      // title: "Education with character-building, knowledge with action.",
+      title: "",
       // subtitle: "Education with nurturing, knowledge with practice",
       urduText:
-        "Empowering modern education through the guidance of the Quran and Sunnah.",
+        // "Empowering modern education through the guidance of the Quran and Sunnah.",
+        "",
       color: "#4CAF50",
     },
     {
