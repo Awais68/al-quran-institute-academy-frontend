@@ -16,10 +16,10 @@ export default function Footer() {
   return (
     <footer className="bg-primary-900 text-white islamic-pattern-light">
       <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8 md:py-10 lg:py-12">
-        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 justify-items-center text-center lg:justify-items-start lg:text-left">
           <div>
-            <div className="flex items-center mb-3 sm:mb-4 md:mb-6">
-              <div className="relative h-12 w-16 sm:h-16 sm:w-20 md:h-20 md:w-24 lg:h-24 lg:w-28 bg-white mr-2 sm:mr-3 md:mr-4 backdrop-blur-sm rounded-full overflow-hidden shadow-lg">
+            <div className="flex flex-col items-center lg:flex-row lg:items-center mb-3 sm:mb-4 md:mb-6">
+              <div className="relative h-12 w-16 sm:h-16 sm:w-20 md:h-20 md:w-24 lg:h-24 lg:w-28 bg-white mr-0 lg:mr-2 sm:mr-3 md:mr-4 backdrop-blur-sm rounded-full overflow-hidden shadow-lg mx-auto lg:mx-0">
                 <Image
                   src="/images/logotp.png"
                   alt="Madarsa Hajira Logo"
@@ -38,7 +38,7 @@ export default function Footer() {
               Providing quality Islamic education with a focus on character
               development and practical implementation of knowledge.
             </p>
-            <div className="flex space-x-2 sm:space-x-3 md:space-x-4">
+            <div className="flex  space-x-2 sm:space-x-3  md:space-x-4">
               <Link
                 href="#"
                 className="text-accent-400 hover:text-accent-300 transition-colors"
@@ -70,7 +70,136 @@ export default function Footer() {
             </div>
           </div>
 
-          <div>
+          {/* Mobile/Tablet: Quick Links and Programs side by side, Desktop: Quick Links only */}
+          <div className="lg:hidden w-full">
+            <div className="grid grid-cols-2 w-full gap-4 justify-center">
+              <div className="flex flex-col items-center text-center w-full">
+                <h4 className="text-sm sm:text-base md:text-lg font-bold mb-2 sm:mb-3 md:mb-4 text-white">
+                  Quick Links
+                </h4>
+                <ul className="space-y-1.5 sm:space-y-2 md:space-y-3">
+                  <li>
+                    <Link
+                      href="/#about"
+                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
+                    >
+                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
+                      About Us
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/#programs"
+                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
+                    >
+                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
+                      Our Programs
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/#gallery"
+                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
+                    >
+                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
+                      Gallery
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/#faculty"
+                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
+                    >
+                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
+                      Faculty
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/#testimonials"
+                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
+                    >
+                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
+                      Testimonials
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/#contact"
+                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
+                    >
+                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
+                      Contact Us
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+              <div className="flex flex-col items-center text-center w-full">
+                <h4 className="text-sm sm:text-base md:text-lg font-bold mb-2 sm:mb-3 md:mb-4 text-white">
+                  Programs
+                </h4>
+                <ul className="space-y-1.5 sm:space-y-2 md:space-y-3">
+                  <li>
+                    <Link
+                      href="/#programs"
+                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
+                    >
+                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
+                      Hifz-ul-Quran
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/programs"
+                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
+                    >
+                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
+                      Tajweed
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/#programs"
+                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
+                    >
+                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
+                      Islamic Studies
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/#programs"
+                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
+                    >
+                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
+                      Arabic Language
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/#programs"
+                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
+                    >
+                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
+                      Namaz Course
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/#programs"
+                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
+                    >
+                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
+                      Quaida Course
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop: Quick Links */}
+          <div className="hidden lg:block">
             <h4 className="text-sm sm:text-base md:text-lg font-bold mb-2 sm:mb-3 md:mb-4 text-white">
               Quick Links
             </h4>
@@ -132,7 +261,8 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div className="xs:col-span-2 lg:col-span-1">
+          {/* Desktop: Programs */}
+          <div className="hidden lg:block">
             <h4 className="text-sm sm:text-base md:text-lg font-bold mb-2 sm:mb-3 md:mb-4 text-white">
               Programs
             </h4>
@@ -179,7 +309,16 @@ export default function Footer() {
                   className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
                 >
                   <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                  Fiqh
+                  Namaz Course
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/#programs"
+                  className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
+                >
+                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
+                  Quaida Course
                 </Link>
               </li>
             </ul>

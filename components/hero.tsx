@@ -24,6 +24,20 @@ export default function Hero() {
         "Empowering modern education through the guidance of the Quran and Sunnah.",
       color: "#4CAF50",
     },
+    {
+      id: 2,
+      image: "/images/mobile2.png",
+      title: "Abdullah",
+      urduText: " ",
+      color: "#673AB7",
+    },
+    {
+      id: 3,
+      image: "/images/hero3.png",
+      title: "",
+      urduText: "",
+      color: "#009688",
+    },
   ];
 
   const slides = [

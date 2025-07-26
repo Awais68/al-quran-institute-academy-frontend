@@ -8,6 +8,9 @@ import { cn } from "@/lib/utils";
 import AuthButtons from "./auth/auth-buttons";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
+
+
+
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);

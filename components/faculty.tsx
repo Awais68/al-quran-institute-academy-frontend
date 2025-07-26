@@ -82,7 +82,7 @@ export default function Faculty() {
               transition={{ duration: 0.6, delay: index * 0.1 }}
             >
               <div className="p-4 sm:p-5 md:p-6">
-                <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-1">
+                <h3 className=" flex justify-center text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-1">
                   {member.name}
                 </h3>
                 <p className="text-primary-600 font-medium text-xs sm:text-sm mb-2 sm:mb-3 md:mb-4">

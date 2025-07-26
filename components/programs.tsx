@@ -150,11 +150,11 @@ export default function Programs() {
     <section
       id="programs"
       ref={ref}
-      className="py-4 sm:py-6 md:py-16 bg-primary-50 "
+      className="py-4 sm:py-2 md:py-4 bg-primary-50 "
     >
       <div className="container mx-auto px-4">
         <motion.div
-          className="text-center mb-2 sm:mb-2 md:mb-2"
+          className="text-center  sm:mb-2 md:mb-2"
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6 }}
@@ -182,7 +182,7 @@ export default function Programs() {
           <section
             id="programs"
             ref={ref}
-            className="py-4 sm:py-0 md:py-6 lg:py-16 bg-primary-50"
+            className="py-4  sm:py-0 md:py-2  lg:py-0 bg-primary-50"
           >
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
               <motion.div
@@ -195,15 +195,15 @@ export default function Programs() {
               ></motion.div>
 
               <motion.div
-                className="flex flex-wrap justify-center mb-6 sm:mb-8 md:mb-10 gap-2 sm:gap-3 md:gap-4"
+                className="flex flex-wrap justify-center mb-6 sm:mb-2 md:mb-4 gap-2 sm:gap-3 md:gap-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={
                   isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
                 }
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <div className="w-full overflow-x-hidden pb-2 flex flex-wrap justify-center">
-                  <div className="flex flex-wrap justify-center space-x-2 sm:space-x-3 md:space-x-4 min-w-0">
+                <div className="w-full overflow-x-hidden flex flex-wrap justify-center">
+                  <div className="flex flex-wrap justify-center space-x-2 sm:space-x-3 gap-2 mx-2 md:space-x-4 min-w-0">
                     {programsData.map((program) => (
                       <button
                         key={program.id}

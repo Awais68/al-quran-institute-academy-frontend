@@ -62,7 +62,7 @@ const galleryImages = [
 
   {
     id: 8,
-    src: "/images/single.png",
+    src: "/images/last.png",
     alt: "Community event",
     caption: "Eid celebration with community",
     category: "Events",
