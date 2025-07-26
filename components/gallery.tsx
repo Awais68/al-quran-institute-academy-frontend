@@ -268,24 +268,6 @@ export default function Gallery() {
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           {filteredImages.map((image, index) => (
-            // <motion.div
-            //   key={image.id}
-            //   className="relative overflow-hidden rounded-lg shadow-md group cursor-pointer h-48 sm:h-96 md:h-84"
-            //   onClick={() => openLightbox(image.id)}
-            //   initial={{ opacity: 0, scale: 0.9 }}
-            //   animate={
-            //     isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }
-            //   }
-            //   transition={{ duration: 0.5, delay: 0.1 * index }}
-            //   whileHover={{ scale: 1.02 }}
-            // >
-            //   <Image
-            //     src={image.src}
-            //     alt={image.alt}
-            //     fill
-            //     sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            //     className="object-cover transition-transform duration-500 group-hover:scale-110"
-            //   />
             <motion.div
               key={image.id}
               className="relative overflow-hidden rounded-lg shadow-md group cursor-pointer w-full h-64 sm:h-72 md:h-80 lg:h-96"
@@ -303,6 +285,8 @@ export default function Gallery() {
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-110 w-full h-full"
+                priority={index < 4} // Load first 4 images with priority
+                loading={index < 4 ? "eager" : "lazy"}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 sm:p-4">
                 <span className="text-xs text-primary-300 uppercase tracking-wider mb-1">
