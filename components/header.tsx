@@ -8,9 +8,6 @@ import { cn } from "@/lib/utils";
 import AuthButtons from "./auth/auth-buttons";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
-
-
-
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -144,11 +141,20 @@ export default function Header() {
       {/* Mobile Navigation */}
       <div
         className={cn(
-          "fixed inset-0 bg-white z-10 pt-20 px-4 lg:hidden transition-transform duration-300 ease-in-out overflow-y-auto",
+          // Make sure the menu is fixed, covers the whole screen, and is always on top
+          "fixed inset-0 z-50 bg-white pt-20 px-4 lg:hidden transition-transform duration-300 ease-in-out overflow-y-auto flex flex-col",
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         )}
+        style={{ minHeight: "100vh" }} // Ensure full viewport height
       >
-        <nav className="flex flex-col items-center space-y-5 py-8">
+        <button
+          onClick={() => setIsMenuOpen(false)}
+          className="absolute top-4 right-4 z-50 text-gray-700 hover:text-primary-700 bg-white rounded-full p-2 shadow"
+          aria-label="Close menu"
+        >
+          <X size={28} />
+        </button>
+        <nav className="flex flex-col items-center space-y-5 py-8 w-full flex-1">
           <Link
             href="/#about"
             className="text-lg text-gray-700 hover:text-primary-700 transition-colors w-full text-center py-2"
