@@ -22,7 +22,7 @@ export default function Footer() {
               <div className="relative h-12 w-16 sm:h-16 sm:w-20 md:h-20 md:w-24 lg:h-24 lg:w-28 bg-white mr-0 lg:mr-2 sm:mr-3 md:mr-4 backdrop-blur-sm rounded-full overflow-hidden shadow-lg mx-auto lg:mx-0">
                 <Image
                   src="/images/logotp.png"
-                  alt="Madarsa Hajira Logo"
+                  alt="Al-Quran Logo"
                   fill={true}
                   className="object-contain"
                 />
@@ -38,7 +38,7 @@ export default function Footer() {
               Providing quality Islamic education with a focus on character
               development and practical implementation of knowledge.
             </p>
-            <div className="flex  space-x-2 sm:space-x-3  md:space-x-4">
+            <div className="flex  space-x-2 sm:space-x-3  md:space-x-4 sm:flex justify-center">
               <Link
                 href="#"
                 className="text-accent-400 hover:text-accent-300 transition-colors"

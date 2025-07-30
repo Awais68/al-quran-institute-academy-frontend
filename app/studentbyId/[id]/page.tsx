@@ -93,7 +93,6 @@ export default function CurrentStudent() {
       setLoading(false);
     }
   }, [id]);
-  console.log("Student==>", student);
 
   if (loading)
     return (

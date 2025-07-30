@@ -57,7 +57,6 @@ export default function Student() {
     const getCurrentUser = async () => {
       try {
         const response = await axios.get(AppRoutes.getCurrentUser);
-        console.log("Api response", response);
         setCurrentUser(response.data.data);
       } catch (error) {
         // console.error("Error fetching currentStudent/user", error);

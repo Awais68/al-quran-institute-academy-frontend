@@ -83,7 +83,6 @@ export default function LoginModal({
       // } else {
       //   setError("Invalid email or password");
       // }
-      console.log("response==>", response);
       localStorage.setItem("token", response.data?.data?.token);
       router.push("/currentUser");
     } catch (err: any) {

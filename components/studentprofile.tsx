@@ -146,7 +146,6 @@ export function StudentProfile({ studentId }: StudentProfileProps) {
     const getAllStudents = async () => {
       try {
         const response = await axios.get(AppRoutes.getAllStudents);
-        console.log("API Response:", response);
 
         // Adjust this based on your response shape
         setStudents(response.data.data);
@@ -157,7 +156,6 @@ export function StudentProfile({ studentId }: StudentProfileProps) {
 
     getAllStudents();
   }, []);
-  console.log("Student in the Teacher", students);
 
   const [isEditing, setIsEditing] = useState(false);
   const [newNote, setNewNote] = useState("");

@@ -116,9 +116,7 @@ export default function Signup({}: // params,
       const url = await uploadImage(file);
       setImageUrl(url);
       // alert("Image uploaded successfully!");
-      console.log("Cloudinary image url:", url);
     } catch (error) {
-      console.log("Image upload failed. Please try again.", error);
     } finally {
       setUploading(false);
     }

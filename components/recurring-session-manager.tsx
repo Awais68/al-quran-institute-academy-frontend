@@ -173,17 +173,14 @@ export function RecurringSessionManager() {
 
   const handlePauseSession = (sessionId: string) => {
     // Implementation for pausing session
-    console.log("Pausing session:", sessionId)
   }
 
   const handleResumeSession = (sessionId: string) => {
     // Implementation for resuming session
-    console.log("Resuming session:", sessionId)
   }
 
   const handleStopSession = (sessionId: string) => {
     // Implementation for stopping session
-    console.log("Stopping session:", sessionId)
   }
 
   return (

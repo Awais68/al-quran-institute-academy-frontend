@@ -71,7 +71,6 @@ const CurrentStudent = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log("ApiResponse==>>>>", response);
         setStudent(response.data.data); // Expecting a single student object
         setLoading(false);
       } catch (err) {
@@ -81,7 +80,6 @@ const CurrentStudent = () => {
     };
     fetchCurrentStudent();
   }, []);
-  console.log("Student==>", student);
 
   if (loading)
     return (

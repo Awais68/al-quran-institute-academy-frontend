@@ -82,7 +82,6 @@ export default function InstructorDashboard() {
             Authorization: `Bearer ${token}`,
           },
         });
-        // console.log("ApiResponse==>>>>", response);
         setCurrentStudent(response.data.data); // Expecting a single student object
         setLoading(false);
       } catch (err) {
@@ -92,13 +91,11 @@ export default function InstructorDashboard() {
     };
     fetchCurrentStudent();
   }, []);
-  console.log("Student==>", currentStudent);
 
   useEffect(() => {
     const getAllStudents = async () => {
       try {
         const response = await axios.get(AppRoutes.getAllStudents);
-        console.log("API Response:", response);
 
         // Adjust this based on your response shape
         setAllStudents(response.data.data);
@@ -109,7 +106,6 @@ export default function InstructorDashboard() {
 
     getAllStudents();
   }, []);
-  console.log("Student in the Teacher", allStudents);
 
   // Mock data - in real app, this would come from an API
   // const instructorStats = {

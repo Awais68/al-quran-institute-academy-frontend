@@ -1,19 +1,39 @@
+// "use client";
+
+// import { useState, useEffect } from "react";
+
+// export function useMediaQuery(query: string): boolean | undefined {
+//   const [matches, setMatches] = useState<boolean | undefined>(undefined);
+
+//   useEffect(() => {
+//     const media = window.matchMedia(query);
+//     setMatches(media.matches);
+
+//     const listener = () => setMatches(media.matches);
+//     media.addEventListener("change", listener);
+
+//     return () => media.removeEventListener("change", listener);
+//   }, [query]);
+
+//   return matches;
+// }
+
 "use client";
 
 import { useState, useEffect } from "react";
 
-export function useMediaQuery(query: string): boolean | undefined {
-  const [matches, setMatches] = useState<boolean | undefined>(undefined);
+export function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(false);
 
   useEffect(() => {
     const media = window.matchMedia(query);
-    setMatches(media.matches);
-
+    if (media.matches !== matches) {
+      setMatches(media.matches);
+    }
     const listener = () => setMatches(media.matches);
-    media.addEventListener("change", listener);
-
-    return () => media.removeEventListener("change", listener);
-  }, [query]);
+    window.addEventListener("resize", listener);
+    return () => window.removeEventListener("resize", listener);
+  }, [matches, query]);
 
   return matches;
 }

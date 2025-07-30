@@ -87,7 +87,6 @@ export default function Contact() {
     // Simulate form submission
     try {
       const response = await axios.post(AppRoutes.contact, data);
-      console.log("Response from API:", response.data);
 
       setSubmitSuccess(true);
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
