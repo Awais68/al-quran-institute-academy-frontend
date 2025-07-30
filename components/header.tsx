@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
@@ -125,7 +125,13 @@ export default function Header() {
             Contact
           </Link>
 
-          <AuthButtons isScrolled={isScrolled} />
+          <Suspense
+            fallback={
+              <div className="w-20 h-10 bg-gray-200 rounded animate-pulse"></div>
+            }
+          >
+            <AuthButtons isScrolled={isScrolled} />
+          </Suspense>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -199,7 +205,13 @@ export default function Header() {
           </Link>
 
           <div className="w-full pt-4 mt-4 border-t border-gray-100">
-            <AuthButtons variant="mobile" isScrolled={isScrolled} />
+            <Suspense
+              fallback={
+                <div className="w-full h-20 bg-gray-200 rounded animate-pulse"></div>
+              }
+            >
+              <AuthButtons variant="mobile" isScrolled={isScrolled} />
+            </Suspense>
           </div>
         </nav>
       </div>
