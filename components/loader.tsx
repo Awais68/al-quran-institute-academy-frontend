@@ -62,31 +62,31 @@ export default function LoadingComponent() {
         <div className="flex flex-wrap gap-6 items-center">
           <div className="text-center space-y-2">
             <LoadingSpinner size="lg" color="blue" />
-            <p className="text-sm text-gray-600">Blue</p>
+            {/* <p className="text-sm text-gray-600">Blue</p> */}
           </div>
           <div className="text-center space-y-2">
             <LoadingSpinner color="gray" />
-            <p className="text-sm text-gray-600">Gray</p>
+            {/* <p className="text-sm text-gray-600">Gray</p> */}
           </div>
           <div className="text-center space-y-2">
             <LoadingSpinner size="sm" color="green" />
-            <p className="text-sm text-gray-600">Green</p>
+            {/* <p className="text-sm text-gray-600">Green</p> */}
           </div>
           <div className="text-center space-y-2">
             <LoadingSpinner size="lg" color="red" />
-            <p className="text-sm text-gray-600">Red</p>
+            {/* <p className="text-sm text-gray-600">Red</p> */}
           </div>
           <div className="text-center space-y-2">
             <LoadingSpinner size="sm" color="yellow" />
-            <p className="text-sm text-gray-600">Yellow</p>
+            {/* <p className="text-sm text-gray-600">Yellow</p> */}
           </div>
           <div className="text-center space-y-2">
             <LoadingSpinner color="pink" />
-            <p className="text-sm text-gray-600">Pink</p>
+            {/* <p className="text-sm text-gray-600">Pink</p> */}
           </div>
           <div className="text-center space-y-2">
             <LoadingSpinner size="lg" color="purple" />
-            <p className="text-sm text-gray-600">Purple</p>
+            {/* <p className="text-sm text-gray-600">Purple</p> */}
           </div>
         </div>
       </div>
