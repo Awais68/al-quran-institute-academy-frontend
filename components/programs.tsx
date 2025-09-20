@@ -19,15 +19,32 @@ import Link from "next/link";
 const programsData = [
   {
     id: 1,
+    title: "Nazrah Quran",
+    urduTitle: "ناظرہ قرآن",
+    description: "Perfecting Your Quranic Recitation.",
+    urduDescription: "Fluent Quran Tajweed and insight",
+    duration: "1-2 years",
+    ageGroup: "1 hour class & 1/2 half hour classes",
+    schedule: "Daily, 5 days a week",
+    icon: <BookOpen className="h-8 w-8 sm:h-10 sm:w-10 text-primary-600" />,
+    features: [
+      "One-to-One classes individually",
+      "Regular revision sessions",
+      "Tajweed rules application",
+      "Certification upon completion",
+    ],
+  },
+  {
+    id: 2,
     title: "Hifz-ul-Quran",
-    urduTitle: "حفظ القرآن",
+    urduTitle: "  حفظ القرآن",
     description:
       "Complete memorization of the Holy Quran with proper tajweed and understanding of the text. Our experienced instructors guide students through a structured program that ensures proper memorization and retention.",
     urduDescription: "Fluent Quran memorization with Tajweed and insight",
     duration: "3-5 years",
     ageGroup: "1 hour class & 1/2 half hour classes",
     schedule: "Daily, 5 days a week",
-    icon: < Book className="h-8 w-8 sm:h-10 sm:w-10 text-primary-600" />,
+    icon: <Book className="h-8 w-8 sm:h-10 sm:w-10 text-primary-600" />,
     features: [
       "One-to-One classes individually",
       "Regular revision sessions",
@@ -38,7 +55,7 @@ const programsData = [
   },
 
   {
-    id: 2,
+    id: 3,
     title: "Tajweed",
     urduTitle: "تجوید",
     description:
@@ -58,7 +75,7 @@ const programsData = [
     ],
   },
   {
-    id: 3,
+    id: 4,
     title: "Islamic Studies",
     urduTitle: "اسلامی تعلیمات",
     description:
@@ -78,7 +95,7 @@ const programsData = [
     ],
   },
   {
-    id: 4,
+    id: 5,
     title: "Arabic Language",
     urduTitle: "عربی زبان",
     description:
@@ -98,7 +115,7 @@ const programsData = [
     ],
   },
   {
-    id: 5,
+    id: 6,
     title: "Namaz Course",
     urduTitle: "نماز کورس",
     description:
@@ -117,7 +134,7 @@ const programsData = [
     ],
   },
   {
-    id: 6,
+    id: 7,
     title: "Quaida Course",
     urduTitle: " کورس",
     description:

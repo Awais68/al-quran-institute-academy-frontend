@@ -306,7 +306,7 @@ export default function Contact() {
                       Email
                     </h4>
                     <p className="text-white text-xs md:text-sm">
-                      info@alquraninstituteonline.com
+                      aqionline786@gmail.com
                     </p>
                   </div>
                 </div>
