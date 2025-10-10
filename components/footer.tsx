@@ -193,6 +193,15 @@ export default function Footer() {
                       Quaida Course
                     </Link>
                   </li>
+                  <li>
+                    <Link
+                      href="/#programs"
+                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
+                    >
+                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
+                      Nazra
+                    </Link>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -338,7 +347,7 @@ export default function Footer() {
               <li className="flex items-center">
                 <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-2 md:mr-3 text-accent-400 flex-shrink-0" />
                 <span className="text-primary-200 text-xs sm:text-sm md:text-base">
-                  info@alquraninstituteonline.com
+                  aqionline786@gmail.com
                 </span>
               </li>
             </ul>

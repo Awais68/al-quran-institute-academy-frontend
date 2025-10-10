@@ -383,13 +383,16 @@ export default function Signup({}: // params,
                       <SelectValue placeholder="Select Your Course" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="qaida">
+                      <SelectItem value="Qaida">
                         Basic Rules of Qaida Course
                       </SelectItem>
                       <SelectItem value="Tajweed">Tajweed</SelectItem>
                       <SelectItem value="Nazra">Nazra Quran</SelectItem>
                       <SelectItem value="Hifz">Hifz zul Quran</SelectItem>
                       <SelectItem value="Namaz">Namaz Course</SelectItem>
+                      <SelectItem value="Islamic Studies">
+                        Islamic Studies
+                      </SelectItem>
                       <SelectItem value="Arabic">
                         Arabic Language Course
                       </SelectItem>

@@ -7,6 +7,15 @@ import { cn } from "@/lib/utils";
 const coursesData = [
   {
     id: 1,
+    title: "Qaida",
+    description:
+      "Complete the Holy Quran with proper tajweed and understanding of the text.",
+    duration: "1-2 years",
+    ageGroup: "8-15 years",
+    icon: <BookOpen className="h-10 w-10 text-blue-600" />,
+  },
+  {
+    id: 2,
     title: "Hifz-ul-Quran",
     description:
       "Complete memorization of the Holy Quran with proper tajweed and understanding of the text.",
@@ -15,7 +24,7 @@ const coursesData = [
     icon: <BookOpen className="h-10 w-10 text-blue-600" />,
   },
   {
-    id: 2,
+    id: 3,
     title: "Nazra",
     description:
       "Complete memorization of the Holy Quran with proper tajweed and understanding of the text.",
@@ -24,7 +33,7 @@ const coursesData = [
     icon: <BookOpen className="h-10 w-10 text-blue-600" />,
   },
   {
-    id: 3,
+    id: 4,
     title: "Tajweed",
     description:
       "Learn the proper pronunciation and recitation rules of the Holy Quran.",
@@ -33,8 +42,8 @@ const coursesData = [
     icon: <Book className="h-10 w-10 text-blue-600" />,
   },
   {
-    id: 4,
-    title: "Islamic Studies",
+    id: 5,
+    title: "IslamicStudies",
     description:
       "Comprehensive study of Islamic principles, history, and practices.",
     duration: "Ongoing",
@@ -42,7 +51,7 @@ const coursesData = [
     icon: <Bookmark className="h-10 w-10 text-blue-600" />,
   },
   {
-    id: 5,
+    id: 6,
     title: "Arabic Language",
     description:
       "Learn to read, write, and speak Arabic with focus on Quranic Arabic.",
@@ -51,11 +60,11 @@ const coursesData = [
     icon: <FileText className="h-10 w-10 text-blue-600" />,
   },
   {
-    id: 6,
-    title: "Fiqh (Islamic Jurisprudence)",
+    id: 7,
+    title: "Namaz",
     description:
       "Study of Islamic law and the principles of Islamic jurisprudence.",
-    duration: "2-4 years",
+    duration: "6 Months",
     ageGroup: "15+ years",
     icon: <Users className="h-10 w-10 text-blue-600" />,
   },
