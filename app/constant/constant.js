@@ -1,7 +1,7 @@
 const devURL = "http://localhost:4000";
 const prodURL = "https://al-quran-institute-online-backend.onrender.com";
 
-export const BASE_URL = devURL;
+export const BASE_URL = prodURL;
 
 export const AppRoutes = {
   signup: BASE_URL + "/auth/signup",
