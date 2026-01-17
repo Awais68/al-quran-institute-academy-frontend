@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useEffect, useState, useContext } from "react";
-import axios from "axios";
+import apiClient from "@/lib/api";
 import { AppRoutes } from "@/app/constant/constant";
 import { Card, CardContent } from "./ui/card";
 import { Video, Users, BookOpen } from "lucide-react";
 import { AuthContext } from "@/app/context/AuthContext";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function AdminContent() {
   const [students, setStudents] = useState<any[]>([]);
@@ -17,7 +18,7 @@ export default function AdminContent() {
   useEffect(() => {
     const getAllStudents = async () => {
       try {
-        const response = await axios.get(AppRoutes.getStudent);
+        const response = await apiClient.get('/getAllStudents');
         setStudents(response.data.data);
       } catch (error) {
         console.error("Error fetching students:", error);
@@ -27,10 +28,17 @@ export default function AdminContent() {
     getAllStudents();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
-    router.push(`/studentbyId/${students}`);
+  const handleLogout = async () => {
+    try {
+      // Call logout endpoint to clear server-side session/cookie
+      await apiClient.post('/auth/logout');
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      // Clear client-side state
+      setUser(null);
+      router.push(`/studentbyId/${students}`);
+    }
   };
 
   // Get user image and name fallback
@@ -111,10 +119,12 @@ export default function AdminContent() {
             className="bg-blue-50 px-4 py-6 border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700"
           >
             <div className="flex justify-center mb-4">
-              <img
+              <Image
                 className="rounded-full h-40 w-40 object-cover"
                 src={data.image}
                 alt="Student Image"
+                width={160}
+                height={160}
               />
             </div>
             <div className="p-2  ">

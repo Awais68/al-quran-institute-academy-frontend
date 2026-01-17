@@ -289,11 +289,16 @@ export default function Contact() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-primary-100 mb-0.5 sm:mb-1 text-xs sm:text-sm md:text-base">
-                      Phone
+                      Phone / WhatsApp
                     </h4>
-                    <p className="text-white text-xs md:text-sm">
+                    <a 
+                      href="https://wa.me/923403201940" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-white hover:text-accent-300 transition-colors text-xs md:text-sm underline"
+                    >
                       +92-340-3201940
-                    </p>
+                    </a>
                   </div>
                 </div>
 
@@ -305,9 +310,12 @@ export default function Contact() {
                     <h4 className="font-semibold text-primary-100 mb-0.5 sm:mb-1 text-xs sm:text-sm md:text-base">
                       Email
                     </h4>
-                    <p className="text-white text-xs md:text-sm">
+                    <a 
+                      href="mailto:aqionline786@gmail.com"
+                      className="text-white hover:text-accent-300 transition-colors text-xs md:text-sm underline"
+                    >
                       aqionline786@gmail.com
-                    </p>
+                    </a>
                   </div>
                 </div>
 

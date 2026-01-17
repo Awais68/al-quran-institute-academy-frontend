@@ -60,7 +60,7 @@ export default function CurrentStudent() {
     const fetchCurrentStudent = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:4000/getAStudent/${id}`, {
+        const res = await axios.get(`http://localhost:4000/studentById/getAStudent/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

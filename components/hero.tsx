@@ -1,17 +1,21 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useState, useEffect } from "react";
+import dynamic from 'next/dynamic';
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import * as THREE from "three";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+// Dynamically import the Three.js scene component with no SSR
+const HeroScene = dynamic(() => import('./hero-scene'), {
+  ssr: false,
+  loading: () => <div className="absolute inset-0 -z-10 bg-gradient-to-b from-slate-900 to-slate-800" />
+});
+
 export default function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number | null>(null);
   const isMobile = useIsMobile();
 
   const mobSlides = [
@@ -73,68 +77,6 @@ export default function Hero() {
 
   const activeSlides = isMobile ? mobSlides : slides;
 
-  // Three.js initialization omitted for brevity...
-
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    const renderer = new THREE.WebGLRenderer({
-      canvas: canvasRef.current,
-      alpha: true,
-      antialias: true,
-    });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    const particles = new THREE.Group();
-    const material = new THREE.MeshBasicMaterial({
-      color: new THREE.Color(activeSlides[currentSlide].color),
-      transparent: true,
-      opacity: 0.6,
-    });
-    const geo = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-    for (let i = 0; i < 100; i++) {
-      const mesh = new THREE.Mesh(geo, material.clone());
-      const r = 8 + Math.random() * 15;
-      const a = Math.random() * Math.PI * 2;
-      mesh.position.set(
-        Math.cos(a) * r,
-        (Math.random() - 0.5) * 15,
-        Math.sin(a) * r - 5
-      );
-      mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
-      mesh.scale.setScalar(Math.random() * 0.8 + 0.2);
-      particles.add(mesh);
-    }
-    scene.add(particles);
-    camera.position.z = 20;
-    const animate = () => {
-      particles.rotation.y += 0.001;
-      particles.children.forEach((p, i) => {
-        p.rotation.x += 0.003;
-        p.rotation.y += 0.005;
-      });
-      renderer.render(scene, camera);
-      animationRef.current = requestAnimationFrame(animate);
-    };
-    animate();
-    const onResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    };
-    window.addEventListener("resize", onResize);
-    return () => {
-      window.removeEventListener("resize", onResize);
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
-    };
-  }, [currentSlide, activeSlides]);
-
   useEffect(() => {
     const id = setInterval(
       () => setCurrentSlide((i) => (i + 1) % activeSlides.length),
@@ -146,10 +88,7 @@ export default function Hero() {
   return (
     <section className="relative w-full h-screen overflow-hidden bg-gradient-to-b from-slate-900 to-slate-800">
       <div className="relative w-full h-screen overflow-hidden">
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+        <HeroScene />
         <div className="absolute inset-0 bg-black/40" />
 
         {/* Slides with Responsive Background Images */}

@@ -44,7 +44,8 @@ export default function CountryCitySelector({
     fetch("/countries+cities.json")
       .then((res) => res.json())
       .then((jsonData) => {
-        const enhancedCountries = jsonData.map((country: CountryData) => {
+        const countriesArray = jsonData.countries || jsonData;
+        const enhancedCountries = countriesArray.map((country: CountryData) => {
           const countryCode = Country.getAllCountries().find(
             (c) => c.name === country.name
           )?.isoCode;

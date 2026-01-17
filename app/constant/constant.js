@@ -1,7 +1,7 @@
-const devURL = "http://localhost:4000";
-const prodURL = "https://al-quran-institute-online-backend.onrender.com";
+const devURL = process.env.NEXT_PUBLIC_API_DEV_URL || "http://localhost:4000";
+const prodURL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://al-quran-institute-online-backend.onrender.com";
 
-export const BASE_URL = prodURL;
+export const BASE_URL = process.env.NODE_ENV === 'production' ? prodURL : devURL;
 
 export const AppRoutes = {
   signup: BASE_URL + "/auth/signup",

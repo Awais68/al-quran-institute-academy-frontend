@@ -40,28 +40,36 @@ export default function Footer() {
             </p>
             <div className="flex  space-x-2 sm:space-x-3  md:space-x-4 sm:flex justify-center">
               <Link
-                href="#"
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-accent-400 hover:text-accent-300 transition-colors"
               >
                 <Facebook size={14} className="sm:h-5 sm:w-5 md:h-6 md:w-6" />
                 <span className="sr-only">Facebook</span>
               </Link>
               <Link
-                href="#"
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-accent-400 hover:text-accent-300 transition-colors"
               >
                 <Twitter size={14} className="sm:h-5 sm:w-5 md:h-6 md:w-6" />
                 <span className="sr-only">Twitter</span>
               </Link>
               <Link
-                href="#"
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-accent-400 hover:text-accent-300 transition-colors"
               >
                 <Instagram size={14} className="sm:h-5 sm:w-5 md:h-6 md:w-6" />
                 <span className="sr-only">Instagram</span>
               </Link>
               <Link
-                href="#"
+                href="https://youtube.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-accent-400 hover:text-accent-300 transition-colors"
               >
                 <Youtube size={14} className="sm:h-5 sm:w-5 md:h-6 md:w-6" />
@@ -338,24 +346,35 @@ export default function Footer() {
               Contact Info
             </h4>
             <ul className="space-y-2 sm:space-y-3 md:space-y-4">
-              <li className="flex items-center">
+              {/* <li className="flex items-center">
                 <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-2 md:mr-3 text-accent-400 flex-shrink-0" />
                 <span className="text-primary-200 text-xs sm:text-sm md:text-base">
                   +92-340-3201940
                 </span>
-              </li>
+              </li> */}
+              <a
+                href="https://wa.me/923403201940"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white hover:text-accent-300 transition-colors text-xs md:text-sm underline"
+              >
+                +92-340-3201940
+              </a>
               <li className="flex items-center">
-                <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-2 md:mr-3 text-accent-400 flex-shrink-0" />
-                <span className="text-primary-200 text-xs sm:text-sm md:text-base">
-                  aqionline786@gmail.com
-                </span>
+
               </li>
+              <a
+                href="mailto:aqionline786@gmail.com"
+                className="text-white hover:text-accent-300 transition-colors text-xs md:text-sm underline"
+              >
+                aqionline786@gmail.com
+              </a>
             </ul>
 
             <div className="mt-4 sm:mt-5 md:mt-6 pt-4 sm:pt-5 md:pt-6 border-t border-primary-800">
               <Link
                 href="/signup"
-                className="bg-accent-600 hover:bg-accent-500 border-2 text-white px-3 sm:px-4 border-2 md:px-5  py-1.5 sm:py-2 md:py-3 rounded-md text-[10px] sm:text-xs md:text-sm lg:text-base font-medium transition-colors inline-block"
+                className="bg-accent-600 hover:bg-accent-500 border-white text-white px-3 sm:px-4 border-2 md:px-5  py-1.5 sm:py-2 md:py-3 rounded-md text-[10px] sm:text-xs md:text-sm lg:text-base font-medium transition-colors inline-block"
               >
                 Enroll Now
               </Link>

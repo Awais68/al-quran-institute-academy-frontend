@@ -1,6 +1,5 @@
 "use client";
 
-import axios from "axios";
 import { useEffect, useState, useContext } from "react";
 import {
   Card,
@@ -25,9 +24,9 @@ import {
   Video,
   Star,
 } from "lucide-react";
-import { AppRoutes } from "@/app/constant/constant";
 import Spinner from "./loader";
 import { AuthContext } from "@/app/context/AuthContext";
+import Image from "next/image";
 
 export function StudentDashboard() {
   const { user } = useContext(AuthContext);
@@ -80,9 +79,11 @@ export function StudentDashboard() {
         </div>
         <div className="flex justify-center items-center">
           {user.image && (
-            <img
+            <Image
               src={user.image}
               alt={user.fullName || "Student"}
+              width={160}
+              height={160}
               className="w-40 h-40 rounded-full object-cover border-4 border-blue-400"
             />
           )}

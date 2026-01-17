@@ -1,47 +1,42 @@
 "use client";
 
 import { createContext, useState, useEffect } from "react";
-import Cookies from "js-cookie";
-import axios from "axios";
-import { AppRoutes } from "@/app/constant/constant.js";
+import apiClient from "@/lib/api";
 
 export const AuthContext = createContext();
 
 export default function AuthContextProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
-
-  // Listen for token changes in localStorage
-  useEffect(() => {
-    const handleStorage = () => {
-      setToken(localStorage.getItem("token"));
-    };
-    window.addEventListener("storage", handleStorage);
-    setToken(localStorage.getItem("token"));
-    return () => window.removeEventListener("storage", handleStorage);
-  }, []);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getCurrentUserInfo = async () => {
       try {
-        const token = localStorage.getItem("token");
+        // Check if token exists
+        const token = localStorage.getItem('token');
         if (!token) {
           setUser(null);
+          setLoading(false);
           return;
         }
-        const response = await axios.get(AppRoutes.getCurrentUser, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUser(response.data?.data); // <-- Make sure this matches your API!
+
+        const response = await apiClient.get('/getCurrentUser/getCurrentUser');
+        setUser(response.data?.data);
       } catch (error) {
+        // If request fails, user is not authenticated
         setUser(null);
+        localStorage.removeItem('token');
+        console.error('Failed to get current user:', error.message);
+      } finally {
+        setLoading(false);
       }
     };
+
     getCurrentUserInfo();
-  }, [token]);
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, setUser, loading }}>
       {children}
     </AuthContext.Provider>
   );

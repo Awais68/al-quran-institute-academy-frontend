@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Home, Users, BookOpen, Settings, BarChart3 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export function AppSidebar() {
   return (
@@ -18,7 +19,7 @@ export function AppSidebar() {
         <SidebarHeader className="bg-black border-b border-gray-800">
           <div className="flex h-[60px] items-center px-6">
             <Link href="/" className="flex items-center gap-2 font-semibold">
-              <img src="/images/logo.png" alt="Logo" className="h-6 w-8" />
+              <Image src="/images/logo.png" alt="Logo" width={32} height={24} className="h-6 w-8" />
               <span className="font-bold text-white">Admin Dashboard</span>
             </Link>
           </div>

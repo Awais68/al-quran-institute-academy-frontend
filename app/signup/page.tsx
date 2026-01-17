@@ -30,13 +30,16 @@ import PhoneNumberInput from "@/components/npmPhone";
 import CountryCitySelector from "@/components/country-city";
 import { useEffect } from "react";
 import { LoadingSpinner } from "@/components/loader";
+import Image from "next/image";
+import LoginModal from "@/components/auth/login-modal";
+import { cn } from "@/lib/utils";
 
-export default function Signup({}: // params,
-// searchParams,
-{
-  params?: any;
-  searchParams?: any;
-}) {
+export default function Signup({ }: // params,
+  // searchParams,
+  {
+    params?: any;
+    searchParams?: any;
+  }) {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const [date, setDate] = useState<Date | undefined>();
@@ -47,7 +50,9 @@ export default function Signup({}: // params,
   const [phone, setPhone] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
-
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [signup, setSignup] = useState(false);
+  const [selectedRole, setSelectedRole] = useState("Student");
   const daysOfWeek = [
     "Monday",
     "Tuesday",
@@ -66,6 +71,10 @@ export default function Signup({}: // params,
     "Friday",
   ]);
 
+  const openLoginModal = () => {
+    setSignup(false);
+    setLoginOpen(true);
+  };
   const dobtoage = (dob: Date | undefined) => {
     if (!dob) return null;
 
@@ -151,27 +160,42 @@ export default function Signup({}: // params,
       return;
     }
 
-    const age = dobtoage(date);
+    const age = date ? dobtoage(date) : null;
 
-    const data = {
+    let data: any = {
       name: e.target.name.value.toUpperCase(),
-      fatherName: e.target.fatherName.value.toUpperCase(),
       email: e.target.email.value,
-      gender: e.target.gender.value,
       phone: e.target.phone.value,
-      dob: date,
-      age: age,
-      app: e.target.app.value,
-      suitableTime: e.target.suitableTime.value,
-      course: e.target.course.value,
+      gender: e.target.gender.value,
       city: selectedCity || null,
       country: selectedCountry,
       password: e.target.password.value,
       image: imageUrl,
-      classDays: selectedDays,
-      role: "Student",
-      // roll_no: student?.length + 1,
+      role: selectedRole,
     };
+
+    // Add role-specific fields
+    if (selectedRole === 'Student') {
+      data = {
+        ...data,
+        fatherName: e.target.fatherName.value.toUpperCase(),
+        dob: date,
+        age: age,
+        app: e.target.app.value,
+        suitableTime: e.target.suitableTime.value,
+        course: e.target.course.value,
+        classDays: selectedDays,
+      };
+    } else if (selectedRole === 'Teacher') {
+      data = {
+        ...data,
+        qualification: e.target.qualification.value,
+        experience: e.target.experience.value,
+        expertise: e.target.expertise.value,
+        bio: e.target.bio?.value || '',
+      };
+    }
+    // Admin role only needs basic fields (already included above)
 
     try {
       const response = await axios.post(AppRoutes.signup, data);
@@ -191,11 +215,11 @@ export default function Signup({}: // params,
     } catch (err: any) {
       setError(
         err.response?.data?.message ||
-          (typeof err.response?.data === "string"
-            ? err.response?.data
-            : JSON.stringify(err.response?.data)) ||
-          err.message ||
-          "Signup failed. Please try again later."
+        (typeof err.response?.data === "string"
+          ? err.response?.data
+          : JSON.stringify(err.response?.data)) ||
+        err.message ||
+        "Signup failed. Please try again later."
       );
     } finally {
       setIsSubmitting(false);
@@ -235,12 +259,12 @@ export default function Signup({}: // params,
               className="flex items-center justify-center space-x-2 mb-0"
             >
               <div className="">
-                <img
+                <Image
                   src="/images/logo.png"
                   height={100}
                   width={300}
                   alt="Logo Loading..."
-                  className="flex justify-center mx-auto  "
+                  className="flex justify-center mx-auto"
                 />
                 <span className="text-2xl font-bold text-blue-900">
                   Al-Quran Institute Online
@@ -267,6 +291,39 @@ export default function Signup({}: // params,
               </div>
             )}
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Role Selection */}
+              <div className="space-y-2">
+                <Label className="text-blue-900">Register As</Label>
+                <div className="grid grid-cols-3 gap-2">
+                  {['Student', 'Teacher', 'Admin'].map((roleOption) => (
+                    <button
+                      key={roleOption}
+                      type="button"
+                      onClick={() => setSelectedRole(roleOption)}
+                      className={cn(
+                        "px-4 py-2 rounded-md text-sm font-medium transition-all",
+                        selectedRole === roleOption
+                          ? "bg-blue-600 text-white shadow-md"
+                          : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                      )}
+                    >
+                      {roleOption}
+                    </button>
+                  ))}
+                </div>
+                {selectedRole === 'Admin' && (
+                  <p className="text-xs text-orange-600 mt-1">
+                    ⚠️ First Admin registration is auto-approved. Additional admins require approval.
+                  </p>
+                )}
+                {selectedRole === 'Teacher' && (
+                  <p className="text-xs text-blue-600 mt-1">
+                    👨‍🏫 Teacher accounts have access to student management
+                  </p>
+                )}
+              </div>
+
+              {/* Common Fields for All Roles */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="relative">
                   <Label htmlFor="name" className="text-blue-900">
@@ -279,20 +336,24 @@ export default function Signup({}: // params,
                     id="name"
                     name="name"
                     placeholder="Full Name"
+                    required
                     className="border-blue-200 focus:border-blue-400 pl-10   uppercase"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="fatherName" className="text-blue-900">
-                    Father Name
-                  </Label>
-                  <Input
-                    id="fatherName"
-                    name="fatherName"
-                    placeholder="Father Name"
-                    className="border-blue-200 focus:border-blue-400 uppercase"
-                  />
-                </div>
+                {selectedRole === 'Student' && (
+                  <div>
+                    <Label htmlFor="fatherName" className="text-blue-900">
+                      Father Name
+                    </Label>
+                    <Input
+                      id="fatherName"
+                      name="fatherName"
+                      placeholder="Father Name"
+                      required
+                      className="border-blue-200 focus:border-blue-400 uppercase"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="relative">
@@ -310,143 +371,269 @@ export default function Signup({}: // params,
                   className="border-blue-200 focus:border-blue-400 pl-10"
                 />
               </div>
-              <div className="grid grid-cols-1  w-full  md:grid-cols-2 gap-4 ">
-                <div className="w-full mx-auto ">
-                  <Label htmlFor="gender" className="text-blue-900">
-                    Gender
-                  </Label>
-                  <Select name="gender" required>
-                    <SelectTrigger className="border-blue-200 focus:border-blue-400">
-                      <SelectValue placeholder="Select Gender" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="male">Male</SelectItem>
-                      <SelectItem value="female">Female</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="mb-4">
-                  {/* <Label htmlFor="phone" className="text-blue-900">
-                    Phone Number
-                  </Label> */}
-                  <PhoneNumberInput />
-                </div>
-                <div>
-                  <Label htmlFor="suitableTime" className="text-blue-900 ">
-                    Suitable Class Timing For Students (Pakistan Time)
-                  </Label>
-                  <Select name="suitableTime" required>
-                    <SelectTrigger className="border-blue-200 focus:border-blue-400">
-                      <SelectValue placeholder="Select Your Timing" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {timeSlots.map((slot) => (
-                        <SelectItem key={slot.value} value={slot.value}>
-                          {slot.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="dob" className="text-blue-900"></Label>
-                  <Calendar22 date={date} onChange={setDate} />
-                  {date && (
-                    <p className="text-blue-700 mt-1">
-                      Your Age: {dobtoage(date)} years
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="app" className="text-blue-900">
-                    Class Application
-                  </Label>
-                  <Select name="app" required>
-                    <SelectTrigger className="border-blue-200 focus:border-blue-400">
-                      <SelectValue placeholder="Select Application" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="WhatsApp">WhatsApp</SelectItem>
-                      <SelectItem value="Teams">Teams</SelectItem>
-                      <SelectItem value="Google Meet">Google Meet</SelectItem>
-                      <SelectItem value="Telegram">Telegram</SelectItem>
-                      <SelectItem value="Zoom">Zoom</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="course" className="text-blue-900">
-                    Course
-                  </Label>
-                  <Select name="course" required>
-                    <SelectTrigger className="border-blue-200 focus:border-blue-400">
-                      <SelectValue placeholder="Select Your Course" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Qaida">
-                        Basic Rules of Qaida Course
-                      </SelectItem>
-                      <SelectItem value="Tajweed">Tajweed</SelectItem>
-                      <SelectItem value="Nazra">Nazra Quran</SelectItem>
-                      <SelectItem value="Hifz">Hifz zul Quran</SelectItem>
-                      <SelectItem value="Namaz">Namaz Course</SelectItem>
-                      <SelectItem value="Islamic Studies">
-                        Islamic Studies
-                      </SelectItem>
-                      <SelectItem value="Arabic">
-                        Arabic Language Course
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                {/* Class Days Section */}
-                <div>
-                  <Label htmlFor="classDays" className="text-blue-900">
-                    Class Days
-                  </Label>
-                  <div className="grid grid-cols-2 gap-2 mt-2">
-                    {daysOfWeek.map((day) => (
-                      <label
-                        key={day}
-                        className="flex items-center gap-2 text-blue-800"
-                      >
-                        <Checkbox
-                          id={day}
-                          checked={selectedDays.includes(day)}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              setSelectedDays([...selectedDays, day]);
-                            } else {
-                              setSelectedDays(
-                                selectedDays.filter((d) => d !== day)
-                              );
-                            }
-                          }}
-                        />
-                        {day}
-                      </label>
-                    ))}
+              {/* Role-Specific Fields */}
+              {selectedRole === 'Student' && (
+                <div className="grid grid-cols-1 w-full md:grid-cols-2 gap-4">
+                  <div className="w-full mx-auto">
+                    <Label htmlFor="gender" className="text-blue-900">
+                      Gender
+                    </Label>
+                    <Select name="gender" required>
+                      <SelectTrigger className="border-blue-200 focus:border-blue-400">
+                        <SelectValue placeholder="Select Gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="male">Male</SelectItem>
+                        <SelectItem value="female">Female</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="mb-4">
+                    <PhoneNumberInput />
+                  </div>
+                  <div>
+                    <Label htmlFor="suitableTime" className="text-blue-900">
+                      Suitable Class Timing (Pakistan Time)
+                    </Label>
+                    <Select name="suitableTime" required>
+                      <SelectTrigger className="border-blue-200 focus:border-blue-400">
+                        <SelectValue placeholder="Select Your Timing" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {timeSlots.map((slot) => (
+                          <SelectItem key={slot.value} value={slot.value}>
+                            {slot.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="dob" className="text-blue-900">Date of Birth</Label>
+                    <Calendar22 date={date} onChange={setDate} />
+                    {date && (
+                      <p className="text-blue-700 mt-1">
+                        Your Age: {dobtoage(date)} years
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <Label htmlFor="app" className="text-blue-900">
+                      Class Application
+                    </Label>
+                    <Select name="app" required>
+                      <SelectTrigger className="border-blue-200 focus:border-blue-400">
+                        <SelectValue placeholder="Select Application" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="WhatsApp">WhatsApp</SelectItem>
+                        <SelectItem value="Teams">Teams</SelectItem>
+                        <SelectItem value="Google Meet">Google Meet</SelectItem>
+                        <SelectItem value="Telegram">Telegram</SelectItem>
+                        <SelectItem value="Zoom">Zoom</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="course" className="text-blue-900">
+                      Course
+                    </Label>
+                    <Select name="course" required>
+                      <SelectTrigger className="border-blue-200 focus:border-blue-400">
+                        <SelectValue placeholder="Select Your Course" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Qaida">Basic Rules of Qaida Course</SelectItem>
+                        <SelectItem value="Tajweed">Tajweed</SelectItem>
+                        <SelectItem value="Nazra">Nazra Quran</SelectItem>
+                        <SelectItem value="Hifz">Hifz zul Quran</SelectItem>
+                        <SelectItem value="Namaz">Namaz Course</SelectItem>
+                        <SelectItem value="Islamic Studies">Islamic Studies</SelectItem>
+                        <SelectItem value="Arabic">Arabic Language Course</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="classDays" className="text-blue-900">
+                      Class Days
+                    </Label>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      {daysOfWeek.map((day) => (
+                        <label key={day} className="flex items-center gap-2 text-blue-800">
+                          <Checkbox
+                            id={day}
+                            checked={selectedDays.includes(day)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setSelectedDays([...selectedDays, day]);
+                              } else {
+                                setSelectedDays(selectedDays.filter((d) => d !== day));
+                              }
+                            }}
+                          />
+                          {day}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
                   <div className="col-span-2">
                     <CountryCitySelector
                       onCountryChange={setSelectedCountry}
                       onCityChange={setSelectedCity}
                     />
                   </div>
+                  <div className="col-span-2 space-y-4">
+                    <Label className="text-blue-900">Upload Photo</Label>
+                    <input type="file" onChange={handleUploadImage} />
+                    {imageUrl && (
+                      <Image
+                        src={imageUrl}
+                        alt="Uploaded"
+                        width={160}
+                        height={160}
+                        className="w-40 h-40 object-cover rounded-md"
+                      />
+                    )}
+                  </div>
                 </div>
-                <div className="space-y-4">
-                  <input type="file" onChange={handleUploadImage} />
-                  {imageUrl && (
-                    <img
-                      src={imageUrl}
-                      alt="Uploaded"
-                      className="w-40 h-40 object-cover"
+              )}
+
+              {selectedRole === 'Teacher' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="gender" className="text-blue-900">
+                      Gender
+                    </Label>
+                    <Select name="gender" required>
+                      <SelectTrigger className="border-blue-200 focus:border-blue-400">
+                        <SelectValue placeholder="Select Gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="male">Male</SelectItem>
+                        <SelectItem value="female">Female</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <PhoneNumberInput />
+                  </div>
+                  <div>
+                    <Label htmlFor="qualification" className="text-blue-900">
+                      Qualification
+                    </Label>
+                    <Input
+                      id="qualification"
+                      name="qualification"
+                      placeholder="e.g., Alim, Hafiz, Master's in Islamic Studies"
+                      required
+                      className="border-blue-200 focus:border-blue-400"
                     />
-                  )}
+                  </div>
+                  <div>
+                    <Label htmlFor="experience" className="text-blue-900">
+                      Teaching Experience (Years)
+                    </Label>
+                    <Input
+                      id="experience"
+                      name="experience"
+                      type="number"
+                      placeholder="e.g., 5"
+                      required
+                      min="0"
+                      className="border-blue-200 focus:border-blue-400"
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <Label htmlFor="expertise" className="text-blue-900">
+                      Areas of Expertise
+                    </Label>
+                    <Input
+                      id="expertise"
+                      name="expertise"
+                      placeholder="e.g., Tajweed, Hifz, Arabic Language"
+                      required
+                      className="border-blue-200 focus:border-blue-400"
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <Label htmlFor="bio" className="text-blue-900">
+                      Brief Bio (Optional)
+                    </Label>
+                    <textarea
+                      id="bio"
+                      name="bio"
+                      rows={3}
+                      placeholder="Tell us about yourself and your teaching philosophy..."
+                      className="w-full border border-blue-200 rounded-md p-2 focus:border-blue-400 focus:outline-none"
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <CountryCitySelector
+                      onCountryChange={setSelectedCountry}
+                      onCityChange={setSelectedCity}
+                    />
+                  </div>
+                  <div className="col-span-2 space-y-4">
+                    <Label className="text-blue-900">Upload Photo</Label>
+                    <input type="file" onChange={handleUploadImage} />
+                    {imageUrl && (
+                      <Image
+                        src={imageUrl}
+                        alt="Uploaded"
+                        width={160}
+                        height={160}
+                        className="w-40 h-40 object-cover rounded-md"
+                      />
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {selectedRole === 'Admin' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="gender" className="text-blue-900">
+                      Gender
+                    </Label>
+                    <Select name="gender" required>
+                      <SelectTrigger className="border-blue-200 focus:border-blue-400">
+                        <SelectValue placeholder="Select Gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="male">Male</SelectItem>
+                        <SelectItem value="female">Female</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <PhoneNumberInput />
+                  </div>
+                  <div className="col-span-2">
+                    <CountryCitySelector
+                      onCountryChange={setSelectedCountry}
+                      onCityChange={setSelectedCity}
+                    />
+                  </div>
+                  <div className="col-span-2 space-y-4">
+                    <Label className="text-blue-900">Upload Photo</Label>
+                    <input type="file" onChange={handleUploadImage} />
+                    {imageUrl && (
+                      <Image
+                        src={imageUrl}
+                        alt="Uploaded"
+                        width={160}
+                        height={160}
+                        className="w-40 h-40 object-cover rounded-md"
+                      />
+                    )}
+                  </div>
+                  <div className="col-span-2 bg-orange-50 border border-orange-200 p-4 rounded-md">
+                    <p className="text-orange-800 text-sm">
+                      <strong>Note:</strong> The first Admin registration is automatically approved. Subsequent admin accounts require approval from existing administrators.
+                    </p>
+                  </div>
+                </div>
+              )}
 
               <div className="relative">
                 <Label htmlFor="password" className="text-red-700 ">
@@ -487,18 +674,35 @@ export default function Signup({}: // params,
                 )}
               </Button>
             </form>
+            <LoginModal
+              open={loginOpen}
+              onOpenChange={setLoginOpen}
+              onRegisterClick={() => {
+                setLoginOpen(false);
+                // agar chaho to yahan signup logic bhi laga sakte ho
+              }}
+            />
+
 
             <Separator className="my-6" />
 
             <div className="text-center">
               <p className="text-blue-700 text-sm">
                 Already have an account?{" "}
-                <Link
-                  href="openLoginModal"
+                {/* <Link
+                  // href="/signin"
                   className="text-blue-600 hover:text-blue-800 font-medium"
+                  onClick={openLoginModal}
                 >
                   Sign in here
-                </Link>
+                </Link> */}
+                <Button
+                  // variant="outline"
+                  className="bg-white text-blue-500 mx-0 p-0 font-bold hover:bg-white hover:text-black"
+                  onClick={openLoginModal}
+                >
+                  Sign in here
+                </Button>
               </p>
             </div>
           </CardContent>

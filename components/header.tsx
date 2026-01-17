@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import AuthButtons from "./auth/auth-buttons";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -132,6 +133,8 @@ export default function Header() {
           >
             <AuthButtons isScrolled={isScrolled} />
           </Suspense>
+          
+          <ThemeToggle />
         </nav>
 
         {/* Mobile Menu Button */}
