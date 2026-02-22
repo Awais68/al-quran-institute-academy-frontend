@@ -9,6 +9,7 @@ import Faculty from "@/components/faculty";
 import Contact from "@/components/contact";
 import Footer from "@/components/footer";
 import ChatWidget from "@/components/chatPage";
+import WhatsAppFloat from "@/components/whatsapp-float";
 
 export default function Home() {
   return (
@@ -25,6 +26,7 @@ export default function Home() {
       <Footer />
 
       {/* <ChatWidget /> */}
+      <WhatsAppFloat />
     </main>
   );
 }

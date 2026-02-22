@@ -44,7 +44,8 @@ export default function CountryCitySelector({
     fetch("/countries+cities.json")
       .then((res) => res.json())
       .then((jsonData) => {
-        const enhancedCountries = jsonData.map((country: CountryData) => {
+        const countriesArray = jsonData.countries || jsonData;
+        const enhancedCountries = countriesArray.map((country: CountryData) => {
           const countryCode = Country.getAllCountries().find(
             (c) => c.name === country.name
           )?.isoCode;
@@ -57,7 +58,7 @@ export default function CountryCitySelector({
         setCountries(enhancedCountries);
       })
       .catch((error) => {
-        console.error("Error loading JSON:", error);
+        console.warn("Error loading JSON:", error);
         // Fallback to country-state-city if JSON fails
         const fallbackCountries = Country.getAllCountries().map((c) => {
           const citiesArr = City.getCitiesOfCountry(c.isoCode);

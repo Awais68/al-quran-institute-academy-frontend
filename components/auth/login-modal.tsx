@@ -15,11 +15,13 @@ import { Label } from "@/components/ui/label";
 import { EyeIcon, EyeOffIcon, LockIcon, MailIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import axios from "axios";
+import apiClient from "@/lib/api";
 import { AppRoutes } from "@/app/constant/constant";
 import { useRouter } from "next/navigation";
 import { AuthContext } from "@/app/context/AuthContext";
 import { LoadingSpinner } from "../loader";
+import ForgotPasswordModal from "./forgot-password-modal";
+import { setAuthToken } from "@/lib/auth-token";
 
 interface LoginModalProps {
   open: boolean;
@@ -39,14 +41,15 @@ export default function LoginModal({
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const router = useRouter();
-  const { user } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
 
 
   useEffect(() => {
     if (open && preFilledEmail) {
       setEmail(preFilledEmail);
-     
+
       setTimeout(() => {
         const passwordInput = document.getElementById(
           "password"
@@ -70,38 +73,58 @@ export default function LoginModal({
     setIsLoading(true);
 
     try {
-    
-      const response = await axios.post(AppRoutes.login, {
+      const response = await apiClient.post('/auth/login', {
         email,
         password,
       });
-      // If login is successful, close modal and reset form
-      // if (response.status === 200 || response.status === 201) {
-      //   onOpenChange(false);
-      //   setEmail("");
-      //   setPassword("");
-      // } else {
-      //   setError("Invalid email or password");
-      // }
-      localStorage.setItem("token", response.data?.data?.token);
-      router.push("/currentUser");
+
+      // Store token in localStorage + cookie (for middleware)
+      const token = response.data.data.token;
+      if (token) {
+        setAuthToken(token);
+      }
+
+      // Get user data
+      const userData = response.data.data.user;
+
+      // Update AuthContext with user data
+      setUser(userData);
+
+      // Close modal and reset form
+      onOpenChange(false);
+      setEmail("");
+      setPassword("");
+      setError("");
+
+      // Redirect based on role using replace to prevent back navigation
+      if (userData.role === 'Admin') {
+        router.replace("/currentUser");
+      } else if (userData.role === 'Teacher') {
+        router.replace("/teacher");
+      } else if (userData.role === 'Student') {
+        router.replace("/students");
+      } else {
+        router.replace("/"); // fallback
+      }
     } catch (err: any) {
-      setError(
-        err.response?.data?.message ||
-          (typeof err.response?.data === "string"
-            ? err.response?.data
-            : JSON.stringify(err.response?.data)) ||
-          err.message ||
-          "Login failed. Please try again later."
-      );
+      // Extract error message from various response formats
+      let errorMessage = "Login failed. Please try again.";
+      
+      if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.response?.data?.error) {
+        errorMessage = err.response.data.error;
+      } else if (typeof err.response?.data === "string") {
+        errorMessage = err.response.data;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (user) router.push("/currentStudent");
-  });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -126,7 +149,7 @@ export default function LoginModal({
                 <MailIcon className="h-5 w-5 text-gray-400" />
               </div>
               <Input
-                id="email"
+                id="login-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -140,12 +163,13 @@ export default function LoginModal({
           <div className="space-y-2">
             <div className="flex justify-between">
               <Label htmlFor="password">Password</Label>
-              <Link
-                href="/forgetPassword"
-                className="text-sm text-primary-600 hover:text-primary-800"
+              <button
+                type="button"
+                onClick={() => setForgotPasswordOpen(true)}
+                className="text-sm text-primary-600 hover:text-primary-800 font-medium"
               >
                 Forgot password?
-              </Link>
+              </button>
             </div>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -204,6 +228,11 @@ export default function LoginModal({
           </div>
         </form>
       </DialogContent>
+
+      <ForgotPasswordModal
+        open={forgotPasswordOpen}
+        onOpenChange={setForgotPasswordOpen}
+      />
     </Dialog>
   );
 }

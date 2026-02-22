@@ -91,7 +91,7 @@ export default function Testimonials() {
           <div className="islamic-divider w-20 sm:w-24 mx-auto mb-4 sm:mb-6"></div>
           <p className="text-gray-600 max-w-2xl mx-auto text-sm md:text-base">
             Hear what our students, parents, and community members have to say
-            about Madarsa Hajira.
+            about Al-Quran Institute Online.
           </p>
         </motion.div>
 
@@ -170,7 +170,7 @@ export default function Testimonials() {
                   className={cn(
                     "w-2 sm:w-2.5 md:w-3 h-2 sm:h-2.5 md:h-3 rounded-full transition-all duration-300",
                     index === currentIndex
-                      ? "bg-accent-500 w-5 sm:w-6 md:w-8"
+                      ? "bg-blue-400 w-5 sm:w-6 md:w-8"
                       : "bg-primary-200"
                   )}
                   aria-label={`Go to testimonial ${index + 1}`}

@@ -25,7 +25,7 @@ import {
   Upload,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import apiClient from "@/lib/api";
 import { useSearchParams } from "next/navigation";
 
 interface Student {
@@ -47,43 +47,46 @@ interface Student {
   roll_no: string;
 }
 
+interface Activity {
+  _id: string;
+  type: "remark" | "submission" | "feedback";
+  date: string;
+  content: string;
+  media?: {
+    type: "audio" | "video";
+    url: string;
+    cloudinaryId: string;
+    thumbnail?: string;
+  };
+  teacherFeedback?: string;
+  teacherName?: string;
+  status?: "pending" | "reviewed";
+}
+
 const CurrentStudent = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const [student, setStudent] = useState<Student | null>(null);
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchCurrentStudent = async () => {
       try {
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-          setError("No authentication token found. Please login.");
-          setLoading(false);
-          return;
-        }
-
-        // Updated API endpoint with /api prefix
-        const res = await axios.get(
-          `http://localhost:4000/api/getAStudent/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        // API client handles authentication via cookies automatically
+        const res = await apiClient.get(`/studentById/getAStudent/${id}`);
 
         if (res.data && res.data.data) {
           setStudent(res.data.data);
+          // Fetch student activities
+          await fetchActivities(res.data.data._id);
         } else {
           setError("No student data received from server");
         }
         setLoading(false);
       } catch (err: any) {
-        console.error("Student fetch error:", err);
+        console.warn("Student fetch error:", err);
 
         let message = "Failed to fetch student";
 
@@ -117,6 +120,18 @@ const CurrentStudent = () => {
       setLoading(false);
     }
   }, [id]);
+
+  const fetchActivities = async (studentId: string) => {
+    try {
+      const res = await apiClient.get(`/activities/student/${studentId}`);
+      if (res.data && res.data.data) {
+        setActivities(res.data.data.activities || []);
+      }
+    } catch (err) {
+      console.warn("Failed to fetch activities:", err);
+      setActivities([]);
+    }
+  };
 
   if (loading) {
     return (
@@ -157,57 +172,25 @@ const CurrentStudent = () => {
   const enrolledCourses = [
     {
       id: "tajweed-mastery",
-      title: "Tajweed Mastery",
-      instructor: "Sheikh Ahmed Al-Qari",
+      title: student?.course || "Not Enrolled",
+      instructor: "Your Teacher",
       progress: 35,
       totalLessons: 48,
       completedLessons: 17,
-      nextLesson: "Noon Sakinah Rules - Part 2",
-      nextSessionDate: "2024-01-15T10:00:00",
-      status: "active",
+      nextLesson: "Next Session",
+      nextSessionDate: new Date().toISOString(),
+      status: student?.status || "inactive",
     },
   ];
 
   const upcomingSessions = [
     {
-      course: "Tajweed Mastery",
-      instructor: "Sheikh Ahmed Al-Qari",
-      date: "2024-01-15T10:00:00",
-      duration: "60 minutes",
+      course: student?.course || "Course",
+      instructor: "Teacher",
+      date: new Date().toISOString(),
+      duration: student?.suitableTime || "60 minutes",
       type: "One-on-One Session",
-      topic: "Noon Sakinah Rules",
-    },
-    {
-      course: "Tajweed Mastery",
-      instructor: "Sheikh Ahmed Al-Qari",
-      date: "2024-01-17T15:00:00",
-      duration: "45 minutes",
-      type: "Group Practice",
       topic: "Recitation Practice",
-    },
-  ];
-
-  const recentActivities = [
-    {
-      type: "lesson_completed",
-      title: "Completed: Makharij Overview",
-      course: "Tajweed Mastery",
-      date: "2024-01-12T14:30:00",
-      icon: <CheckCircle className="h-5 w-5 text-green-600" />,
-    },
-    {
-      type: "assignment_submitted",
-      title: "Submitted: Recitation Recording",
-      course: "Tajweed Mastery",
-      date: "2024-01-11T16:45:00",
-      icon: <Upload className="h-5 w-5 text-blue-600" />,
-    },
-    {
-      type: "feedback_received",
-      title: "Received feedback from instructor",
-      course: "Tajweed Mastery",
-      date: "2024-01-10T09:15:00",
-      icon: <MessageCircle className="h-5 w-5 text-purple-600" />,
     },
   ];
 
@@ -667,42 +650,120 @@ const CurrentStudent = () => {
             <Card className="bg-white/80 backdrop-blur-sm border-blue-200/50">
               <CardHeader>
                 <CardTitle className="text-xl text-blue-900">
-                  Recent Activity
+                  Student Activities
                 </CardTitle>
                 <CardDescription>
-                  Your learning activity over the past week
+                  Recent submissions, feedback, and remarks
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {recentActivities.map((activity, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center space-x-4 p-4 border border-blue-200 rounded-lg"
-                    >
-                      <div className="flex-shrink-0">{activity.icon}</div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-blue-900">
-                          {activity.title}
-                        </h4>
-                        <p className="text-blue-700 text-sm">
-                          {activity.course}
-                        </p>
+                {activities.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <MessageCircle className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>No activities yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {activities.map((activity) => (
+                      <div
+                        key={activity._id}
+                        className="flex flex-col space-y-3 p-4 border border-blue-200 rounded-lg"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="flex-shrink-0">
+                              {activity.type === "submission" ? (
+                                <Upload className="h-5 w-5 text-blue-600" />
+                              ) : activity.type === "feedback" ? (
+                                <MessageCircle className="h-5 w-5 text-purple-600" />
+                              ) : (
+                                <CheckCircle className="h-5 w-5 text-green-600" />
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-blue-900">
+                                {activity.type === "submission" 
+                                  ? "Practice Submission" 
+                                  : activity.type === "feedback" 
+                                  ? "Teacher Feedback"
+                                  : "Teacher Remark"}
+                              </h4>
+                              <p className="text-blue-700 text-sm mt-1">
+                                {activity.content}
+                              </p>
+                              {activity.teacherName && (
+                                <p className="text-blue-600 text-xs mt-1">
+                                  By {activity.teacherName}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-right flex-shrink-0">
+                            <Badge
+                              variant={activity.status === "reviewed" ? "default" : "secondary"}
+                              className="mb-1"
+                            >
+                              {activity.status === "reviewed" ? "Reviewed" : "Pending"}
+                            </Badge>
+                            <p className="text-blue-600 text-xs">
+                              {new Date(activity.date).toLocaleDateString()}
+                            </p>
+                            <p className="text-blue-500 text-xs">
+                              {new Date(activity.date).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        {/* Media Player */}
+                        {activity.media && (
+                          <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                            {activity.media.type === "audio" ? (
+                              <div className="flex items-center space-x-3">
+                                <Play className="h-5 w-5 text-blue-600" />
+                                <audio 
+                                  controls 
+                                  className="flex-1"
+                                  src={activity.media.url}
+                                >
+                                  Your browser does not support the audio element.
+                                </audio>
+                              </div>
+                            ) : (
+                              <div>
+                                <div className="flex items-center space-x-2 mb-2">
+                                  <Video className="h-5 w-5 text-blue-600" />
+                                  <span className="text-sm font-medium text-blue-900">Video Recording</span>
+                                </div>
+                                <video 
+                                  controls 
+                                  className="w-full rounded"
+                                  src={activity.media.url}
+                                >
+                                  Your browser does not support the video element.
+                                </video>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Teacher Feedback */}
+                        {activity.teacherFeedback && (
+                          <div className="mt-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                            <p className="text-sm font-medium text-purple-900 mb-1">
+                              Teacher's Feedback:
+                            </p>
+                            <p className="text-sm text-purple-800">
+                              {activity.teacherFeedback}
+                            </p>
+                          </div>
+                        )}
                       </div>
-                      <div className="text-right">
-                        <p className="text-blue-600 text-sm">
-                          {new Date(activity.date).toLocaleDateString()}
-                        </p>
-                        <p className="text-blue-500 text-xs">
-                          {new Date(activity.date).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

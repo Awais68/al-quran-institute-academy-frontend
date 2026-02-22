@@ -1,9 +1,9 @@
-import AdminContent from "@/components/adminContent";
+import AdminDashboard from "@/components/admin-dashboard";
 
 export default function Admin() {
   return (
-    <div className="min-h-screen flex justify-center">
-      <AdminContent />
+    <div className="min-h-screen">
+      <AdminDashboard />
     </div>
   );
 }

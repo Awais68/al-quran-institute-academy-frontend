@@ -148,9 +148,9 @@ export function StudentProfile({ studentId }: StudentProfileProps) {
         const response = await axios.get(AppRoutes.getAllStudents);
 
         // Adjust this based on your response shape
-        setStudents(response.data.data);
+        setStudents(Array.isArray(response.data.data) ? response.data.data : []);
       } catch (error) {
-        console.error("Error fetching students:", error);
+        console.warn("Error fetching students:", error);
       }
     };
 
