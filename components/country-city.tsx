@@ -58,7 +58,7 @@ export default function CountryCitySelector({
         setCountries(enhancedCountries);
       })
       .catch((error) => {
-        console.error("Error loading JSON:", error);
+        console.warn("Error loading JSON:", error);
         // Fallback to country-state-city if JSON fails
         const fallbackCountries = Country.getAllCountries().map((c) => {
           const citiesArr = City.getCitiesOfCountry(c.isoCode);

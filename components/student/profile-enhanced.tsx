@@ -97,7 +97,7 @@ export default function StudentProfileEnhanced({ studentId, isAdmin = false }: S
         setStudent(response.data);
       }
     } catch (error) {
-      console.error("Failed to fetch student:", error);
+      console.warn("Failed to fetch student:", error);
     }
   };
 
@@ -109,7 +109,7 @@ export default function StudentProfileEnhanced({ studentId, isAdmin = false }: S
         setPayments(response.data.data.payments);
       }
     } catch (error) {
-      console.error("Failed to fetch payment history:", error);
+      console.warn("Failed to fetch payment history:", error);
     } finally {
       setLoading(false);
     }

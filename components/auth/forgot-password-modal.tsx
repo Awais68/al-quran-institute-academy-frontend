@@ -49,10 +49,7 @@ export default function ForgotPasswordModal({ open, onOpenChange }: ForgotPasswo
 
     try {
       // TODO: Replace with actual API call
-      const response = await apiClient.post("/api/auth/forgot-password", { email });
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const response = await apiClient.post("/auth/forgot-password", { email });
 
       setSuccess(true);
       toast({

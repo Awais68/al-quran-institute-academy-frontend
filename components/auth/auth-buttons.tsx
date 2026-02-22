@@ -56,7 +56,8 @@ export default function AuthButtons({
 
   const openSignupModal = () => {
     setLoginOpen(false);
-    setSignup(true);
+    setSignup(false);
+    router.push('/signup');
   };
 
   const handleLogout = async () => {
@@ -64,7 +65,7 @@ export default function AuthButtons({
       // Call logout endpoint to clear server-side session/cookie
       await apiClient.post('/auth/logout'); // Assuming there's a logout endpoint
     } catch (error) {
-      console.error('Logout error:', error);
+      console.warn('Logout error:', error);
     } finally {
       // Clear client-side state and token
       localStorage.removeItem('token');

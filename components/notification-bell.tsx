@@ -38,10 +38,10 @@ export default function NotificationBell() {
     try {
       const response = await apiClient.get("/notifications?limit=10");
       if (response.data?.data) {
-        setNotifications(response.data.data.notifications);
+        setNotifications(Array.isArray(response.data.data.notifications) ? response.data.data.notifications : []);
       }
     } catch (error) {
-      console.error("Error fetching notifications:", error);
+      console.warn("Error fetching notifications:", error);
     }
   };
 
@@ -53,7 +53,7 @@ export default function NotificationBell() {
         setUnreadCount(response.data.data.count);
       }
     } catch (error) {
-      console.error("Error fetching unread count:", error);
+      console.warn("Error fetching unread count:", error);
     }
   };
 
@@ -100,7 +100,7 @@ export default function NotificationBell() {
         );
         setUnreadCount((prev) => Math.max(0, prev - 1));
       } catch (error) {
-        console.error("Error marking notification as read:", error);
+        console.warn("Error marking notification as read:", error);
       }
     }
 
@@ -122,7 +122,7 @@ export default function NotificationBell() {
         setUnreadCount((prev) => Math.max(0, prev - 1));
       }
     } catch (error) {
-      console.error("Error deleting notification:", error);
+      console.warn("Error deleting notification:", error);
     }
   };
 
@@ -133,7 +133,7 @@ export default function NotificationBell() {
       setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
       setUnreadCount(0);
     } catch (error) {
-      console.error("Error marking all as read:", error);
+      console.warn("Error marking all as read:", error);
     }
   };
 

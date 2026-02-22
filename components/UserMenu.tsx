@@ -17,7 +17,7 @@ export default function UserMenu() {
       // Call logout endpoint to clear server-side session/cookie
       await apiClient.post('/auth/logout');
     } catch (error) {
-      console.error('Logout error:', error);
+      console.warn('Logout error:', error);
     } finally {
       // Clear client-side state and token
       localStorage.removeItem('token');

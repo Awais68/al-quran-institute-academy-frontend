@@ -2,6 +2,7 @@
 
 import { createContext, useState, useEffect } from "react";
 import apiClient from "@/lib/api";
+import { clearAuthToken } from "@/lib/auth-token";
 
 export const AuthContext = createContext();
 
@@ -25,8 +26,8 @@ export default function AuthContextProvider({ children }) {
       } catch (error) {
         // If request fails, user is not authenticated
         setUser(null);
-        localStorage.removeItem('token');
-        console.error('Failed to get current user:', error.message);
+        clearAuthToken();
+        console.warn('Failed to get current user:', error.message);
       } finally {
         setLoading(false);
       }
@@ -35,8 +36,13 @@ export default function AuthContextProvider({ children }) {
     getCurrentUserInfo();
   }, []);
 
+  const logout = () => {
+    clearAuthToken();
+    setUser(null);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, setUser, loading }}>
+    <AuthContext.Provider value={{ user, setUser, loading, logout }}>
       {children}
     </AuthContext.Provider>
   );

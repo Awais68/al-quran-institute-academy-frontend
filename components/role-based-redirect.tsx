@@ -21,7 +21,7 @@ export default function RoleBasedRedirect({
   useEffect(() => {
     const checkRole = async () => {
       try {
-        const response = await apiClient.get('/getCurrentUser');
+        const response = await apiClient.get('/getCurrentUser/getCurrentUser');
         const user = response.data.data;
 
         if (!allowedRoles.includes(user.role)) {
@@ -46,7 +46,7 @@ export function useUserRole() {
   useEffect(() => {
     const fetchRole = async () => {
       try {
-        const response = await apiClient.get('/getCurrentUser');
+        const response = await apiClient.get('/getCurrentUser/getCurrentUser');
         setRole(response.data.data.role);
       } catch (error) {
         setRole(null);

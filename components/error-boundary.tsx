@@ -23,7 +23,7 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: any) {
-    console.error('Global error caught by boundary:', error, errorInfo);
+    console.warn('Global error caught by boundary:', error, errorInfo);
   }
 
   render() {

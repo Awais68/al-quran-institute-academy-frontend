@@ -3,9 +3,11 @@
 import { useEffect, useState, useContext } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
+import { io } from "socket.io-client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AuthContext } from "@/app/context/AuthContext";
+import { SOCKET_URL } from "@/app/constant/constant";
 import {
   BookOpen,
   Calendar,
@@ -16,10 +18,14 @@ import {
   LogOut,
   AlertCircle,
   FileText,
+  Phone,
+  Video,
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import NotificationBell from "@/components/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useToast } from "@/hooks/use-toast";
+import apiClient from "@/lib/api";
 
 // Import all student tab components
 import MyCourses from "@/components/student/my-courses";
@@ -30,10 +36,32 @@ import ActivityTab from "@/components/student/activity";
 import ProfileSidebar from "@/components/student/profile-sidebar";
 
 export default function StudentDashboard() {
-  const { user, loading, logout } = useContext(AuthContext);
+  const { user, loading, logout, setUser } = useContext(AuthContext);
   const router = useRouter();
+  const { toast } = useToast();
   const [profileOpen, setProfileOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("courses");
+  const [incomingCall, setIncomingCall] = useState<{ from: string; roomId: string; teacherName: string } | null>(null);
+  const [teacherData, setTeacherData] = useState<any>(null);
+  const [isLoadingTeacher, setIsLoadingTeacher] = useState(false);
+
+  // Fetch assigned teacher data
+  useEffect(() => {
+    if (!user || user.role !== "Student") return;
+    const fetchTeacher = async () => {
+      if (!user.assignedTeacher) return;
+      setIsLoadingTeacher(true);
+      try {
+        const response = await apiClient.get(`/teacher/${user.assignedTeacher}`);
+        setTeacherData(response.data?.data || null);
+      } catch (error) {
+        console.warn("Error fetching teacher:", error);
+      } finally {
+        setIsLoadingTeacher(false);
+      }
+    };
+    fetchTeacher();
+  }, [user]);
 
   useEffect(() => {
     if (loading) return; // Wait for auth to load
@@ -44,7 +72,21 @@ export default function StudentDashboard() {
     }
     if (user.role !== "Student") {
       router.replace("/");
+      return;
     }
+
+    // Setup socket for incoming calls from teachers
+    const socket = io(SOCKET_URL);
+    socket.emit("register-user", { userId: user._id, userName: user.name, userType: "Student" });
+
+    socket.on("incoming-call", ({ from, roomId, teacherName }) => {
+      console.log("Incoming call from teacher:", teacherName);
+      setIncomingCall({ from, roomId, teacherName });
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, [user, loading, router]);
 
   const handleJoinSession = (courseId: string) => {
@@ -57,11 +99,50 @@ export default function StudentDashboard() {
     router.push(`/messages?to=${teacherEmail}`);
   };
 
-  const handleLogout = () => {
-    if (logout) {
-      logout();
+  const handleAcceptCall = () => {
+    if (incomingCall) {
+      router.push(`/video-call/${incomingCall.roomId}`);
+      setIncomingCall(null);
     }
-    router.push("/");
+  };
+
+  const handleRejectCall = () => {
+    setIncomingCall(null);
+  };
+
+  const handleCallTeacher = async () => {
+    if (!teacherData) {
+      toast({
+        title: "No Teacher Assigned",
+        description: "You don't have an assigned teacher yet.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const roomId = `room-${teacherData._id}-${Date.now()}`;
+    const socket = io(SOCKET_URL);
+    
+    socket.emit("call-teacher", {
+      teacherId: teacherData._id,
+      studentName: user?.name || "Student",
+      roomId: roomId
+    });
+
+    toast({
+      title: "Calling Teacher",
+      description: `Calling ${teacherData.name}...`,
+    });
+
+    setTimeout(() => {
+      router.push(`/video-call/${roomId}`);
+      socket.disconnect();
+    }, 500);
+  };
+
+  const handleLogout = () => {
+    logout();
+    router.replace("/");
   };
 
   if (loading || !user) {
@@ -74,6 +155,57 @@ export default function StudentDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Incoming Call Notification */}
+      {incomingCall && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm">
+          <Card className="w-96 shadow-2xl animate-in fade-in zoom-in duration-300">
+            <CardContent className="p-6">
+              <div className="text-center">
+                <div className="mb-4 flex justify-center">
+                  <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center animate-pulse">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="white"
+                      className="w-8 h-8"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  Incoming Call
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  {incomingCall.teacherName} is calling you...
+                </p>
+                <div className="flex gap-3">
+                  <Button
+                    onClick={handleRejectCall}
+                    variant="outline"
+                    className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
+                  >
+                    Decline
+                  </Button>
+                  <Button
+                    onClick={handleAcceptCall}
+                    className="flex-1 bg-green-500 hover:bg-green-600 text-white"
+                  >
+                    Accept
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+      
       <div className="container mx-auto px-4 py-8">
         {/* Header Section */}
         <div className="flex items-center justify-between mb-8">
@@ -86,6 +218,14 @@ export default function StudentDashboard() {
             </p>
           </div>
           <div className="flex gap-3">
+            <Button
+              onClick={handleCallTeacher}
+              className="bg-green-600 hover:bg-green-700 text-white"
+              disabled={isLoadingTeacher || !teacherData}
+            >
+              <Phone className="h-4 w-4 mr-2" />
+              Call Teacher
+            </Button>
             <ThemeToggle />
             <NotificationBell />
             <Button

@@ -76,7 +76,7 @@ export default function Schedule() {
                 const res = await apiClient.get("/sessions");
                 setSessions(res.data.data?.sessions || []);
             } catch (err: any) {
-                console.error("Failed to load sessions:", err);
+                console.warn("Failed to load sessions:", err);
             } finally {
                 setSessionsLoading(false);
             }
@@ -87,7 +87,8 @@ export default function Schedule() {
             try {
                 const userId = user.id || user._id;
                 const res = await apiClient.get(`/lessons/student/${userId}?type=upcoming`);
-                setLessons(res.data.data || []);
+                const data = res.data.data;
+                setLessons(Array.isArray(data) ? data : Array.isArray(data?.lessons) ? data.lessons : []);
             } catch (err: any) {
                 setError("Failed to load lessons");
             } finally {
@@ -102,7 +103,7 @@ export default function Schedule() {
                 const res = await apiClient.get(`/lessons/recitation/${userId}`);
                 setRecitationPractices(res.data.data?.practices || []);
             } catch (err: any) {
-                console.error("Failed to load recitation practices:", err);
+                console.warn("Failed to load recitation practices:", err);
             } finally {
                 setPracticesLoading(false);
             }
@@ -240,7 +241,7 @@ export default function Schedule() {
                         </div>
                     )}
 
-                    {lessons.map((lesson) => (
+                    {Array.isArray(lessons) && lessons.map((lesson) => (
                         <div
                             key={lesson._id}
                             className="p-4 border border-blue-200 rounded-lg bg-blue-50/50 hover:bg-blue-50 transition"

@@ -96,7 +96,7 @@ export default function Contact() {
         setSubmitSuccess(false);
       }, 5000);
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.warn("Error submitting form:", error);
     } finally {
       setIsSubmitting(false);
     }

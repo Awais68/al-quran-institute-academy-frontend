@@ -70,7 +70,7 @@ export default function Achievement({ studentId }: AchievementProps) {
       }
       setLoading(false);
     } catch (error) {
-      console.error("Failed to fetch achievements:", error);
+      console.warn("Failed to fetch achievements:", error);
       setLoading(false);
     }
   };

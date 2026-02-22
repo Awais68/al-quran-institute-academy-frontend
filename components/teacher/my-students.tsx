@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { io } from "socket.io-client";
+import { AuthContext } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,6 +59,7 @@ interface MyStudentsProps {
 }
 
 export default function MyStudents({ students, onRefresh }: MyStudentsProps) {
+  const { user } = useContext(AuthContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCourse, setFilterCourse] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -282,7 +285,19 @@ export default function MyStudents({ students, onRefresh }: MyStudentsProps) {
                           <Eye className="h-4 w-4 mr-2" />
                           View Profile
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => router.push(`/video-call/room-${student._id}`)}>
+                        <DropdownMenuItem onClick={() => {
+                          const roomId = `room-${student._id}-${Date.now()}`;
+                          const socket = io("http://localhost:4000");
+                          socket.emit("call-student", {
+                            studentId: student._id,
+                            teacherName: user?.name || "Teacher",
+                            roomId: roomId
+                          });
+                          setTimeout(() => {
+                            router.push(`/video-call/${roomId}`);
+                            socket.disconnect();
+                          }, 500);
+                        }}>
                           <Video className="h-4 w-4 mr-2" />
                           Start Video Call
                         </DropdownMenuItem>

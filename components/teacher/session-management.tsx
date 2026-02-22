@@ -114,7 +114,7 @@ export default function SessionManagement({
         });
       }
     } catch (error: any) {
-      console.error("Error scheduling session:", error);
+      console.warn("Error scheduling session:", error);
       toast({
         title: "Error",
         description: error.response?.data?.message || "Failed to schedule session",

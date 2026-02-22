@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import apiClient from "@/lib/api";
+import { AuthContext } from "@/app/context/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -30,6 +31,7 @@ interface AdminUser {
 export default function AdminDashboardPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { logout } = useContext(AuthContext);
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -51,7 +53,7 @@ export default function AdminDashboardPage() {
 
   const checkAuthentication = async () => {
     try {
-      const response = await apiClient.get('/getCurrentUser');
+      const response = await apiClient.get('/getCurrentUser/getCurrentUser');
       const user = response.data.data;
 
       // Check if user is admin
@@ -80,7 +82,7 @@ export default function AdminDashboardPage() {
   const fetchDashboardStats = async () => {
     try {
       const [studentsRes, userStatsRes] = await Promise.all([
-        apiClient.get('/getAllStudents'),
+        apiClient.get('/students/getAllStudents'),
         apiClient.get('/user/stats/overview').catch(() => ({ data: { data: {} } }))
       ]);
 
@@ -108,21 +110,22 @@ export default function AdminDashboardPage() {
         unpaidStudents,
       });
     } catch (error) {
-      console.error('Error fetching dashboard stats:', error);
+      console.warn('Error fetching dashboard stats:', error);
     }
   };
 
   const handleLogout = async () => {
     try {
       await apiClient.post('/auth/logout');
+    } catch (error) {
+      console.warn('Logout error:', error);
+    } finally {
+      logout();
       toast({
         title: "Logged Out",
         description: "You have been successfully logged out",
       });
-      router.push('/');
-    } catch (error) {
-      console.error('Logout error:', error);
-      router.push('/');
+      router.replace('/');
     }
   };
 

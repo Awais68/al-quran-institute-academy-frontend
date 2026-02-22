@@ -63,7 +63,7 @@ export default function Progress({ studentId }: ProgressProps) {
       }
       setLoading(false);
     } catch (error) {
-      console.error("Failed to fetch progress:", error);
+      console.warn("Failed to fetch progress:", error);
       setLoading(false);
     }
   };

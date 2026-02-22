@@ -6,6 +6,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import AuthContextProvider from "./context/AuthContext";
 import ErrorBoundary from "@/components/error-boundary";
+import { Toaster } from "@/components/ui/toaster";
 import "react-day-picker/dist/style.css";
 
 const inter = Inter({
@@ -75,7 +76,7 @@ export default function RootLayout({
                 window.addEventListener('load', () => {
                   navigator.serviceWorker.register('/sw.js')
                     .then(reg => console.log('Service Worker registered:', reg.scope))
-                    .catch(err => console.error('Service Worker registration failed:', err));
+                    .catch(err => console.warn('Service Worker registration failed:', err));
                 });
               }
             `,
@@ -95,6 +96,7 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               {children}
+              <Toaster />
             </ThemeProvider>
           </AuthContextProvider>
         </ErrorBoundary>

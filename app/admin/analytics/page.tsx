@@ -41,7 +41,7 @@ export default function AnalyticsPage() {
         });
       }
     } catch (error) {
-      console.error("Failed to fetch analytics:", error);
+      console.warn("Failed to fetch analytics:", error);
     } finally {
       setLoading(false);
     }

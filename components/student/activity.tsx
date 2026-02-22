@@ -68,7 +68,7 @@ export default function Activity({ studentId }: ActivityProps) {
       }
       setLoading(false);
     } catch (error) {
-      console.error("Failed to fetch activities:", error);
+      console.warn("Failed to fetch activities:", error);
       setActivities([]);
       setLoading(false);
     }

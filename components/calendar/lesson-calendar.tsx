@@ -102,7 +102,7 @@ export default function LessonCalendar({ userRole = 'Student', userId, isEditabl
 
       setEvents(formattedEvents);
     } catch (error) {
-      console.error('Error fetching lessons:', error);
+      console.warn('Error fetching lessons:', error);
       toast({
         title: 'Error',
         description: 'Failed to load lessons',
@@ -160,7 +160,7 @@ export default function LessonCalendar({ userRole = 'Student', userId, isEditabl
         resetForm();
       }
     } catch (error) {
-      console.error('Error creating lesson:', error);
+      console.warn('Error creating lesson:', error);
       toast({
         title: 'Error',
         description: 'Failed to schedule lesson',
@@ -182,7 +182,7 @@ export default function LessonCalendar({ userRole = 'Student', userId, isEditabl
         fetchLessons();
       }
     } catch (error) {
-      console.error('Error deleting lesson:', error);
+      console.warn('Error deleting lesson:', error);
       toast({
         title: 'Error',
         description: 'Failed to delete lesson',

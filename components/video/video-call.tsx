@@ -189,7 +189,7 @@ export default function VideoCall({
 
       setSocket(newSocket);
     } catch (error) {
-      console.error("Error initializing call:", error);
+      console.warn("Error initializing call:", error);
       toast({
         title: "Error",
         description: "Failed to access camera/microphone",
@@ -327,7 +327,7 @@ export default function VideoCall({
         stopScreenShare();
       }
     } catch (error) {
-      console.error("Error sharing screen:", error);
+      console.warn("Error sharing screen:", error);
     }
   };
 

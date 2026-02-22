@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import { AuthContext } from "@/app/context/AuthContext";
 import { LoadingSpinner } from "../loader";
 import ForgotPasswordModal from "./forgot-password-modal";
+import { setAuthToken } from "@/lib/auth-token";
 
 interface LoginModalProps {
   open: boolean;
@@ -37,7 +38,6 @@ export default function LoginModal({
 }: LoginModalProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("Student");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -76,13 +76,12 @@ export default function LoginModal({
       const response = await apiClient.post('/auth/login', {
         email,
         password,
-        // role,
       });
 
-      // Store token in localStorage
+      // Store token in localStorage + cookie (for middleware)
       const token = response.data.data.token;
       if (token) {
-        localStorage.setItem('token', token);
+        setAuthToken(token);
       }
 
       // Get user data
@@ -95,29 +94,33 @@ export default function LoginModal({
       onOpenChange(false);
       setEmail("");
       setPassword("");
+      setError("");
 
-      // Small delay to ensure state is updated before redirect
-      setTimeout(() => {
-        // Redirect based on role using replace to prevent back navigation
-        if (userData.role === 'Admin') {
-          router.replace("/currentUser");
-        } else if (userData.role === 'Teacher') {
-          router.replace("/teacher");
-        } else if (userData.role === 'Student') {
-          router.replace("/students");
-        } else {
-          router.replace("/"); // fallback
-        }
-      }, 100);
+      // Redirect based on role using replace to prevent back navigation
+      if (userData.role === 'Admin') {
+        router.replace("/currentUser");
+      } else if (userData.role === 'Teacher') {
+        router.replace("/teacher");
+      } else if (userData.role === 'Student') {
+        router.replace("/students");
+      } else {
+        router.replace("/"); // fallback
+      }
     } catch (err: any) {
-      setError(
-        err.response?.data?.message ||
-        (typeof err.response?.data === "string"
-          ? err.response?.data
-          : JSON.stringify(err.response?.data)) ||
-        err.message ||
-        "Login failed. Please try again later."
-      );
+      // Extract error message from various response formats
+      let errorMessage = "Login failed. Please try again.";
+      
+      if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.response?.data?.error) {
+        errorMessage = err.response.data.error;
+      } else if (typeof err.response?.data === "string") {
+        errorMessage = err.response.data;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -139,27 +142,6 @@ export default function LoginModal({
         )}
 
         <form onSubmit={handleLogin} className="space-y-4 pt-4">
-          <div className="space-y-2">
-            <Label htmlFor="role">Login As</Label>
-            <div className="grid grid-cols-3 gap-2">
-              {['Student', 'Teacher', 'Admin'].map((roleOption) => (
-                <button
-                  key={roleOption}
-                  type="button"
-                  onClick={() => setRole(roleOption)}
-                  className={cn(
-                    "px-4 py-2 rounded-md text-sm font-medium transition-all",
-                    role === roleOption
-                      ? "bg-primary-600 text-white shadow-md"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  )}
-                >
-                  {roleOption}
-                </button>
-              ))}
-            </div>
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <div className="relative">

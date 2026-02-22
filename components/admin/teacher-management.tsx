@@ -60,13 +60,14 @@ export default function TeacherManagement() {
   const fetchTeachers = async () => {
     try {
       const response = await apiClient.get("/getAllStudents");
-      const teacherData = response.data.data.filter(
+      const data = Array.isArray(response.data.data) ? response.data.data : [];
+      const teacherData = data.filter(
         (user: any) => user.role === "Teacher"
       );
       setTeachers(teacherData);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching teachers:", error);
+      console.warn("Error fetching teachers:", error);
       toast({
         title: "Error",
         description: "Failed to fetch teachers",
@@ -98,7 +99,7 @@ export default function TeacherManagement() {
       setIsEditDialogOpen(false);
       fetchTeachers();
     } catch (error) {
-      console.error("Error updating teacher:", error);
+      console.warn("Error updating teacher:", error);
       toast({
         title: "Error",
         description: "Failed to update teacher profile",
@@ -119,7 +120,7 @@ export default function TeacherManagement() {
       });
       fetchTeachers();
     } catch (error) {
-      console.error("Error updating status:", error);
+      console.warn("Error updating status:", error);
       toast({
         title: "Error",
         description: "Failed to update teacher status",

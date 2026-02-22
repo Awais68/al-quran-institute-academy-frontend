@@ -69,7 +69,7 @@ export default function CurrentStudent() {
         setLoading(false);
       } catch (err: any) {
         // Log the error details
-        console.error("Student fetch error:", err);
+        console.warn("Student fetch error:", err);
         // Try to show the backend error message if available
         let message = "Failed to fetch student";
         if (err.response && err.response.data) {

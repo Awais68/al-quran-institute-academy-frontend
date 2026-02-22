@@ -86,7 +86,7 @@ const CurrentStudent = () => {
         }
         setLoading(false);
       } catch (err: any) {
-        console.error("Student fetch error:", err);
+        console.warn("Student fetch error:", err);
 
         let message = "Failed to fetch student";
 
@@ -128,7 +128,7 @@ const CurrentStudent = () => {
         setActivities(res.data.data.activities || []);
       }
     } catch (err) {
-      console.error("Failed to fetch activities:", err);
+      console.warn("Failed to fetch activities:", err);
       setActivities([]);
     }
   };

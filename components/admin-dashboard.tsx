@@ -91,7 +91,7 @@ export default function AdminDashboard() {
                 completedSessions: Math.floor(studentsData.length * 2.5), // Placeholder
             });
         } catch (error) {
-            console.error("Error fetching dashboard data:", error);
+            console.warn("Error fetching dashboard data:", error);
         } finally {
             setLoading(false);
         }
@@ -101,7 +101,7 @@ export default function AdminDashboard() {
         try {
             await apiClient.post('/auth/logout');
         } catch (error) {
-            console.error('Logout error:', error);
+            console.warn('Logout error:', error);
         } finally {
             setUser(null);
             router.push('/');

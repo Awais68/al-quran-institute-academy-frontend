@@ -88,7 +88,7 @@ export default function ChatInterface({
       }
       setLoading(false);
     } catch (error) {
-      console.error("Failed to fetch messages:", error);
+      console.warn("Failed to fetch messages:", error);
       setLoading(false);
       toast({
         title: "Error",

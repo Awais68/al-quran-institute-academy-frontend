@@ -19,9 +19,9 @@ export default function AdminContent() {
     const getAllStudents = async () => {
       try {
         const response = await apiClient.get('/getAllStudents');
-        setStudents(response.data.data);
+        setStudents(Array.isArray(response.data.data) ? response.data.data : []);
       } catch (error) {
-        console.error("Error fetching students:", error);
+        console.warn("Error fetching students:", error);
       }
     };
 
@@ -33,11 +33,11 @@ export default function AdminContent() {
       // Call logout endpoint to clear server-side session/cookie
       await apiClient.post('/auth/logout');
     } catch (error) {
-      console.error('Logout error:', error);
+      console.warn('Logout error:', error);
     } finally {
       // Clear client-side state
       setUser(null);
-      router.push(`/studentbyId/${students}`);
+      router.push('/');
     }
   };
 

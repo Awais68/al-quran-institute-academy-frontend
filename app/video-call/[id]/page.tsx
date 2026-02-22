@@ -171,7 +171,7 @@ export default function VideoCallPage() {
         setRemoteUsers([]);
       });
     } catch (error) {
-      console.error("Error initializing call:", error);
+      console.warn("Error initializing call:", error);
       setConnectionStatus("Error: Camera/Microphone access denied");
     }
   };
@@ -246,7 +246,7 @@ export default function VideoCallPage() {
             offer: pc.localDescription,
           });
         })
-        .catch((error) => console.error("Error creating offer:", error));
+        .catch((error) => console.warn("Error creating offer:", error));
     }
 
     return pc;

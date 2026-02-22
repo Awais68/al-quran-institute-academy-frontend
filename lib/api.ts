@@ -1,10 +1,12 @@
 import axios from 'axios';
 import { BASE_URL } from '@/app/constant/constant.js';
+import { clearAuthToken, getAuthToken } from '@/lib/auth-token';
 
 // Create axios instance with default configuration
 const apiClient = axios.create({
   baseURL: BASE_URL,
   withCredentials: true, // Important for sending cookies with requests
+  timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -13,8 +15,7 @@ const apiClient = axios.create({
 // Request interceptor to add authentication token if available
 apiClient.interceptors.request.use(
   (config) => {
-    // Get token from localStorage
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    const token = getAuthToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -32,12 +33,12 @@ apiClient.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
-      // Clear token and redirect to home
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('token');
-        window.location.href = '/';
+      const isLoginEndpoint = error.config?.url?.includes('/auth/login');
+      // Only clear the token when an authenticated request fails (not on login itself,
+      // where 401 means wrong credentials and is handled by the form's catch block)
+      if (!isLoginEndpoint && getAuthToken()) {
+        clearAuthToken();
       }
-      console.error('Unauthorized access - token may have expired');
     }
     return Promise.reject(error);
   }

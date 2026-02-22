@@ -115,7 +115,7 @@ export default function StudentsManagement({ onStatsUpdate }: StudentsManagement
       setStudents(response.data.data || []);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching students:', error);
+      console.warn('Error fetching students:', error);
       toast({
         title: "Error",
         description: "Failed to fetch students",
@@ -191,7 +191,7 @@ export default function StudentsManagement({ onStatsUpdate }: StudentsManagement
       fetchStudents();
       if (onStatsUpdate) onStatsUpdate();
     } catch (error) {
-      console.error('Error updating payment:', error);
+      console.warn('Error updating payment:', error);
       toast({
         title: "Error",
         description: "Failed to update payment status",

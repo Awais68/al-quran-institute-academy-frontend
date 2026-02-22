@@ -14,6 +14,7 @@ import ProgressReport from "@/components/teacher/progress-report";
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, BookOpen, Clock, Star, LogOut, ArrowLeft, Video, Phone } from "lucide-react";
 import io from "socket.io-client";
+import { SOCKET_URL } from "@/app/constant/constant";
 import NotificationBell from "@/components/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -85,7 +86,7 @@ interface SessionData {
 export default function TeacherDashboard() {
   const router = useRouter();
   const { toast } = useToast();
-  const { user, loading: authLoading, setUser } = useContext(AuthContext);
+  const { user, loading: authLoading, setUser, logout } = useContext(AuthContext);
   const [currentTeacher, setCurrentTeacher] = useState<TeacherData | null>(null);
   const [allStudents, setAllStudents] = useState<StudentData[]>([]);
   const [sessions, setSessions] = useState<SessionData[]>([]);
@@ -122,8 +123,8 @@ export default function TeacherDashboard() {
     setLoading(false);
 
     // Setup socket for incoming calls from students
-    const socket = io("http://localhost:4000");
-    socket.emit("register-user", { userId: user._id, userType: "Teacher" });
+    const socket = io(SOCKET_URL);
+    socket.emit("register-user", { userId: user._id, userName: user.name, userType: "Teacher" });
 
     socket.on("incoming-call", ({ from, roomId, studentName }) => {
       console.log("Incoming call from student:", studentName);
@@ -147,8 +148,7 @@ export default function TeacherDashboard() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
+    logout();
     router.replace('/');
     toast({
       title: "Logged Out",
@@ -160,12 +160,13 @@ export default function TeacherDashboard() {
     try {
       const response = await apiClient.get("/students/getAllStudents");
       // Filter only active students
-      const activeStudents = response.data.data.students.filter(
+      const students = response.data?.data?.students;
+      const activeStudents = Array.isArray(students) ? students.filter(
         (student: StudentData) => student.status === "active" && student.roll_no
-      );
+      ) : [];
       setAllStudents(activeStudents);
     } catch (error) {
-      console.error("Error fetching students:", error);
+      console.warn("Error fetching students:", error);
       toast({
         title: "Error",
         description: "Failed to fetch students",
@@ -176,35 +177,37 @@ export default function TeacherDashboard() {
 
   const fetchSessions = async () => {
     try {
-      // In a real app, this would fetch from API
-      // For now, using mock data
-      const mockSessions: SessionData[] = [
-        {
-          _id: "1",
-          student: "Ahmad Hassan",
-          course: "Tajweed",
-          date: new Date(Date.now() + 86400000).toISOString(),
-          time: "10:00",
-          duration: 60,
-          type: "One-on-One",
-          topic: "Noon Sakinah Rules",
-          status: "scheduled",
-        },
-        {
-          _id: "2",
-          student: "Fatima Al-Zahra",
-          course: "Hifz",
-          date: new Date(Date.now() + 172800000).toISOString(),
-          time: "15:00",
-          duration: 45,
-          type: "One-on-One",
-          topic: "Surah Al-Mulk",
-          status: "scheduled",
-        },
-      ];
-      setSessions(mockSessions);
+      const response = await apiClient.get("/sessions");
+      const rawSessions = response.data?.data?.sessions || response.data?.data || [];
+
+      // Normalise API response to SessionData shape
+      const normalised: SessionData[] = rawSessions.map((s: any) => {
+        const scheduledDate = s.scheduledDate || s.date || "";
+        const dateObj = scheduledDate ? new Date(scheduledDate) : null;
+        return {
+          _id: s._id,
+          student: s.studentName || s.student?.name || s.studentId || "Unknown",
+          course: s.course || "",
+          date: scheduledDate,
+          time: dateObj
+            ? dateObj.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })
+            : s.time || "",
+          duration: s.duration || 60,
+          type: s.type || "One-on-One",
+          topic: s.topic || s.notes || "",
+          status: s.status || "scheduled",
+          notes: s.notes,
+        };
+      });
+
+      setSessions(normalised);
     } catch (error) {
-      console.error("Error fetching sessions:", error);
+      console.warn("Error fetching sessions:", error);
+      toast({
+        title: "Warning",
+        description: "Could not load sessions from server",
+        variant: "destructive",
+      });
     }
   };
 
@@ -227,28 +230,27 @@ export default function TeacherDashboard() {
   };
 
   const handleAddSession = (newSession: any) => {
-    const session: SessionData = {
-      _id: Date.now().toString(),
-      ...newSession,
-      status: "scheduled",
-    };
-    setSessions([...sessions, session]);
-    toast({
-      title: "Success",
-      description: "Session scheduled successfully",
-    });
+    // Session data comes from SessionManagement after successful API call
+    setSessions((prev) => [...prev, { ...newSession, status: "scheduled" }]);
+    // Refresh from API to get accurate data
+    fetchSessions();
   };
 
-  const handleUpdateSession = (id: string, updates: any) => {
+  const handleUpdateSession = async (id: string, updates: any) => {
+    // Optimistic update
     setSessions(
       sessions.map((session) =>
         session._id === id ? { ...session, ...updates } : session
       )
     );
-    toast({
-      title: "Success",
-      description: "Session updated successfully",
-    });
+    try {
+      await apiClient.put(`/sessions/${id}`, updates);
+      toast({ title: "Success", description: "Session updated successfully" });
+    } catch (error) {
+      // Rollback on failure
+      await fetchSessions();
+      toast({ title: "Error", description: "Failed to update session", variant: "destructive" });
+    }
   };
 
   if (loading) {

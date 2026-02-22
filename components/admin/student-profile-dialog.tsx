@@ -98,7 +98,7 @@ export default function StudentProfileDialog({
       if (onUpdate) onUpdate();
       onClose();
     } catch (error) {
-      console.error('Error updating student:', error);
+      console.warn('Error updating student:', error);
       toast({
         title: "Error",
         description: "Failed to update student profile",
