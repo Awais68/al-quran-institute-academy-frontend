@@ -18,9 +18,6 @@ import { SOCKET_URL } from "@/app/constant/constant";
 import NotificationBell from "@/components/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-import ActivityTab from "@/components/student/activity";
-import ProfileSidebar from "@/components/student/profile-sidebar";
-
 // export default function StudentDashboard() {
 //   const { user, loading, logout } = useContext(AuthContext);
 //   const router = useRouter();
@@ -92,7 +89,6 @@ export default function TeacherDashboard() {
   const [sessions, setSessions] = useState<SessionData[]>([]);
   const [loading, setLoading] = useState(true);
   const [incomingCall, setIncomingCall] = useState<{ from: string; roomId: string; studentName: string } | null>(null);
-  const [profileOpen, setProfileOpen] = useState(false);
 
   useEffect(() => {
     if (authLoading) return; // Wait for auth to load

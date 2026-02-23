@@ -41,7 +41,6 @@ import {
 import Link from "next/link";
 import { AppRoutes } from "@/app/constant/constant";
 import axios from "axios";
-import getAllStudents from "@/app/admin/page";
 
 
 

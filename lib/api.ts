@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { BASE_URL } from '@/app/constant/constant.js';
+import { BASE_URL } from '@/app/constant/constant';
 import { clearAuthToken, getAuthToken } from '@/lib/auth-token';
 
 // Create axios instance with default configuration
