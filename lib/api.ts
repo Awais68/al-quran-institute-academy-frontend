@@ -6,7 +6,7 @@ import { clearAuthToken, getAuthToken } from '@/lib/auth-token';
 const apiClient = axios.create({
   baseURL: BASE_URL,
   withCredentials: true, // Important for sending cookies with requests
-  timeout: 15000,
+  timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
   },

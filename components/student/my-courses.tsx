@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AuthContext } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 import io from "socket.io-client";
+import { SOCKET_URL } from "@/app/constant/constant";
 import {
   BookOpen,
   Video,
@@ -55,7 +56,7 @@ export default function MyCourses({
   useEffect(() => {
     if (!user?._id) return;
 
-    const socket = io("http://localhost:4000");
+    const socket = io(SOCKET_URL);
 
     socket.emit("register-user", { userId: user._id, userName: user.name, userType: "Student" });
 

@@ -18,6 +18,7 @@ import StudentsManagement from "@/components/admin/students-management";
 import AnalyticsDashboard from "@/components/admin/analytics-dashboard";
 import SessionsManagement from "@/components/admin/sessions-management";
 import TeacherManagement from "@/components/admin/teacher-management";
+import FeeReport from "@/components/admin/fee-report";
 import LoadingComponent from "@/components/loader";
 import { useToast } from "@/hooks/use-toast";
 
@@ -281,7 +282,7 @@ export default function AdminDashboardPage() {
           <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-none shadow-xl">
             <CardContent className="p-6">
               <Tabs defaultValue="students" className="w-full">
-                <TabsList className="grid w-full grid-cols-4 mb-6 bg-gray-100 dark:bg-gray-700">
+                <TabsList className="grid w-full grid-cols-5 mb-6 bg-gray-100 dark:bg-gray-700">
                   <TabsTrigger value="students" className="gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
                     <Users className="h-4 w-4" />
                     <span className="hidden sm:inline">Students</span>
@@ -297,6 +298,10 @@ export default function AdminDashboardPage() {
                   <TabsTrigger value="sessions" className="gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
                     <FileText className="h-4 w-4" />
                     <span className="hidden sm:inline">Sessions</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="fees" className="gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+                    <DollarSign className="h-4 w-4" />
+                    <span className="hidden sm:inline">Fees</span>
                   </TabsTrigger>
                 </TabsList>
 
@@ -314,6 +319,10 @@ export default function AdminDashboardPage() {
 
                 <TabsContent value="sessions">
                   <SessionsManagement stats={stats} />
+                </TabsContent>
+
+                <TabsContent value="fees">
+                  <FeeReport canUpdateFee={true} />
                 </TabsContent>
               </Tabs>
             </CardContent>

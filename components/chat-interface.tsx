@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import apiClient from "@/lib/api";
 import { AuthContext } from "@/app/context/AuthContext";
 import io from "socket.io-client";
+import { SOCKET_URL } from "@/app/constant/constant";
 
 interface Message {
   _id: string;
@@ -57,7 +58,7 @@ export default function ChatInterface({
     fetchMessages();
 
     // Setup socket for real-time messages
-    const socket = io("http://localhost:4000");
+    const socket = io(SOCKET_URL);
     socketRef.current = socket;
 
     socket.on("new-message", (message: Message) => {

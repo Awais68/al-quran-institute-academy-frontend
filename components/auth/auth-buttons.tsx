@@ -8,7 +8,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { AuthContext } from "@/app/context/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import apiClient from "@/lib/api";
-import { AppRoutes } from "@/app/constant/constant.js";
 
 interface AuthButtonsProps {
   className?: string;

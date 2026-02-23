@@ -68,6 +68,7 @@ export default function ProfileSidebar({
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<Student | null>(null);
   const [saving, setSaving] = useState(false);
+  const [fetchingProfile, setFetchingProfile] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -75,6 +76,28 @@ export default function ProfileSidebar({
       setFormData(student);
     }
   }, [student]);
+
+  // Fetch fresh student data when sidebar opens
+  useEffect(() => {
+    if (open && student?._id) {
+      const fetchStudentById = async () => {
+        setFetchingProfile(true);
+        try {
+          const response = await apiClient.get(`/students/getAStudent/${student._id}`);
+          const freshData = response.data?.data?.student || response.data?.data;
+          if (freshData) {
+            setFormData({ ...freshData, role: freshData.role || "Student" });
+          }
+        } catch (error) {
+          // Fallback to passed prop data if fetch fails
+          setFormData(student);
+        } finally {
+          setFetchingProfile(false);
+        }
+      };
+      fetchStudentById();
+    }
+  }, [open, student?._id]);
 
   const handleInputChange = (field: keyof Student, value: any) => {
     if (formData) {
@@ -87,11 +110,14 @@ export default function ProfileSidebar({
 
     setSaving(true);
     try {
-      // TODO: Replace with actual API call
-      // const response = await apiClient.put(`/api/students/${formData._id}`, formData);
-      
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await apiClient.put(`/students/updateStudent/${formData._id}`, {
+        phone: formData.phone,
+        country: formData.country,
+        city: formData.city,
+        course: formData.course,
+        suitableTime: formData.suitableTime,
+        days: formData.days,
+      });
 
       toast({
         title: "Profile updated",
@@ -115,7 +141,7 @@ export default function ProfileSidebar({
     setIsEditing(false);
   };
 
-  if (!student || !formData) return null;
+  if (!student) return null;
 
   const getInitials = (name: string) => {
     return name
@@ -139,6 +165,18 @@ export default function ProfileSidebar({
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-[400px] sm:w-[540px] overflow-y-auto">
+        {fetchingProfile && (
+          <div className="flex items-center justify-center h-full">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        )}
+        {!fetchingProfile && !formData && (
+          <div className="flex items-center justify-center h-full text-gray-500">
+            No profile data available
+          </div>
+        )}
+        {!fetchingProfile && formData && (
+        <>
         <SheetHeader>
           <div className="flex items-center justify-between">
             <SheetTitle className="text-2xl text-blue-900">Student Profile</SheetTitle>
@@ -469,6 +507,8 @@ export default function ProfileSidebar({
             </>
           )}
         </div>
+        </>
+        )}
       </SheetContent>
     </Sheet>
   );

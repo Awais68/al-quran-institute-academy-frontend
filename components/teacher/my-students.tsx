@@ -35,6 +35,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import apiClient from "@/lib/api";
 import ProfileSidebar from "@/components/student/profile-sidebar";
+import { SOCKET_URL } from "@/app/constant/constant";
 
 interface Student {
   _id: string;
@@ -151,16 +152,20 @@ export default function MyStudents({ students, onRefresh }: MyStudentsProps) {
 
     setIsSaving(true);
     try {
+      await apiClient.patch(`/user/students/${selectedStudent._id}/progress`, {
+        progressNote: progress,
+      });
       toast({
         title: "Success",
         description: "Progress updated successfully",
       });
       setIsProgressOpen(false);
       setProgress("");
+      onRefresh();
     } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to update progress",
+        description: error.response?.data?.msg || "Failed to update progress",
         variant: "destructive",
       });
     } finally {
@@ -173,16 +178,20 @@ export default function MyStudents({ students, onRefresh }: MyStudentsProps) {
 
     setIsSaving(true);
     try {
+      await apiClient.patch(`/user/students/${selectedStudent._id}/feedback`, {
+        feedback,
+      });
       toast({
         title: "Success",
         description: "Feedback sent successfully",
       });
       setIsFeedbackOpen(false);
       setFeedback("");
+      onRefresh();
     } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to send feedback",
+        description: error.response?.data?.msg || "Failed to send feedback",
         variant: "destructive",
       });
     } finally {
@@ -281,13 +290,13 @@ export default function MyStudents({ students, onRefresh }: MyStudentsProps) {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => router.push(`/studentbyId/${student._id}`)}>
+                        <DropdownMenuItem onClick={() => handleViewProfile(student)}>
                           <Eye className="h-4 w-4 mr-2" />
                           View Profile
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => {
                           const roomId = `room-${student._id}-${Date.now()}`;
-                          const socket = io("http://localhost:4000");
+                          const socket = io(SOCKET_URL);
                           socket.emit("call-student", {
                             studentId: student._id,
                             teacherName: user?.name || "Teacher",
@@ -305,15 +314,15 @@ export default function MyStudents({ students, onRefresh }: MyStudentsProps) {
                           <FileText className="h-4 w-4 mr-2" />
                           Add Instructions
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleEditProgress(student)}>
                           <Edit className="h-4 w-4 mr-2" />
                           Edit Progress
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSendFeedback(student)}>
                           <MessageCircle className="h-4 w-4 mr-2" />
                           Send Feedback
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleContact(student)}>
                           <Phone className="h-4 w-4 mr-2" />
                           Contact
                         </DropdownMenuItem>

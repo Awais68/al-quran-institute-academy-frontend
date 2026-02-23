@@ -11,8 +11,9 @@ import TeacherStats from "@/components/teacher/teacher-stats";
 import MyStudents from "@/components/teacher/my-students";
 import SessionManagement from "@/components/teacher/session-management";
 import ProgressReport from "@/components/teacher/progress-report";
+import FeeReport from "@/components/admin/fee-report";
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, BookOpen, Clock, Star, LogOut, ArrowLeft, Video, Phone } from "lucide-react";
+import { Users, BookOpen, Clock, Star, LogOut, ArrowLeft, Video, Phone, DollarSign } from "lucide-react";
 import io from "socket.io-client";
 import { SOCKET_URL } from "@/app/constant/constant";
 import NotificationBell from "@/components/notification-bell";
@@ -334,10 +335,11 @@ export default function TeacherDashboard() {
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="students" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
+        <TabsList className="grid w-full grid-cols-5 lg:w-[750px]">
           <TabsTrigger value="students">My Students</TabsTrigger>
           <TabsTrigger value="sessions">Sessions</TabsTrigger>
           <TabsTrigger value="reports">Reports</TabsTrigger>
+          <TabsTrigger value="fees">Fee Report</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
 
@@ -356,6 +358,10 @@ export default function TeacherDashboard() {
 
         <TabsContent value="reports">
           <ProgressReport students={allStudents} onRefresh={fetchStudents} />
+        </TabsContent>
+
+        <TabsContent value="fees">
+          <FeeReport canUpdateFee={false} />
         </TabsContent>
 
         <TabsContent value="analytics">
