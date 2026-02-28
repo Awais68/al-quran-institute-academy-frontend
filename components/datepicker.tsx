@@ -22,16 +22,13 @@ export function Calendar22({
   const [open, setOpen] = React.useState(false);
 
   return (
-    <div className="flex flex-col gap-2">
-      <Label htmlFor="date" className="px-1 text-blue-900">
-        Date of birth
-      </Label>
+    <div className="flex flex-col gap-0">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             id="date"
-            className="w-auto border-blue-100 justify-between font-normal"
+            className="w-full border-blue-200 justify-between font-normal h-10 sm:h-11 text-sm sm:text-base"
           >
             {date ? date.toLocaleDateString() : "Select date"}
             <ChevronDownIcon />

@@ -87,15 +87,23 @@ export default function Activity({ studentId }: ActivityProps) {
         return;
       }
 
-      // Validate file type
-      const validAudioTypes = ["audio/mpeg", "audio/wav", "audio/ogg", "audio/mp3"];
-      const validVideoTypes = ["video/mp4", "video/webm", "video/ogg"];
-      const validTypes = uploadType === "audio" ? validAudioTypes : validVideoTypes;
+      // Validate file type - allow all audio and video formats
+      const isAudio = file.type.startsWith("audio/");
+      const isVideo = file.type.startsWith("video/");
 
-      if (!validTypes.includes(file.type)) {
+      if (uploadType === "audio" && !isAudio) {
         toast({
           title: "Invalid file type",
-          description: `Please select a valid ${uploadType} file`,
+          description: "Please select an audio file",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (uploadType === "video" && !isVideo) {
+        toast({
+          title: "Invalid file type",
+          description: "Please select a video file",
           variant: "destructive",
         });
         return;
@@ -368,7 +376,7 @@ export default function Activity({ studentId }: ActivityProps) {
                 {selectedFile ? selectedFile.name : `Select ${uploadType} file`}
               </Button>
               <p className="text-xs text-gray-500 mt-2">
-                Max file size: 50MB • Supported formats: {uploadType === "audio" ? "MP3, WAV, OGG" : "MP4, WebM, OGG"}
+                Max file size: 50MB • All {uploadType} formats supported
               </p>
             </div>
 

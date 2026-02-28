@@ -181,10 +181,14 @@ export default function TeacherDashboard() {
       const normalised: SessionData[] = rawSessions.map((s: any) => {
         const scheduledDate = s.scheduledDate || s.date || "";
         const dateObj = scheduledDate ? new Date(scheduledDate) : null;
+        // Handle student being either a string or a populated object
+        const studentName = typeof s.student === "object" && s.student !== null
+          ? s.student.name || "Unknown"
+          : s.studentName || s.student || s.studentId || "Unknown";
         return {
           _id: s._id,
-          student: s.studentName || s.student?.name || s.studentId || "Unknown",
-          course: s.course || "",
+          student: studentName,
+          course: typeof s.course === "object" ? s.course?.name || "" : s.course || "",
           date: scheduledDate,
           time: dateObj
             ? dateObj.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })
@@ -227,9 +231,28 @@ export default function TeacherDashboard() {
   };
 
   const handleAddSession = (newSession: any) => {
-    // Session data comes from SessionManagement after successful API call
-    setSessions((prev) => [...prev, { ...newSession, status: "scheduled" }]);
-    // Refresh from API to get accurate data
+    // Normalise the new session to prevent object-as-React-child errors
+    const studentName = typeof newSession.student === "object" && newSession.student !== null
+      ? newSession.student.name || "Unknown"
+      : newSession.studentName || newSession.student || "Unknown";
+    const scheduledDate = newSession.scheduledDate || newSession.date || "";
+    const dateObj = scheduledDate ? new Date(scheduledDate) : null;
+    const normalised = {
+      _id: newSession._id || `temp-${Date.now()}`,
+      student: studentName,
+      course: typeof newSession.course === "object" ? newSession.course?.name || "" : newSession.course || "",
+      date: scheduledDate,
+      time: dateObj
+        ? dateObj.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })
+        : newSession.time || "",
+      duration: newSession.duration || 60,
+      type: newSession.type || "One-on-One",
+      topic: newSession.topic || newSession.notes || "",
+      status: "scheduled" as const,
+      notes: newSession.notes,
+    };
+    setSessions((prev) => [...prev, normalised]);
+    // Also refresh from API to get accurate data
     fetchSessions();
   };
 

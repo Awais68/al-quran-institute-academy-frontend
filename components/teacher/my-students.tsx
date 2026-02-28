@@ -152,8 +152,12 @@ export default function MyStudents({ students, onRefresh }: MyStudentsProps) {
 
     setIsSaving(true);
     try {
-      await apiClient.patch(`/user/students/${selectedStudent._id}/progress`, {
-        progressNote: progress,
+      // Use the correct backend endpoint: POST /progress/feedback
+      await apiClient.post(`/progress/feedback`, {
+        studentId: selectedStudent._id,
+        remarks: progress,
+        rating: 4,
+        improvements: [],
       });
       toast({
         title: "Success",
@@ -178,8 +182,12 @@ export default function MyStudents({ students, onRefresh }: MyStudentsProps) {
 
     setIsSaving(true);
     try {
-      await apiClient.patch(`/user/students/${selectedStudent._id}/feedback`, {
-        feedback,
+      // Use the correct backend endpoint: POST /progress/feedback
+      await apiClient.post(`/progress/feedback`, {
+        studentId: selectedStudent._id,
+        remarks: feedback,
+        rating: 4,
+        improvements: [],
       });
       toast({
         title: "Success",
@@ -283,18 +291,18 @@ export default function MyStudents({ students, onRefresh }: MyStudentsProps) {
                         </div>
                       </div>
                     </div>
-                    <DropdownMenu>
+                    <DropdownMenu modal={false}>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon">
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleViewProfile(student)}>
+                        <DropdownMenuItem onSelect={() => handleViewProfile(student)}>
                           <Eye className="h-4 w-4 mr-2" />
                           View Profile
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => {
+                        <DropdownMenuItem onSelect={() => {
                           const roomId = `room-${student._id}-${Date.now()}`;
                           const socket = io(SOCKET_URL);
                           socket.emit("call-student", {
@@ -310,19 +318,19 @@ export default function MyStudents({ students, onRefresh }: MyStudentsProps) {
                           <Video className="h-4 w-4 mr-2" />
                           Start Video Call
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleOpenInstructions(student)}>
+                        <DropdownMenuItem onSelect={() => handleOpenInstructions(student)}>
                           <FileText className="h-4 w-4 mr-2" />
                           Add Instructions
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleEditProgress(student)}>
+                        <DropdownMenuItem onSelect={() => handleEditProgress(student)}>
                           <Edit className="h-4 w-4 mr-2" />
                           Edit Progress
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleSendFeedback(student)}>
+                        <DropdownMenuItem onSelect={() => handleSendFeedback(student)}>
                           <MessageCircle className="h-4 w-4 mr-2" />
                           Send Feedback
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleContact(student)}>
+                        <DropdownMenuItem onSelect={() => handleContact(student)}>
                           <Phone className="h-4 w-4 mr-2" />
                           Contact
                         </DropdownMenuItem>

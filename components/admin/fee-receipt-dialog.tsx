@@ -49,11 +49,62 @@ export default function FeeReceiptDialog({ student, open, onClose }: FeeReceiptD
   };
 
   const handleDownload = () => {
+    // Create a proper PDF-like download using the receipt content
+    const receiptContent = receiptRef.current;
+    if (!receiptContent) return;
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      toast({
+        title: "Popup Blocked",
+        description: "Please allow popups to download the receipt",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Fee Receipt - ${receiptNumber}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; color: #333; }
+            .receipt { max-width: 700px; margin: 0 auto; padding: 40px; border: 2px solid #e5e7eb; border-radius: 8px; }
+            .header { text-align: center; margin-bottom: 30px; }
+            .header h1 { color: #1e3a5f; margin: 0 0 8px 0; font-size: 24px; }
+            .header p { color: #666; margin: 2px 0; font-size: 12px; }
+            .separator { border: none; border-top: 2px solid #e5e7eb; margin: 20px 0; }
+            .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+            .label { color: #666; font-size: 12px; margin-bottom: 4px; }
+            .value { font-weight: 600; color: #111; }
+            .section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: #111; }
+            .info-box { background: #f9fafb; padding: 16px; border-radius: 8px; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { padding: 10px; text-align: left; }
+            th { border-bottom: 2px solid #e5e7eb; color: #555; }
+            td { border-bottom: 1px solid #e5e7eb; }
+            .total td { border-bottom: 2px solid #d1d5db; font-weight: 700; }
+            .status-box { background: #eff6ff; border: 2px solid #bfdbfe; border-radius: 8px; padding: 16px; margin: 24px 0; }
+            .paid { color: #16a34a; font-size: 18px; font-weight: 700; }
+            .unpaid { color: #dc2626; font-size: 18px; font-weight: 700; }
+            .footer { text-align: center; padding-top: 24px; border-top: 2px solid #e5e7eb; margin-top: 24px; }
+            .footer p { color: #666; font-size: 11px; margin: 4px 0; }
+            .text-right { text-align: right; }
+            @media print { body { margin: 0; } .receipt { border: none; } }
+          </style>
+        </head>
+        <body>
+          <div class="receipt">${receiptContent.innerHTML}</div>
+          <script>window.onload = function() { window.print(); window.close(); }</script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+
     toast({
       title: "Download Started",
       description: "Receipt is being downloaded as PDF",
     });
-    window.print();
   };
 
   const handleEmail = () => {
@@ -93,7 +144,7 @@ export default function FeeReceiptDialog({ student, open, onClose }: FeeReceiptD
           {/* Receipt Content */}
           <div
             ref={receiptRef}
-            className="bg-white p-8 rounded-lg border-2 border-gray-200"
+            className="bg-white p-8 rounded-lg border-2 border-gray-200 print-content"
             style={{ minHeight: '600px' }}
           >
             {/* Header */}

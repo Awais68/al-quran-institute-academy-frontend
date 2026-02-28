@@ -6,10 +6,7 @@ const PhoneNumberInput: React.FC = () => {
   const [phone, setPhone] = useState<string>("");
 
   return (
-    <div className="flex flex-col mx-auto h-8 w-auto border-blue-500">
-      <label htmlFor="phone" className="text-blue-900 font-medium">
-        Phone Number
-      </label>
+    <div className="flex flex-col w-full">
       <PhoneInput
         country={"pk"} // Default country (Pakistan)
         value={phone}
@@ -20,13 +17,10 @@ const PhoneNumberInput: React.FC = () => {
           required: true,
           placeholder: "+92 335 220 4606",
         }}
-        containerClass="flex w-full mx-auto"
-        inputClass=" bg-blue-500" // Adjusted padding for flag
-        // w-full mx-auto h-8 rounded  border-blue-100/50 md:max-w-[70%] rounded p-5 w-24
-        buttonClass=""
-        // border border-blue-200 rounded w-12
-        dropdownClass=""
-        // border border-blue-200 rounded w-full
+        containerClass="flex w-full"
+        inputClass="!w-full !h-10 sm:!h-11 !text-sm sm:!text-base !border-blue-200 !rounded-md"
+        buttonClass="!border-blue-200 !rounded-l-md"
+        dropdownClass="!w-[280px] sm:!w-[320px]"
       />
     </div>
   );

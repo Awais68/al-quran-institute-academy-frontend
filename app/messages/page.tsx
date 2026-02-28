@@ -34,30 +34,33 @@ function MessagesContent() {
       }
 
       try {
-        // Try to find teacher/user by email
-        const response = await apiClient.get(`/user/findByEmail?email=${encodeURIComponent(toEmail)}`);
-        const found = response.data?.data?.user || response.data?.data;
-        if (found) {
-          setRecipientId(found._id);
-          setRecipientName(found.name || toEmail);
-          setRecipientImage(found.image || found.avatar);
+        // Search teachers first
+        const teacherRes = await apiClient.get("/teacher/getAllTeachers");
+        const teachers = teacherRes.data?.data?.teachers || teacherRes.data?.data || [];
+        const foundTeacher = Array.isArray(teachers)
+          ? teachers.find((t: any) => t.email === toEmail)
+          : null;
+        if (foundTeacher) {
+          setRecipientId(foundTeacher._id);
+          setRecipientName(foundTeacher.name || toEmail);
+          setRecipientImage(foundTeacher.image);
+          setResolving(false);
+          return;
         }
-      } catch {
-        // If endpoint doesn't exist, try getting teacher list to find by email
-        try {
-          const teacherRes = await apiClient.get("/teacher/getAllTeachers");
-          const teachers = teacherRes.data?.data?.teachers || teacherRes.data?.data || [];
-          const found = Array.isArray(teachers)
-            ? teachers.find((t: any) => t.email === toEmail)
-            : null;
-          if (found) {
-            setRecipientId(found._id);
-            setRecipientName(found.name || toEmail);
-            setRecipientImage(found.image);
-          }
-        } catch {
-          // Could not resolve recipient
+
+        // Search students if not found in teachers
+        const studentRes = await apiClient.get("/students/getAllStudents");
+        const students = studentRes.data?.data?.students || studentRes.data?.data || [];
+        const foundStudent = Array.isArray(students)
+          ? students.find((s: any) => s.email === toEmail)
+          : null;
+        if (foundStudent) {
+          setRecipientId(foundStudent._id);
+          setRecipientName(foundStudent.name || toEmail);
+          setRecipientImage(foundStudent.image);
         }
+      } catch (error) {
+        console.warn("Failed to resolve recipient:", error);
       } finally {
         setResolving(false);
       }

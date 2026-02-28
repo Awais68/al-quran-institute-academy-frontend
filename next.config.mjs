@@ -17,8 +17,8 @@ const nextConfig = {
       },
     ],
   },
-  webpack: (config, { isServer }) => {
-    // Prevent chunk loading errors
+  webpack: (config, { isServer, dev }) => {
+    // Prevent chunk loading errors and module factory issues
     if (!isServer) {
       config.optimization = {
         ...config.optimization,
@@ -29,8 +29,22 @@ const nextConfig = {
             vendors: false,
           },
         },
+        // Ensure module IDs are consistent
+        moduleIds: dev ? 'named' : 'deterministic',
+      };
+      
+      // Add fallback for node modules in browser
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
       };
     }
+    
+    // Prevent cache issues
+    config.cache = false;
+    
     return config;
   },
   // Disable experimental features that can cause chunk errors
