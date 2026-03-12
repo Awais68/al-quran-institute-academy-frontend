@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { AuthContext } from "@/app/context/AuthContext";
 import io from "socket.io-client";
+import { SOCKET_URL } from "@/app/constant/constant";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const ICE_SERVERS = {
@@ -76,7 +77,7 @@ export default function SessionPage() {
         localVideoRef.current.srcObject = stream;
       }
 
-      const socket = io("http://localhost:4000");
+      const socket = io(SOCKET_URL);
       socketRef.current = socket;
 
       socket.on("connect", () => {
