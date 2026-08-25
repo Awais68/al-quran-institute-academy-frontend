@@ -1,0 +1,54 @@
+{
+  "countries": [
+    {
+      "name": "Pakistan",
+      "code": "PK",
+      "cities": ["Karachi", "Lahore", "Islamabad", "Rawalpindi", "Faisalabad", "Multan", "Peshawar", "Quetta", "Sialkot", "Gujranwala"]
+    },
+    {
+      "name": "United States",
+      "code": "US",
+      "cities": ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "San Diego", "Dallas", "San Jose"]
+    },
+    {
+      "name": "United Kingdom",
+      "code": "GB",
+      "cities": ["London", "Birmingham", "Manchester", "Leeds", "Glasgow", "Liverpool", "Newcastle", "Sheffield", "Bristol", "Edinburgh"]
+    },
+    {
+      "name": "Canada",
+      "code": "CA",
+      "cities": ["Toronto", "Montreal", "Vancouver", "Calgary", "Edmonton", "Ottawa", "Winnipeg", "Quebec City", "Hamilton", "Kitchener"]
+    },
+    {
+      "name": "India",
+      "code": "IN",
+      "cities": ["Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai", "Kolkata", "Ahmedabad", "Pune", "Jaipur", "Lucknow"]
+    },
+    {
+      "name": "Saudi Arabia",
+      "code": "SA",
+      "cities": ["Riyadh", "Jeddah", "Mecca", "Medina", "Dammam", "Khobar", "Tabuk", "Buraidah", "Khamis Mushait", "Najran"]
+    },
+    {
+      "name": "United Arab Emirates",
+      "code": "AE",
+      "cities": ["Dubai", "Abu Dhabi", "Sharjah", "Ajman", "Ras Al Khaimah", "Fujairah", "Umm Al Quwain", "Al Ain", "Khor Fakkan", "Dibba"]
+    },
+    {
+      "name": "Malaysia",
+      "code": "MY",
+      "cities": ["Kuala Lumpur", "George Town", "Ipoh", "Shah Alam", "Petaling Jaya", "Johor Bahru", "Malacca City", "Kota Kinabalu", "Kuching", "Seremban"]
+    },
+    {
+      "name": "Turkey",
+      "code": "TR",
+      "cities": ["Istanbul", "Ankara", "Izmir", "Bursa", "Adana", "Gaziantep", "Konya", "Antalya", "Diyarbakir", "Kayseri"]
+    },
+    {
+      "name": "Australia",
+      "code": "AU",
+      "cities": ["Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide", "Gold Coast", "Canberra", "Newcastle", "Wollongong", "Logan City"]
+    }
+  ]
+}
