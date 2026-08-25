@@ -4,8 +4,10 @@ import type { NextRequest } from 'next/server';
 // Routes that require authentication (any role)
 const protectedRoutes = ['/students', '/teacher', '/currentUser', '/admin', '/session', '/video-call'];
 
-// Routes that should redirect authenticated users away (login/signup)
-const authRoutes = ['/signup'];
+// Routes that should redirect authenticated users away (account creation).
+// NOTE: '/signup' itself is a public, indexable lead-capture page — it must NOT
+// be redirected, or the canonical URL would 302 for logged-in users and crawlers.
+const authRoutes = ['/signup/account'];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -35,6 +37,6 @@ export const config = {
     '/admin/:path*',
     '/session/:path*',
     '/video-call/:path*',
-    '/signup',
+    '/signup/account',
   ],
 };

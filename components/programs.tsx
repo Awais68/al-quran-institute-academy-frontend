@@ -24,7 +24,7 @@ const programsData = [
     description: "Perfecting Your Quranic Recitation.",
     urduDescription: "Fluent Quran Tajweed and insight",
     duration: "1-2 years",
-    ageGroup: "1 hour class & 1/2 half hour classes",
+    ageGroup: "1 hour, or two 30-minute classes",
     schedule: "Daily, 5 days a week",
     icon: <BookOpen className="h-8 w-8 sm:h-10 sm:w-10 text-primary-600" />,
     features: [
@@ -42,7 +42,7 @@ const programsData = [
       "Complete memorization of the Holy Quran with proper tajweed and understanding of the text. Our experienced instructors guide students through a structured program that ensures proper memorization and retention.",
     urduDescription: "Fluent Quran memorization with Tajweed and insight",
     duration: "3-5 years",
-    ageGroup: "1 hour class & 1/2 half hour classes",
+    ageGroup: "1 hour, or two 30-minute classes",
     schedule: "Daily, 5 days a week",
     icon: <Book className="h-8 w-8 sm:h-10 sm:w-10 text-primary-600" />,
     features: [
@@ -103,7 +103,7 @@ const programsData = [
     urduDescription:
       "Master Arabic communication with dedicated focus on Quranic Arabic",
     duration: "2-3 years",
-    ageGroup: "10+ years",
+    ageGroup: "30 minutes",
     schedule: "Daily, 5 days a week",
     icon: <FileText className="h-8 w-8 sm:h-10 sm:w-10 text-primary-600" />,
     features: [
@@ -127,16 +127,16 @@ const programsData = [
     icon: <Users className="h-8 w-8 sm:h-10 sm:w-10 text-primary-600" />,
     features: [
       "Obligation of Salah.",
-      "Pre-Conditions of Salah and it's mufsidat.",
-      "Condition of Leading Salah and others.",
-      "Teacher Availabel for Male & Female.",
-      "How to Offer Funeral, Passengers and Eid Salah ",
+      "Pre-conditions of Salah and its invalidators (mufsidat).",
+      "Conditions for leading Salah in congregation.",
+      "Teacher available for male & female students.",
+      "How to offer funeral, travellers' and Eid Salah.",
     ],
   },
   {
     id: 7,
-    title: "Quaida Course",
-    urduTitle: " کورس",
+    title: "Qaida Course",
+    urduTitle: "قاعدہ کورس",
     description:
       "This foundational Qaida course teaches beginners how to read the Quran in Arabic. Master the alphabet, correct pronunciation, and basic Tajweed rules for accurate recitation",
     urduDescription: "Your First Step to Reading the Quran",
@@ -148,7 +148,7 @@ const programsData = [
     ),
     features: [
       "Basic Tajweed & Rules.",
-      "Arabic Alaphabate and Pronunciontion.",
+      "Arabic alphabet and pronunciation.",
       "Learning about short and long vowels.",
       "Practicing reading words and short verses",
       "Gaining confidence in reciting the Quran accurately.",
@@ -196,11 +196,10 @@ export default function Programs() {
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <section
-            id="programs"
-            ref={ref}
-            className="py-4  sm:py-0 md:py-2  lg:py-0 bg-primary-50"
-          >
+          {/* This was a second <section id="programs" ref={ref}> nested inside
+              the outer one: a duplicate DOM id and the same ref bound twice.
+              It is only a layout wrapper, so it is now a plain <div>. */}
+          <div className="py-4  sm:py-0 md:py-2  lg:py-0 bg-primary-50">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
               <motion.div
                 className="text-center mb-6 sm:mb-8 md:mb-10 lg:mb-12"
@@ -339,13 +338,13 @@ export default function Programs() {
                           ))}
                         </ul>
                         <div className="bg-primary-600 my-6 sm:my-8 md:my-10 hover:bg-primary-700 text-white px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 rounded-md text-xs sm:text-sm md:text-base font-medium transition-colors w-full">
-                          <h1 className="font-normal flex justify-center text-sm sm:text-base md:text-lg flex-wrap">
+                          <p className="font-normal flex justify-center text-sm sm:text-base md:text-lg flex-wrap">
                             Available in Both{" "}
                             <span className="font-bold text-normal">
                               &nbsp;URDU & ENGLISH&nbsp;
                             </span>{" "}
                             Languages
-                          </h1>
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -353,7 +352,7 @@ export default function Programs() {
                 ))}
               </motion.div> */}
             </div>
-          </section>
+          </div>
         </motion.div>
 
         <motion.div
@@ -455,13 +454,13 @@ export default function Programs() {
                     ))}
                   </ul>
                   <div className="bg-primary-600 my-8 hover:bg-primary-700 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-md text-xs sm:text-sm font-medium transition-colors w-full">
-                    <h1 className=" font-normal flex justify-center text-sm flex-wrap">
+                    <p className=" font-normal flex justify-center text-sm flex-wrap">
                       Available in Both{" "}
                       <span className="font-bold text-normal">
                         &nbsp; URDU & ENGLISH &nbsp;
                       </span>{" "}
                       Languages
-                    </h1>
+                    </p>
                   </div>
                 </div>
               </div>

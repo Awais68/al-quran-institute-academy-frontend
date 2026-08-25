@@ -16,6 +16,16 @@ import { Separator } from "@radix-ui/react-separator";
 import { ReactNode } from "react";
 import UserMenu from "@/components/UserMenu";
 
+import type { Metadata } from "next";
+
+// Private route: never index, and don't inherit the homepage canonical.
+export const metadata: Metadata = {
+  title: "Admin | Al-Quran Institute Online",
+  alternates: { canonical: "/admin" },
+  robots: { index: false, follow: false, nocache: true },
+};
+
+
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen flex justify-center w-full">

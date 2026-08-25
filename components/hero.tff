@@ -17,7 +17,7 @@ export default function Hero() {
   const mobSlides = [
     {
       id: 1,
-      image: "/images/mobile.png",
+      image: "/images/mobile.jpg",
       title: "Education with character-building, knowledge with action.",
       // subtitle: "Education with nurturing, knowledge with practice",
       urduText:
@@ -29,7 +29,7 @@ export default function Hero() {
   const slides = [
     {
       id: 1,
-      image: "/images/hero1.png",
+      image: "/images/hero1.jpg",
       title: "Education with character-building, knowledge with action.",
       // subtitle: "Education with nurturing, knowledge with practice",
       urduText:
@@ -39,7 +39,7 @@ export default function Hero() {
 
     {
       id: 2,
-      image: "/images/hero2.png",
+      image: "/images/hero2.jpg",
       title: "A journey of life guided by the wisdom of the Quran",
       // subtitle: "Life's journey in the light of the Quran",
       urduText: "Building character and ethics is our top priority",

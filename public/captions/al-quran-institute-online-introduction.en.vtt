@@ -1,0 +1,13 @@
+WEBVTT
+Kind: captions
+Language: en
+
+NOTE
+Captions for /images/al-quran-institute-online-introduction.mp4 (1:03, has audio).
+No cues yet — add them below, then set `captionsSrc` on the VideoPlayer in
+components/intro-video.tsx and mirror the same text into its `transcript` prop.
+
+Cue format:
+
+00:00:00.000 --> 00:00:04.000
+Line of spoken text here.

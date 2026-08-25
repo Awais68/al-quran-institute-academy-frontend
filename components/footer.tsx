@@ -1,14 +1,78 @@
 import Link from "next/link";
 import Image from "next/image";
-import {
-  Facebook,
-  Instagram,
-  Mail,
-  MapPin,
-  Phone,
-  Twitter,
-  Youtube,
-} from "lucide-react";
+import { Facebook, Instagram } from "lucide-react";
+import { SOCIAL_LINKS } from "@/lib/site";
+
+// Icons are matched to the URLs configured in lib/site.ts, which is the same
+// list the Organization JSON-LD publishes as `sameAs`.
+const SOCIAL_ICONS = [
+  { match: "facebook.com", label: "Facebook", Icon: Facebook },
+  { match: "instagram.com", label: "Instagram", Icon: Instagram },
+] as const;
+
+const SOCIAL_PROFILES = SOCIAL_LINKS.flatMap((href) => {
+  const icon = SOCIAL_ICONS.find((entry) => href.includes(entry.match));
+  return icon ? [{ href, label: icon.label, Icon: icon.Icon }] : [];
+});
+
+// Single source of truth for the footer link columns. These used to exist as
+// two separate copies (one `lg:hidden`, one `hidden lg:block`), which rendered
+// every link twice in the DOM and let the two lists drift apart — the desktop
+// Programs column was missing Nazrah Quran entirely.
+const FOOTER_LINK_SECTIONS = [
+  {
+    title: "Quick Links",
+    links: [
+      { href: "/about", label: "About Us" },
+      { href: "/programs", label: "Our Programs" },
+      { href: "/gallery", label: "Gallery" },
+      { href: "/faculty", label: "Faculty" },
+      { href: "/testimonials", label: "Testimonials" },
+      { href: "/contact", label: "Contact Us" },
+    ],
+  },
+  {
+    title: "Programs",
+    links: [
+      { href: "/programs/hifz-ul-quran", label: "Hifz-ul-Quran" },
+      { href: "/programs/tajweed", label: "Tajweed" },
+      { href: "/programs/islamic-studies", label: "Islamic Studies" },
+      { href: "/programs/arabic-language", label: "Arabic Language" },
+      { href: "/programs/namaz-course", label: "Namaz Course" },
+      { href: "/programs/qaida", label: "Qaida Course" },
+      { href: "/programs/nazrah-quran", label: "Nazrah Quran" },
+    ],
+  },
+] as const;
+
+function FooterLinkSection({
+  title,
+  links,
+}: {
+  title: string;
+  links: readonly { href: string; label: string }[];
+}) {
+  return (
+    <div className="flex flex-col items-center text-center w-full lg:items-start lg:text-left">
+      <h4 className="text-sm sm:text-base md:text-lg font-bold mb-2 sm:mb-3 md:mb-4 text-white">
+        {title}
+      </h4>
+      <ul className="space-y-1.5 sm:space-y-2 md:space-y-3">
+        {links.map(({ href, label }) => (
+          <li key={href}>
+            <Link
+              href={href}
+              className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
+            >
+              <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
+              {label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -21,9 +85,10 @@ export default function Footer() {
             <div className="flex flex-col items-center lg:flex-row lg:items-center mb-3 sm:mb-4 md:mb-6">
               <div className="relative h-12 w-16 sm:h-16 sm:w-20 md:h-20 md:w-24 lg:h-24 lg:w-28 bg-white mr-0 lg:mr-2 sm:mr-3 md:mr-4 backdrop-blur-sm rounded-full overflow-hidden shadow-lg mx-auto lg:mx-0">
                 <Image
-                  src="/images/logotp.png"
-                  alt="Al-Quran Logo"
+                  src="/images/al-quran-institute-online-logo-transparent.png"
+                  alt="Al-Quran Institute Online logo"
                   fill={true}
+                  sizes="(max-width: 640px) 64px, (max-width: 768px) 80px, 112px"
                   className="object-contain"
                 />
               </div>
@@ -39,306 +104,34 @@ export default function Footer() {
               development and practical implementation of knowledge.
             </p>
             <div className="flex  space-x-2 sm:space-x-3  md:space-x-4 sm:flex justify-center">
-              <Link
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-accent-400 hover:text-accent-300 transition-colors"
-              >
-                <Facebook size={14} className="sm:h-5 sm:w-5 md:h-6 md:w-6" />
-                <span className="sr-only">Facebook</span>
-              </Link>
-              <Link
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-accent-400 hover:text-accent-300 transition-colors"
-              >
-                <Twitter size={14} className="sm:h-5 sm:w-5 md:h-6 md:w-6" />
-                <span className="sr-only">Twitter</span>
-              </Link>
-              <Link
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-accent-400 hover:text-accent-300 transition-colors"
-              >
-                <Instagram size={14} className="sm:h-5 sm:w-5 md:h-6 md:w-6" />
-                <span className="sr-only">Instagram</span>
-              </Link>
-              <Link
-                href="https://youtube.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-accent-400 hover:text-accent-300 transition-colors"
-              >
-                <Youtube size={14} className="sm:h-5 sm:w-5 md:h-6 md:w-6" />
-                <span className="sr-only">YouTube</span>
-              </Link>
+              {SOCIAL_PROFILES.map(({ href, label, Icon }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-accent-400 hover:text-accent-300 transition-colors"
+                >
+                  <Icon size={14} className="sm:h-5 sm:w-5 md:h-6 md:w-6" />
+                  <span className="sr-only">{label}</span>
+                </Link>
+              ))}
             </div>
           </div>
 
-          {/* Mobile/Tablet: Quick Links and Programs side by side, Desktop: Quick Links only */}
-          <div className="lg:hidden w-full">
-            <div className="grid grid-cols-2 w-full gap-4 justify-center">
-              <div className="flex flex-col items-center text-center w-full">
-                <h4 className="text-sm sm:text-base md:text-lg font-bold mb-2 sm:mb-3 md:mb-4 text-white">
-                  Quick Links
-                </h4>
-                <ul className="space-y-1.5 sm:space-y-2 md:space-y-3">
-                  <li>
-                    <Link
-                      href="/#about"
-                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                    >
-                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                      About Us
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/#programs"
-                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                    >
-                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                      Our Programs
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/#gallery"
-                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                    >
-                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                      Gallery
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/#faculty"
-                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                    >
-                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                      Faculty
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/#testimonials"
-                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                    >
-                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                      Testimonials
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/#contact"
-                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                    >
-                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                      Contact Us
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-              <div className="flex flex-col items-center text-center w-full">
-                <h4 className="text-sm sm:text-base md:text-lg font-bold mb-2 sm:mb-3 md:mb-4 text-white">
-                  Programs
-                </h4>
-                <ul className="space-y-1.5 sm:space-y-2 md:space-y-3">
-                  <li>
-                    <Link
-                      href="/#programs"
-                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                    >
-                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                      Hifz-ul-Quran
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/programs"
-                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                    >
-                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                      Tajweed
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/#programs"
-                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                    >
-                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                      Islamic Studies
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/#programs"
-                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                    >
-                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                      Arabic Language
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/#programs"
-                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                    >
-                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                      Namaz Course
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/#programs"
-                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                    >
-                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                      Quaida Course
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/#programs"
-                      className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                    >
-                      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                      Nazra
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Desktop: Quick Links */}
-          <div className="hidden lg:block">
-            <h4 className="text-sm sm:text-base md:text-lg font-bold mb-2 sm:mb-3 md:mb-4 text-white">
-              Quick Links
-            </h4>
-            <ul className="space-y-1.5 sm:space-y-2 md:space-y-3">
-              <li>
-                <Link
-                  href="/#about"
-                  className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                >
-                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/#programs"
-                  className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                >
-                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                  Our Programs
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/#gallery"
-                  className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                >
-                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                  Gallery
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/#faculty"
-                  className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                >
-                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                  Faculty
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/#testimonials"
-                  className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                >
-                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                  Testimonials
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/#contact"
-                  className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                >
-                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                  Contact Us
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Desktop: Programs */}
-          <div className="hidden lg:block">
-            <h4 className="text-sm sm:text-base md:text-lg font-bold mb-2 sm:mb-3 md:mb-4 text-white">
-              Programs
-            </h4>
-            <ul className="space-y-1.5 sm:space-y-2 md:space-y-3">
-              <li>
-                <Link
-                  href="/#programs"
-                  className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                >
-                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                  Hifz-ul-Quran
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/programs"
-                  className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                >
-                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                  Tajweed
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/#programs"
-                  className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                >
-                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                  Islamic Studies
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/#programs"
-                  className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                >
-                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                  Arabic Language
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/#programs"
-                  className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                >
-                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                  Namaz Course
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/#programs"
-                  className="text-primary-200 hover:text-white transition-colors flex items-center text-xs sm:text-sm md:text-base"
-                >
-                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-accent-500 rounded-full mr-1 sm:mr-2 md:mr-2.5"></span>
-                  Quaida Course
-                </Link>
-              </li>
-            </ul>
+          {/* One DOM copy of both link columns. Below `lg` the wrapper is a
+              2-column grid sitting inside a single cell of the footer grid;
+              from `lg` up it becomes `display: contents`, so the two sections
+              promote into cells of the parent 4-column grid. No duplicated
+              markup, no duplicated links in the DOM. */}
+          <div className="w-full grid grid-cols-2 gap-4 justify-center lg:contents">
+            {FOOTER_LINK_SECTIONS.map((section) => (
+              <FooterLinkSection
+                key={section.title}
+                title={section.title}
+                links={section.links}
+              />
+            ))}
           </div>
 
           <div className="xs:col-span-2 lg:col-span-1">
@@ -352,23 +145,26 @@ export default function Footer() {
                   +92-340-3201940
                 </span>
               </li> */}
-              <a
-                href="https://wa.me/923403201940"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white hover:text-accent-300 transition-colors text-xs md:text-sm underline"
-              >
-                +92-340-3201940
-              </a>
-              <li className="flex items-center">
-
+              {/* Both entries were bare <a> children of the <ul> (invalid HTML,
+                  with an empty <li> wedged between them as a spacer). */}
+              <li>
+                <a
+                  href="https://wa.me/923403201940"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white hover:text-accent-300 transition-colors text-xs md:text-sm underline"
+                >
+                  +92-340-3201940
+                </a>
               </li>
-              <a
-                href="mailto:aqionline786@gmail.com"
-                className="text-white hover:text-accent-300 transition-colors text-xs md:text-sm underline"
-              >
-                aqionline786@gmail.com
-              </a>
+              <li>
+                <a
+                  href="mailto:aqionline786@gmail.com"
+                  className="text-white hover:text-accent-300 transition-colors text-xs md:text-sm underline"
+                >
+                  aqionline786@gmail.com
+                </a>
+              </li>
             </ul>
 
             <div className="mt-4 sm:mt-5 md:mt-6 pt-4 sm:pt-5 md:pt-6 border-t border-primary-800">

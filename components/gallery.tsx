@@ -12,49 +12,49 @@
 // const galleryImages = [
 //   {
 //     id: 1,
-//     src: "/images/hifzclass.png",
+//     src: "/images/online-hifz-class-students.png",
 //     alt: "Students learning Quran",
 //     caption: "Students in Hifz class",
 //     category: "Classes",
 //   },
 //   {
 //     id: 2,
-//     src: "/images/ab.jpg",
+//     src: "/images/online-quran-student-with-smartphone.jpg",
 //     alt: "Madarsa building",
 //     caption: "Our Online Student",
 //     category: "Classes",
 //   },
 //   {
 //     id: 3,
-//     src: "/images/mubashir.png",
+//     src: "/images/quran-recitation-competition-participant.png",
 //     alt: "Graduation ceremony",
 //     caption: "Students in Hifz class",
 //     category: "Events",
 //   },
 //   {
 //     id: 4,
-//     src: "/images/compition.png",
+//     src: "/images/quran-recitation-competition-stage.png",
 //     alt: "Quran competition",
 //     caption: "Quran recitation competition",
 //     category: "Events",
 //   },
 //   {
 //     id: 5,
-//     src: "/images/single2.png",
+//     src: "/images/girl-learning-quran-online-on-laptop.png",
 //     alt: "Islamic calligraphy class",
 //     caption: "Students learning Islamic calligraphy",
 //     category: "Classes",
 //   },
 //   {
 //     id: 6,
-//     src: "/images/single.png",
+//     src: "/images/boy-learning-quran-online-with-headset.png",
 //     alt: "Community event",
 //     caption: "Eid celebration with community",
 //     category: "Events",
 //   },
 //   {
 //     id: 7,
-//     src: "/images/person3.png",
+//     src: "/images/man-reading-quran-in-mosque.png",
 //     alt: "Community event",
 //     caption: "Reciting Quran",
 //     category: "Events",
@@ -62,7 +62,7 @@
 
 //   {
 //     id: 8,
-//     src: "/images/last.png",
+//     src: "/images/child-in-online-quran-class.png",
 //     alt: "Community event",
 //     caption: "Eid celebration with community",
 //     category: "Events",
@@ -76,7 +76,7 @@
 //   // },
 //   // {
 //   //   id: 10,
-//   //   src: "/images/prayar.png",
+//   //   src: "/images/congregational-prayer-in-mosque.png",
 //   //   alt: "Prayer hall",
 //   //   caption: "Main prayer hall",
 //   //   category: "Campus",
@@ -210,7 +210,7 @@
 //               poster="/images/mosa.jpg"
 //               className="rounded-lg w-full h-96 sm:h-96 md:h-96 object-cover"
 //             >
-//               <source src="/images/cd.mp4" type="video/mp4" />
+//               <source src="/images/musa-irfan-hifz-student-testimonial.mp4" type="video/mp4" />
 //               <track
 //                 src="/images/cd.vtt"
 //                 kind="subtitles"
@@ -237,10 +237,10 @@
 //               height="500px"
 //               controls
 //               preload="metadata"
-//               poster="/images/single2.png"
+//               poster="/images/girl-learning-quran-online-on-laptop.png"
 //               className="rounded-lg w-full h-96 sm:h-96 md:h-96 object-cover"
 //             >
-//               <source src="/images/ef.mp4" type="video/mp4" />
+//               <source src="/images/fatma-arabic-student-testimonial.mp4" type="video/mp4" />
 //               <track
 //                 src="/images/ef.vtt"
 //                 kind="subtitles"
@@ -379,66 +379,66 @@ import { motion, useInView } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import VideoPlayer from "@/components/video-player";
 
 const galleryImages = [
   {
     id: 1,
-    src: "/images/hifzclass.png",
-    alt: "Students learning Quran",
-    caption: "Students in Hifz class",
+    src: "/images/online-hifz-class-students.png",
+    alt: "Collage of Hifz-ul-Quran students attending their online Quran memorisation class",
+    caption: "Students in our online Hifz class",
     category: "Classes",
   },
   {
     id: 2,
-    src: "/images/ab.jpg",
-    alt: "Madarsa building",
-    caption: "Our Online Student",
+    src: "/images/online-quran-student-with-smartphone.jpg",
+    alt: "Young student taking an online Quran lesson on a smartphone at home",
+    caption: "One of our online students joining class from home",
     category: "Classes",
   },
   {
     id: 3,
-    src: "/images/mubashir.png",
-    alt: "Graduation ceremony",
-    caption: "Students in Hifz class",
+    src: "/images/quran-recitation-competition-participant.png",
+    alt: "Student reciting the Quran into a microphone during a recitation competition",
+    caption: "A student reciting at our Quran recitation competition",
     category: "Events",
   },
   {
     id: 4,
-    src: "/images/compition.png",
-    alt: "Quran competition",
-    caption: "Quran recitation competition",
+    src: "/images/quran-recitation-competition-stage.png",
+    alt: "Quran recitation competition on stage with participants and judges seated in front of the audience",
+    caption: "Annual Quran recitation competition",
     category: "Events",
   },
   {
     id: 5,
-    src: "/images/single2.png",
-    alt: "Islamic calligraphy class",
-    caption: "Students learning Islamic calligraphy",
+    src: "/images/girl-learning-quran-online-on-laptop.png",
+    alt: "Girl studying the Quran online with her teacher on a laptop",
+    caption: "One-to-one online Quran lesson for sisters",
     category: "Classes",
   },
   {
     id: 6,
-    src: "/images/single.png",
-    alt: "Community event",
-    caption: "Eid celebration with community",
+    src: "/images/boy-learning-quran-online-with-headset.png",
+    alt: "Boy wearing a headset during a one-to-one online Quran lesson",
+    caption: "One-to-one online Quran lesson with headset",
     category: "Events",
   },
   {
     id: 7,
-    src: "/images/person3.png",
-    alt: "Community event",
-    caption: "Reciting Quran",
+    src: "/images/man-reading-quran-in-mosque.png",
+    alt: "Man reading the Quran from a wooden rehal inside a mosque",
+    caption: "Reciting the Quran in the masjid",
     category: "Events",
   },
   {
     id: 8,
-    src: "/images/last.png",
-    alt: "Community event",
-    caption: "Eid celebration with community",
+    src: "/images/child-in-online-quran-class.png",
+    alt: "Smiling child attending an online Quran class",
+    caption: "A young learner enjoying an online Quran class",
     category: "Events",
   },
 ];
-
 const categories = ["All", "Classes", "Events"];
 
 export default function Gallery() {
@@ -550,53 +550,50 @@ export default function Gallery() {
         {/* Video Section - Fixed height to match image gallery */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8 md:mb-10">
           <div className="grid grid-cols-1">
-            <video
-              width="100%"
-              height="auto"
-              controls
-              preload="metadata"
-              poster="/images/mosa.jpg"
-              className="rounded-lg w-full h-64 object-cover"
-            >
-              <source src="/images/cd.mp4" type="video/mp4" />
-              <track
-                src="/images/cd.vtt"
-                kind="subtitles"
-                srcLang="en"
-                label="English"
-              />
-              Your browser does not support the video tag.
-            </video>
+            {/* VideoPlayer keeps the poster on screen and downloads nothing
+                until the card scrolls near the viewport, and pauses playback
+                again once it scrolls away.
+
+                Captions: this clip has an audio track, so it needs them. The
+                cue text has to come from someone who can hear the recording —
+                the skeleton file is at
+                public/captions/musa-irfan-hifz-student-testimonial.en.vtt.
+                Once its cues are filled in, uncomment `captionsSrc` and fill
+                `transcript` with the same lines. Shipping invented caption
+                text would be worse than shipping none, so both stay off until
+                then. */}
+            <VideoPlayer
+              src="/images/musa-irfan-hifz-student-testimonial.mp4"
+              poster="/images/musa-irfan-hifz-student-testimonial-poster.jpg"
+              title="Musa Irfan — Hifz student"
+              aspectClassName="h-64"
+              // captionsSrc="/captions/musa-irfan-hifz-student-testimonial.en.vtt"
+              // transcript={[{ speaker: "Musa Irfan", text: "…" }]}
+            />
             <div className="px-4 bg-blue-100 shadow-inner rounded mt-1 p-2">
               <h3 className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight">
                 Musa Irfan
               </h3>
               <p className="text-sm sm:text-base text-gray-700 mt-2 leading-relaxed text-justify">
-                Musa Irfan from UK is one of the best student. He is memorizing
-                Quran and Alhamdulillah has finished 4 siparahs yet. May Allah
-                bless upon him and give him a chance to finish this course
-                easily, Ameen.
+                Musa Irfan from the UK is one of our best students. He is
+                memorising the Quran and, Alhamdulillah, has completed four
+                siparahs so far. May Allah bless him and make the rest of this
+                course easy for him, Ameen.
               </p>
             </div>
           </div>
           <div className="grid grid-cols-1">
-            <video
-              width="100%"
-              height="auto"
-              controls
-              preload="metadata"
-              poster="/images/single2.png"
-              className="rounded-lg w-full h-64 object-cover"
-            >
-              <source src="/images/ef.mp4" type="video/mp4" />
-              <track
-                src="/images/ef.vtt"
-                kind="subtitles"
-                srcLang="en"
-                label="English"
-              />
-              Your browser does not support the video tag.
-            </video>
+            {/* This clip is 4 seconds long and carries no audio stream at all
+                (ffprobe reports video only), so there is nothing to caption or
+                transcribe — it is decorative b-roll, not a spoken testimonial.
+                If a real recorded testimonial replaces it, add a .vtt under
+                public/captions/ and wire `captionsSrc` + `transcript`. */}
+            <VideoPlayer
+              src="/images/fatma-arabic-student-testimonial.mp4"
+              poster="/images/fatma-arabic-student-testimonial-poster.jpg"
+              title="Fatma's Arabic journey"
+              aspectClassName="h-64"
+            />
             <div className="px-4 bg-blue-100 shadow-inner rounded mt-1 p-2">
               <h3 className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight">
                 {"Fatma's Arabic Journey"}

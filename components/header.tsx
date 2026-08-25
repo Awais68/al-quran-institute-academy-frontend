@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,12 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const isMobile = useMediaQuery("(max-width: 1023px)");
+  const pathname = usePathname();
+
+  // The transparent header only works over the homepage hero image. On every
+  // other route the page starts with a light background, so a transparent bar
+  // with white links would be invisible — force the solid treatment there.
+  const isHome = pathname === "/";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -53,7 +60,7 @@ export default function Header() {
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled
+        isScrolled || !isHome
           ? "bg-white/95 backdrop-blur-md shadow-md py-2"
           : "bg-transparent py-0 md:py-0"
       )}
@@ -62,9 +69,11 @@ export default function Header() {
         <Link href="/" className="flex items-center z-20 cursor-pointer">
           <div className="relative h-16 w-16 md:h-32 md:w-32">
             <Image
-              src="/images/logotp.png"
+              src="/images/al-quran-institute-online-logo-transparent.png"
               alt="Al-Quran Institute Online"
               fill={true}
+              sizes="(max-width: 640px) 96px, (max-width: 1024px) 128px, 160px"
+              priority
               className="object-contain"
             />
           </div>
@@ -72,55 +81,55 @@ export default function Header() {
 
         <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8">
           <Link
-            href="/#about"
+            href="/about"
             className={cn(
               "text-sm font-medium hover:text-primary-700 transition-colors",
-              isScrolled ? "text-gray-900" : "text-white"
+              isScrolled || !isHome ? "text-gray-900" : "text-white"
             )}
           >
             About
           </Link>
           <Link
-            href="/#programs"
+            href="/programs"
             className={cn(
               "text-sm font-medium hover:text-primary-700 transition-colors",
-              isScrolled ? "text-gray-900" : "text-white"
+              isScrolled || !isHome ? "text-gray-900" : "text-white"
             )}
           >
             Programs
           </Link>
           <Link
-            href="/#gallery"
+            href="/gallery"
             className={cn(
               "text-sm font-medium hover:text-primary-700 transition-colors",
-              isScrolled ? "text-gray-900" : "text-white"
+              isScrolled || !isHome ? "text-gray-900" : "text-white"
             )}
           >
             Gallery
           </Link>
           <Link
-            href="/#faculty"
+            href="/faculty"
             className={cn(
               "text-sm font-medium hover:text-primary-700 transition-colors",
-              isScrolled ? "text-gray-900" : "text-white"
+              isScrolled || !isHome ? "text-gray-900" : "text-white"
             )}
           >
             Faculty
           </Link>
           <Link
-            href="/#testimonials"
+            href="/testimonials"
             className={cn(
               "text-sm font-medium hover:text-primary-700 transition-colors",
-              isScrolled ? "text-gray-900" : "text-white"
+              isScrolled || !isHome ? "text-gray-900" : "text-white"
             )}
           >
             Testimonials
           </Link>
           <Link
-            href="/#contact"
+            href="/contact"
             className={cn(
               "text-sm font-medium hover:text-primary-700 transition-colors",
-              isScrolled ? "text-gray-900" : "text-white"
+              isScrolled || !isHome ? "text-gray-900" : "text-white"
             )}
           >
             Contact
@@ -131,7 +140,7 @@ export default function Header() {
               <div className="w-20 h-10 bg-gray-200 rounded animate-pulse"></div>
             }
           >
-            <AuthButtons isScrolled={isScrolled} />
+            <AuthButtons isScrolled={isScrolled || !isHome} />
           </Suspense>
           
           <ThemeToggle />
@@ -165,42 +174,42 @@ export default function Header() {
         </button>
         <nav className="flex flex-col items-center space-y-5 py-8 w-full flex-1">
           <Link
-            href="/#about"
+            href="/about"
             className="text-lg text-gray-700 hover:text-primary-700 transition-colors w-full text-center py-2"
             onClick={() => setIsMenuOpen(false)}
           >
             About
           </Link>
           <Link
-            href="/#programs"
+            href="/programs"
             className="text-lg text-gray-700 hover:text-primary-700 transition-colors w-full text-center py-2"
             onClick={() => setIsMenuOpen(false)}
           >
             Programs
           </Link>
           <Link
-            href="/#gallery"
+            href="/gallery"
             className="text-lg text-gray-700 hover:text-primary-700 transition-colors w-full text-center py-2"
             onClick={() => setIsMenuOpen(false)}
           >
             Gallery
           </Link>
           <Link
-            href="/#faculty"
+            href="/faculty"
             className="text-lg text-gray-700 hover:text-primary-700 transition-colors w-full text-center py-2"
             onClick={() => setIsMenuOpen(false)}
           >
             Faculty
           </Link>
           <Link
-            href="/#testimonials"
+            href="/testimonials"
             className="text-lg text-gray-700 hover:text-primary-700 transition-colors w-full text-center py-2"
             onClick={() => setIsMenuOpen(false)}
           >
             Testimonials
           </Link>
           <Link
-            href="/#contact"
+            href="/contact"
             className="text-lg text-gray-700 hover:text-primary-700 transition-colors w-full text-center py-2"
             onClick={() => setIsMenuOpen(false)}
           >
@@ -213,7 +222,7 @@ export default function Header() {
                 <div className="w-full h-20 bg-gray-200 rounded animate-pulse"></div>
               }
             >
-              <AuthButtons variant="mobile" isScrolled={isScrolled} />
+              <AuthButtons variant="mobile" isScrolled={isScrolled || !isHome} />
             </Suspense>
           </div>
         </nav>

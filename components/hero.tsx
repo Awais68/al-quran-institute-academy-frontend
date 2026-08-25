@@ -21,7 +21,8 @@ export default function Hero() {
   const mobSlides = [
     {
       id: 1,
-      image: "/images/mobile.png",
+      image: "/images/quran-student-mobile-hero.jpg",
+      alt: "Student reading the Quran on a smartphone during an online lesson",
       // title: "Education with character-building, knowledge with action.",
       title: "",
       // subtitle: "Education with nurturing, knowledge with practice",
@@ -32,14 +33,16 @@ export default function Hero() {
     },
     {
       id: 2,
-      image: "/images/mobile2.png",
+      image: "/images/online-quran-video-lesson-mobile-hero.png",
+      alt: "Online Quran lesson in progress on a laptop video call",
       title: "",
       urduText: " ",
       color: "#673AB7",
     },
     {
       id: 3,
-      image: "/images/hero3.png",
+      image: "/images/man-reciting-quran-at-home-hero.png",
+      alt: "Man reciting the Quran from an open mushaf at home",
       title: "",
       urduText: "",
       color: "#009688",
@@ -49,7 +52,8 @@ export default function Hero() {
   const slides = [
     {
       id: 1,
-      image: "/images/hero1.png",
+      image: "/images/quran-student-reading-on-phone-hero.jpg",
+      alt: "Student reading the Quran on a smartphone during an online lesson",
       title: "Education with character-building, knowledge with action.",
       // subtitle: "Education with nurturing, knowledge with practice",
       urduText:
@@ -59,7 +63,8 @@ export default function Hero() {
 
     {
       id: 2,
-      image: "/images/hero2.png",
+      image: "/images/online-quran-teacher-video-lesson-hero.jpg",
+      alt: "Online Quran teacher giving a live one-to-one video lesson",
       title: "A journey of life guided by the wisdom of the Quran",
       // subtitle: "Life's journey in the light of the Quran",
       urduText: "Building character and ethics is our top priority",
@@ -67,7 +72,8 @@ export default function Hero() {
     },
     {
       id: 3,
-      image: "/images/hero3.png",
+      image: "/images/man-reciting-quran-at-home-hero.png",
+      alt: "Man reciting the Quran from an open mushaf at home",
       title: "Promotion of Islamic values",
       // subtitle: "Islamic values",
       urduText: "A unified space for both Islamic and contemporary education",
@@ -100,12 +106,20 @@ export default function Hero() {
               i === currentSlide ? "opacity-100" : "opacity-0"
             )}
           >
+            {/* The slide is a full-bleed background: it always paints the whole
+                viewport width, so `sizes` must say 100vw. The old
+                "…50vw, 33vw" value made the browser request a variant far
+                narrower than it renders at. Only the first slide is
+                above-the-fold, so only that one gets `priority`; the rest lazy
+                load as the carousel advances. */}
             <Image
               src={slide.image}
-              alt={slide.title}
+              alt={slide.alt}
               fill
               priority={i === 0}
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              loading={i === 0 ? undefined : "lazy"}
+              sizes="100vw"
+              quality={70}
               className="object-cover brightness-50"
               style={{ objectPosition: "center" }}
             />
@@ -127,8 +141,10 @@ export default function Hero() {
             <h3 className="text-sm sm:text-base text-gray-300 uppercase">
               Al-Quran Institute Online
             </h3>
+            {/* The kicker above already carries the brand name — the <h1> is the
+                homepage's one ranking heading, so it states what we teach. */}
             <h1 className="mt-2 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">
-              Al-Quran Institute Online
+              Online Quran Academy — Hifz, Tajweed &amp; Nazrah Classes
             </h1>
             <div className="mt-2 h-1 w-16 bg-accent-500 mx-auto md:mx-0" />
             <p className="mt-4 text-xl sm:text-2xl font-noto text-primary-200">
@@ -140,7 +156,7 @@ export default function Hero() {
             {/* <p className="mt-2 text-sm sm:text-base text-primary-200 italic">"{slides[currentSlide].subtitle}"</p> */}
             <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <Link
-                href="/#programs"
+                href="/programs"
                 className="px-6 py-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-md text-sm sm:text-base w-full sm:w-auto text-center"
               >
                 Our Programs
@@ -149,7 +165,7 @@ export default function Hero() {
                 href="/signup"
                 className="px-6 py-2 border border-accent-400 text-gray-300 rounded-md text-sm sm:text-base w-full sm:w-auto text-center hover:bg-accent-500/10"
               >
-                Register Now
+                Enroll Now
               </Link>
             </div>
           </motion.div>

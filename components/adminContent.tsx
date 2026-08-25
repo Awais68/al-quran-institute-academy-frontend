@@ -122,7 +122,7 @@ export default function AdminContent() {
               <Image
                 className="rounded-full h-40 w-40 object-cover"
                 src={data.image}
-                alt="Student Image"
+                alt="Student profile photo"
                 width={160}
                 height={160}
               />

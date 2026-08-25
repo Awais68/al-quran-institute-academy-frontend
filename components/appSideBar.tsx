@@ -19,7 +19,7 @@ export function AppSidebar() {
         <SidebarHeader className="bg-black border-b border-gray-800">
           <div className="flex h-[60px] items-center px-6">
             <Link href="/" className="flex items-center gap-2 font-semibold">
-              <Image src="/images/logo.png" alt="Logo" width={32} height={24} className="h-6 w-8" />
+              <Image src="/images/al-quran-institute-online-logo.png" alt="Al-Quran Institute Online logo" width={32} height={24} className="h-6 w-8" />
               <span className="font-bold text-white">Admin Dashboard</span>
             </Link>
           </div>

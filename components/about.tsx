@@ -51,9 +51,10 @@ export default function About() {
           >
             <div className="relative h-[200px] xs:h-[250px] sm:h-[300px] md:h-[400px] lg:h-[500px] rounded-lg overflow-hidden shadow-2xl">
               <Image
-                src="/images/prayar.png"
-                alt="Madarsa Hajira Building"
+                src="/images/congregational-prayer-in-mosque.png"
+                alt="Worshippers offering congregational prayer inside a mosque"
                 fill
+                sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"
               />
             </div>
@@ -138,7 +139,6 @@ export default function About() {
               </h4>
               <ul className="space-y-2">
                 {[
-                  "What Sets Us Apart",
                   "Expert & Certified Online Instructors",
                   "Structured Quran Curriculum with Tajweed & Tafsir",
                   "Focus on Character Building & Spiritual Growth",

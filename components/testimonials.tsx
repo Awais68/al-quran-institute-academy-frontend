@@ -6,36 +6,9 @@ import { motion, useInView } from "framer-motion";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/use-media-query";
+// Shared with lib/schema.ts so the Review JSON-LD always matches what renders.
+import { testimonials } from "@/lib/testimonials";
 
-const testimonials = [
-  {
-    id: 1,
-    name: "Ahmed Khan",
-    role: "Parent",
-    country: "London, UK",
-    image: "/images/person1.png",
-    quote:
-      " Al Quran Institute Online has transformed my understanding of the Quran. The Teachers are knowlegeable and patient.",
-  },
-  {
-    id: 2,
-    name: "Fatima Ali",
-    country: "Toronto, Canada",
-    role: "Former Student",
-    image: "/images/person2.png",
-    quote:
-      "My children love their online Quran classes. The interactive teaching methods are excellent.",
-  },
-  {
-    id: 3,
-    name: "Abdullah Rahman",
-    country: "Sydney, Australia",
-    role: "Community Leader",
-    image: "/images/person3.png",
-    quote:
-      "Flexible scheduling and quality education. Highly recommend for busy professionals.",
-  },
-];
 
 export default function Testimonials() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -131,7 +104,7 @@ export default function Testimonials() {
                     <div className="relative w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full overflow-hidden mb-2 sm:mb-3 md:mb-4 border-4 border-primary-100">
                       <Image
                         src={testimonial.image}
-                        alt={testimonial.name}
+                        alt={`Profile photo of ${testimonial.name}, ${testimonial.role}`}
                         fill
                         sizes="(max-width: 640px) 3.5rem, (max-width: 768px) 4rem, 5rem"
                         className="object-cover"
