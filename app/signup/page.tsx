@@ -59,6 +59,7 @@ export default function Signup() {
   const [uploading, setUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState("");
+  const [phone, setPhone] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [loginOpen, setLoginOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState("Student");
@@ -97,43 +98,57 @@ export default function Signup() {
     return age;
   };
 
+  // Uploads the image through the backend /upload endpoint, which uploads to
+  // Cloudinary with signed credentials. Direct client->Cloudinary unsigned
+  // uploads fail here because the "al-quran-institute" preset is signed-only.
   const uploadImage = async (file: File): Promise<string> => {
     const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "al-quran-institute");
+    formData.append("image", file);
 
-    const cloudName = "dcp2soyzn";
+    const response = await fetch(AppRoutes.uploadImage, {
+      method: "POST",
+      body: formData,
+    });
 
-    const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
+    const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error("Image upload failed");
+      throw new Error(data?.message || "Image upload failed");
     }
 
-    const data = await response.json();
+    const url = data?.data?.url;
+    if (!url) {
+      throw new Error("Image upload failed: server did not return an image URL.");
+    }
 
-    return data.secure_url;
+    return url;
   };
 
   // Image upload handler
   const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUploading(true);
     const file = e.target.files?.[0];
-    if (!file) {
-      setUploading(false);
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setError("Please select a valid image file (JPG, PNG, GIF, WEBP).");
       return;
     }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setError("Image is too large. Maximum size is 10MB.");
+      return;
+    }
+
+    setUploading(true);
+    setError("");
     try {
       const url = await uploadImage(file);
       setImageUrl(url);
-      // alert("Image uploaded successfully!");
-    } catch (error) {
+    } catch (error: any) {
+      setImageUrl("");
+      setError(
+        error?.message || "Image upload failed. Please check your connection and try again."
+      );
     } finally {
       setUploading(false);
     }
@@ -156,6 +171,12 @@ export default function Signup() {
   // const [date, setDate] = useState();
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
+  const validateEmail = (email: string): boolean =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+
+  // Backend Joi accepts a 10-15 character phone string; PhoneNumberInput gives digits only.
+  const validatePhone = (value: string): boolean => /^\d{10,15}$/.test(value);
+
   const validatePassword = (password: string): boolean => {
     const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     return passwordPattern.test(password);
@@ -166,6 +187,41 @@ export default function Signup() {
     setError("");
     setSuccess("");
     setIsSubmitting(true);
+
+    const fullName = (e.target.name.value || "").trim();
+    const email = (e.target.email.value || "").trim();
+
+    if (!fullName) {
+      setError("Full name is required.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!validatePhone(phone)) {
+      setError(
+        "Please enter a valid phone number (10-15 digits, including country code)."
+      );
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!selectedCountry) {
+      setError("Please select your country.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (selectedRole === "Student" && !e.target.course.value) {
+      setError("Please select a course.");
+      setIsSubmitting(false);
+      return;
+    }
 
     if (!imageUrl) {
       setError("Please upload an image before submitting the form.");
@@ -183,9 +239,9 @@ export default function Signup() {
     const age = date ? dobtoage(date) : null;
 
     let data: any = {
-      name: e.target.name.value.toUpperCase(),
-      email: e.target.email.value,
-      phone: e.target.phone.value,
+      name: fullName.toUpperCase(),
+      email: email,
+      phone: phone,
       gender: e.target.gender.value,
       city: selectedCity || null,
       country: selectedCountry,
@@ -268,7 +324,6 @@ export default function Signup() {
     }
   };
 
-  const [mounted, setMounted] = useState(false);
 
   // Redirect already-logged-in users to their respective dashboard
   useEffect(() => {
@@ -283,12 +338,13 @@ export default function Signup() {
     }
   }, [user, router]);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Show spinner while hydrating, checking auth, or redirecting logged-in user
-  if (!mounted || authLoading || user) {
+  // Only block the form while an already-logged-in user is being redirected.
+  // Previously this also gated on `!mounted` and `authLoading`, which meant the
+  // server rendered nothing but this spinner and the client kept showing it for
+  // the full duration of the /getCurrentUser call (30s+ on a cold backend).
+  // The heavy widgets below are all `ssr: false` dynamic imports with loading
+  // placeholders, so the form itself is hydration-safe without the gate.
+  if (user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -319,9 +375,9 @@ export default function Signup() {
                 </span>
               </div>
             </Link>
-            <CardTitle className="text-xl sm:text-2xl text-blue-900 mt-2">
+            <h1 className="text-xl sm:text-2xl font-semibold leading-none tracking-tight text-blue-900 mt-2">
               Join Us Now
-            </CardTitle>
+            </h1>
             <CardDescription className="text-sm sm:text-base text-blue-700">
               Create your account to start learning the Quran
             </CardDescription>
@@ -442,7 +498,7 @@ export default function Signup() {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-blue-900 text-sm sm:text-base">Phone Number</Label>
-                    <PhoneNumberInput />
+                    <PhoneNumberInput value={phone} onChange={setPhone} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="suitableTime" className="text-blue-900 text-sm sm:text-base">
@@ -540,6 +596,7 @@ export default function Signup() {
                     <Label className="text-blue-900 text-sm sm:text-base">Upload Photo</Label>
                     <input 
                       type="file" 
+                      accept="image/*"
                       onChange={handleUploadImage}
                       className="w-full text-xs sm:text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     />
@@ -574,7 +631,7 @@ export default function Signup() {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-blue-900 text-sm sm:text-base">Phone Number</Label>
-                    <PhoneNumberInput />
+                    <PhoneNumberInput value={phone} onChange={setPhone} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="qualification" className="text-blue-900 text-sm sm:text-base">
@@ -636,6 +693,7 @@ export default function Signup() {
                     <Label className="text-blue-900 text-sm sm:text-base">Upload Photo</Label>
                     <input 
                       type="file" 
+                      accept="image/*"
                       onChange={handleUploadImage}
                       className="w-full text-xs sm:text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     />
@@ -670,7 +728,7 @@ export default function Signup() {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-blue-900 text-sm sm:text-base">Phone Number</Label>
-                    <PhoneNumberInput />
+                    <PhoneNumberInput value={phone} onChange={setPhone} />
                   </div>
                   <div className="col-span-full space-y-2">
                     <CountryCitySelector
@@ -682,6 +740,7 @@ export default function Signup() {
                     <Label className="text-blue-900 text-sm sm:text-base">Upload Photo</Label>
                     <input 
                       type="file" 
+                      accept="image/*"
                       onChange={handleUploadImage}
                       className="w-full text-xs sm:text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     />
