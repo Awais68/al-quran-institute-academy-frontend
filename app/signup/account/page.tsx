@@ -32,6 +32,7 @@ import { cn } from "@/lib/utils";
 import { setAuthToken } from "@/lib/auth-token";
 import { getErrorMessage, SERVER_STARTING_HINT } from "@/lib/error-handler";
 import { scrollToFirstError } from "@/lib/scroll-to-first-error";
+import { dashboardPathForRole } from "@/lib/dashboard-path";
 import dynamic from "next/dynamic";
 
 // Dynamically import heavy components to reduce initial bundle size
@@ -392,15 +393,7 @@ export default function Signup() {
         // Trust the role the server assigned, never the one the client sent.
         const assignedRole = responseData?.data?.user?.role ?? SIGNUP_ROLE;
         setTimeout(() => {
-          if (assignedRole === 'Admin') {
-            router.push("/currentUser");
-          } else if (assignedRole === 'Teacher') {
-            router.push("/teacher");
-          } else if (assignedRole === 'Student') {
-            router.push("/students");
-          } else {
-            router.push("/");
-          }
+          router.push(dashboardPathForRole(assignedRole));
         }, 1000);
       } else {
         setError("Signup failed. Please try again later.");
@@ -422,13 +415,7 @@ export default function Signup() {
   // Redirect already-logged-in users to their respective dashboard
   useEffect(() => {
     if (user) {
-      if (user.role === 'Admin') {
-        router.replace('/currentUser');
-      } else if (user.role === 'Teacher') {
-        router.replace('/teacher');
-      } else if (user.role === 'Student') {
-        router.replace('/students');
-      }
+      router.replace(dashboardPathForRole(user.role));
     }
   }, [user, router]);
 
@@ -778,11 +765,15 @@ export default function Signup() {
                     {fieldError("country")}
                   </div>
                   <div className="col-span-full space-y-3 sm:space-y-4">
-                    <Label className="text-blue-900 text-sm sm:text-base">Upload Photo</Label>
+                    <Label className="text-blue-900 text-sm sm:text-base">
+                      Upload Photo <span className="text-red-600" aria-hidden="true">*</span>
+                      <span className="sr-only">(required)</span>
+                    </Label>
                     <input
                       type="file"
                       accept="image/jpeg,image/png,image/webp"
                       onChange={handleUploadImage}
+                      aria-required="true"
                       {...errorMarker("image")}
                       className={cn(
                         "w-full text-xs sm:text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100",
@@ -889,11 +880,15 @@ export default function Signup() {
                     {fieldError("country")}
                   </div>
                   <div className="col-span-full space-y-3 sm:space-y-4">
-                    <Label className="text-blue-900 text-sm sm:text-base">Upload Photo</Label>
+                    <Label className="text-blue-900 text-sm sm:text-base">
+                      Upload Photo <span className="text-red-600" aria-hidden="true">*</span>
+                      <span className="sr-only">(required)</span>
+                    </Label>
                     <input
                       type="file"
                       accept="image/jpeg,image/png,image/webp"
                       onChange={handleUploadImage}
+                      aria-required="true"
                       {...errorMarker("image")}
                       className={cn(
                         "w-full text-xs sm:text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100",
@@ -950,11 +945,15 @@ export default function Signup() {
                     {fieldError("country")}
                   </div>
                   <div className="col-span-full space-y-3 sm:space-y-4">
-                    <Label className="text-blue-900 text-sm sm:text-base">Upload Photo</Label>
+                    <Label className="text-blue-900 text-sm sm:text-base">
+                      Upload Photo <span className="text-red-600" aria-hidden="true">*</span>
+                      <span className="sr-only">(required)</span>
+                    </Label>
                     <input
                       type="file"
                       accept="image/jpeg,image/png,image/webp"
                       onChange={handleUploadImage}
+                      aria-required="true"
                       {...errorMarker("image")}
                       className={cn(
                         "w-full text-xs sm:text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100",

@@ -21,6 +21,13 @@ export function Calendar22({
 }) {
   const [open, setOpen] = React.useState(false);
 
+  // A date of birth needs a real year range: with captionLayout="dropdown" and
+  // no bounds, react-day-picker offers only the current year, so nobody could
+  // actually pick their birth year.
+  const today = React.useMemo(() => new Date(), []);
+  const startMonth = React.useMemo(() => new Date(today.getFullYear() - 100, 0), [today]);
+  const endMonth = React.useMemo(() => new Date(today.getFullYear(), today.getMonth()), [today]);
+
   return (
     <div className="flex flex-col gap-0">
       <Popover open={open} onOpenChange={setOpen}>
@@ -38,6 +45,10 @@ export function Calendar22({
           <Calendar
             mode="single"
             captionLayout="dropdown"
+            startMonth={startMonth}
+            endMonth={endMonth}
+            defaultMonth={date ?? endMonth}
+            disabled={{ after: today }}
             selected={date}
             onSelect={(date) => {
               onChange(date); // 👈 send date to parent
