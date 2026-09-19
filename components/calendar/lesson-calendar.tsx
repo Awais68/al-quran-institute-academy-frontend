@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -13,10 +14,12 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, User, BookOpen, Video, Edit, Trash2 } from 'lucide-react';
+import { Calendar, Clock, User, BookOpen, Video, Trash2, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import apiClient from '@/lib/api';
 import { getErrorMessage } from '@/lib/error-handler';
+
+type SessionStatus = 'scheduled' | 'completed' | 'cancelled' | 'ongoing';
 
 interface LessonEvent {
   id: string;
@@ -28,11 +31,18 @@ interface LessonEvent {
   teacherId?: string;
   teacherName?: string;
   course?: string;
-  status?: 'scheduled' | 'completed' | 'cancelled';
+  topic?: string;
+  status?: SessionStatus;
   meetingLink?: string;
   notes?: string;
   backgroundColor?: string;
   borderColor?: string;
+}
+
+interface PersonOption {
+  _id: string;
+  name?: string;
+  email?: string;
 }
 
 interface LessonCalendarProps {
@@ -41,86 +51,46 @@ interface LessonCalendarProps {
   isEditable?: boolean;
 }
 
+const COURSES = ['Qaida', 'Tajweed', 'Nazra', 'Hifz', 'Namaz', 'Arabic', 'Islamic Studies'];
+
+const EMPTY_FORM = {
+  studentId: '',
+  teacherId: '',
+  course: '',
+  scheduledDate: '',
+  duration: '60',
+  topic: '',
+  notes: '',
+};
+
+// Converts a Date into the "YYYY-MM-DDTHH:mm" shape <input type="datetime-local"> expects,
+// keeping the browser's local timezone instead of shifting to UTC like toISOString() does.
+const toLocalInputValue = (date: Date) => {
+  const offset = date.getTimezoneOffset() * 60 * 1000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+};
+
 export default function LessonCalendar({ userRole = 'Student', userId, isEditable = false }: LessonCalendarProps) {
   const [events, setEvents] = useState<LessonEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<LessonEvent | null>(null);
   const [showEventDialog, setShowEventDialog] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [students, setStudents] = useState<PersonOption[]>([]);
+  const [teachers, setTeachers] = useState<PersonOption[]>([]);
+  const [lessonForm, setLessonForm] = useState(EMPTY_FORM);
   const { toast } = useToast();
+  const router = useRouter();
 
-  // Form state for creating/editing lessons
-  const [lessonForm, setLessonForm] = useState({
-    studentId: '',
-    teacherId: '',
-    course: '',
-    startTime: '',
-    endTime: '',
-    notes: '',
-    meetingLink: ''
-  });
+  const canSchedule = isEditable && (userRole === 'Admin' || userRole === 'Teacher');
 
-  const courses = [
-    'Qaida',
-    'Tajweed',
-    'Nazra',
-    'Hifz',
-    'Namaz',
-    'Arabic',
-    'Islamic Studies'
-  ];
-
-  useEffect(() => {
-    fetchLessons();
-  }, [userId]);
-
-  const fetchLessons = async () => {
-    try {
-      setLoading(true);
-      // This would be your actual API endpoint
-      // For now, using mock data
-      const response = await apiClient.get('/lessons', {
-        params: userRole !== 'Admin' ? { userId } : undefined
-      });
-
-      const formattedEvents = response.data.lessons?.map((lesson: any) => ({
-        id: lesson._id,
-        title: `${lesson.course} - ${lesson.studentName}`,
-        start: lesson.startTime,
-        end: lesson.endTime,
-        studentId: lesson.studentId,
-        studentName: lesson.studentName,
-        teacherId: lesson.teacherId,
-        teacherName: lesson.teacherName,
-        course: lesson.course,
-        status: lesson.status,
-        meetingLink: lesson.meetingLink,
-        notes: lesson.notes,
-        backgroundColor: getStatusColor(lesson.status).bg,
-        borderColor: getStatusColor(lesson.status).border
-      })) || [];
-
-      setEvents(formattedEvents);
-    } catch (error) {
-      console.warn('Error fetching lessons:', error);
-      toast({
-        title: 'Error',
-        description: getErrorMessage(error, {
-          endpoint: '/lessons',
-          fallback: 'Failed to load lessons',
-        }),
-        variant: 'destructive'
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status?: string) => {
     switch (status) {
       case 'scheduled':
         return { bg: '#3b82f6', border: '#2563eb' };
+      case 'ongoing':
+        return { bg: '#f59e0b', border: '#d97706' };
       case 'completed':
         return { bg: '#22c55e', border: '#16a34a' };
       case 'cancelled':
@@ -130,8 +100,77 @@ export default function LessonCalendar({ userRole = 'Student', userId, isEditabl
     }
   };
 
+  const fetchLessons = useCallback(async () => {
+    try {
+      setLoading(true);
+      // The backend scopes /sessions by the caller's role, so no userId filter is needed here.
+      const response = await apiClient.get('/sessions');
+      const sessions = response.data?.data?.sessions ?? [];
+
+      const formattedEvents: LessonEvent[] = sessions.map((session: any) => {
+        const start = new Date(session.scheduledDate);
+        const end = new Date(start.getTime() + (session.duration || 60) * 60 * 1000);
+        const studentName = session.studentId?.name || 'Student';
+        const colors = getStatusColor(session.status);
+
+        return {
+          id: session._id,
+          title: `${session.course || 'Session'} - ${studentName}`,
+          start: start.toISOString(),
+          end: end.toISOString(),
+          studentId: session.studentId?._id,
+          studentName,
+          teacherId: session.teacherId?._id,
+          teacherName: session.teacherId?.name,
+          course: session.course,
+          topic: session.topic,
+          status: session.status,
+          meetingLink: session.meetingLink || `/video-call/${session._id}`,
+          notes: session.notes,
+          backgroundColor: colors.bg,
+          borderColor: colors.border,
+        };
+      });
+
+      setEvents(formattedEvents);
+    } catch (error) {
+      console.warn('Error fetching sessions:', error);
+      toast({
+        title: 'Error',
+        description: getErrorMessage(error, {
+          endpoint: '/sessions',
+          fallback: 'Failed to load scheduled sessions',
+        }),
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [toast]);
+
+  useEffect(() => {
+    fetchLessons();
+  }, [fetchLessons, userId]);
+
+  // Only the scheduling roles need the student/teacher pickers.
+  useEffect(() => {
+    if (!canSchedule) return;
+
+    const fetchPeople = async () => {
+      const [studentsRes, teachersRes] = await Promise.all([
+        apiClient.get('/students/getAllStudents?limit=200').catch(() => null),
+        userRole === 'Admin' ? apiClient.get('/teacher?limit=200').catch(() => null) : Promise.resolve(null),
+      ]);
+
+      setStudents(studentsRes?.data?.data?.students ?? []);
+      setTeachers(teachersRes?.data?.data?.teachers ?? []);
+    };
+
+    fetchPeople();
+  }, [canSchedule, userRole]);
+
   const handleEventClick = (clickInfo: any) => {
-    const event = events.find(e => e.id === clickInfo.event.id);
+    const event = events.find((e) => e.id === clickInfo.event.id);
     if (event) {
       setSelectedEvent(event);
       setShowEventDialog(true);
@@ -139,90 +178,93 @@ export default function LessonCalendar({ userRole = 'Student', userId, isEditabl
   };
 
   const handleDateClick = (arg: any) => {
-    if (isEditable && userRole === 'Admin') {
-      setSelectedDate(arg.date);
-      setLessonForm({
-        ...lessonForm,
-        startTime: arg.dateStr,
-        endTime: new Date(arg.date.getTime() + 60 * 60 * 1000).toISOString()
-      });
-      setShowCreateDialog(true);
-    }
+    if (!canSchedule) return;
+    setLessonForm({ ...EMPTY_FORM, scheduledDate: toLocalInputValue(arg.date) });
+    setShowCreateDialog(true);
   };
 
   const handleCreateLesson = async () => {
+    if (!lessonForm.studentId || !lessonForm.course || !lessonForm.scheduledDate) {
+      toast({
+        title: 'Missing details',
+        description: 'Student, course and date/time are required',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (userRole === 'Admin' && !lessonForm.teacherId) {
+      toast({
+        title: 'Missing details',
+        description: 'Please pick the teacher for this session',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     try {
-      const response = await apiClient.post('/lessons', lessonForm);
-      
-      if (response.data.success) {
-        toast({
-          title: 'Success',
-          description: 'Lesson scheduled successfully'
-        });
-        setShowCreateDialog(false);
-        fetchLessons();
-        resetForm();
-      }
+      setSaving(true);
+      await apiClient.post('/sessions', {
+        studentId: lessonForm.studentId,
+        teacherId: lessonForm.teacherId || undefined,
+        course: lessonForm.course,
+        scheduledDate: new Date(lessonForm.scheduledDate).toISOString(),
+        duration: Number(lessonForm.duration) || 60,
+        topic: lessonForm.topic || undefined,
+        notes: lessonForm.notes || undefined,
+      });
+
+      toast({ title: 'Success', description: 'Session scheduled successfully' });
+      setShowCreateDialog(false);
+      setLessonForm(EMPTY_FORM);
+      fetchLessons();
     } catch (error) {
-      console.warn('Error creating lesson:', error);
+      console.warn('Error creating session:', error);
       toast({
         title: 'Error',
         description: getErrorMessage(error, {
-          endpoint: '/lessons',
-          fallback: 'Failed to schedule lesson',
+          endpoint: '/sessions',
+          fallback: 'Failed to schedule session',
         }),
-        variant: 'destructive'
+        variant: 'destructive',
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteLesson = async (sessionId: string) => {
+    try {
+      await apiClient.delete(`/sessions/${sessionId}`);
+      toast({ title: 'Success', description: 'Session deleted successfully' });
+      setShowEventDialog(false);
+      fetchLessons();
+    } catch (error) {
+      console.warn('Error deleting session:', error);
+      toast({
+        title: 'Error',
+        description: getErrorMessage(error, {
+          endpoint: '/sessions',
+          fallback: 'Failed to delete session',
+        }),
+        variant: 'destructive',
       });
     }
   };
 
-  const handleDeleteLesson = async (lessonId: string) => {
-    try {
-      const response = await apiClient.delete(`/lessons/${lessonId}`);
-      
-      if (response.data.success) {
-        toast({
-          title: 'Success',
-          description: 'Lesson deleted successfully'
-        });
-        setShowEventDialog(false);
-        fetchLessons();
-      }
-    } catch (error) {
-      console.warn('Error deleting lesson:', error);
-      toast({
-        title: 'Error',
-        description: getErrorMessage(error, {
-          endpoint: '/lessons',
-          fallback: 'Failed to delete lesson',
-        }),
-        variant: 'destructive'
-      });
+  const handleJoinSession = (meetingLink?: string) => {
+    if (!meetingLink) {
+      toast({ title: 'Info', description: 'Meeting link not available yet' });
+      return;
     }
-  };
 
-  const handleJoinSession = (meetingLink: string) => {
-    if (meetingLink) {
-      window.open(meetingLink, '_blank');
+    setShowEventDialog(false);
+    // Sessions created by this app carry an in-app route; external links still open in a new tab.
+    if (meetingLink.startsWith('/')) {
+      router.push(meetingLink);
     } else {
-      toast({
-        title: 'Info',
-        description: 'Meeting link not available yet',
-        variant: 'default'
-      });
+      window.open(meetingLink, '_blank', 'noopener,noreferrer');
     }
-  };
-
-  const resetForm = () => {
-    setLessonForm({
-      studentId: '',
-      teacherId: '',
-      course: '',
-      startTime: '',
-      endTime: '',
-      notes: '',
-      meetingLink: ''
-    });
   };
 
   return (
@@ -233,19 +275,28 @@ export default function LessonCalendar({ userRole = 'Student', userId, isEditabl
             <Calendar className="w-5 h-5 text-blue-600" />
             <h2 className="text-2xl font-bold">Lesson Schedule</h2>
           </div>
-          
-          {isEditable && userRole === 'Admin' && (
-            <Button onClick={() => setShowCreateDialog(true)}>
+
+          {canSchedule && (
+            <Button
+              onClick={() => {
+                setLessonForm({ ...EMPTY_FORM, scheduledDate: toLocalInputValue(new Date()) });
+                setShowCreateDialog(true);
+              }}
+            >
               Schedule Lesson
             </Button>
           )}
         </div>
 
         {/* Legend */}
-        <div className="mb-4 flex gap-4 text-sm">
+        <div className="mb-4 flex flex-wrap gap-4 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded" style={{ backgroundColor: '#3b82f6' }}></div>
             <span>Scheduled</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded" style={{ backgroundColor: '#f59e0b' }}></div>
+            <span>Ongoing</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded" style={{ backgroundColor: '#22c55e' }}></div>
@@ -257,30 +308,37 @@ export default function LessonCalendar({ userRole = 'Student', userId, isEditabl
           </div>
         </div>
 
-        <FullCalendar
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          initialView="timeGridWeek"
-          headerToolbar={{
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-          }}
-          events={events}
-          eventClick={handleEventClick}
-          dateClick={handleDateClick}
-          height="auto"
-          editable={isEditable && userRole === 'Admin'}
-          selectable={isEditable && userRole === 'Admin'}
-          slotMinTime="06:00:00"
-          slotMaxTime="22:00:00"
-          allDaySlot={false}
-          nowIndicator={true}
-          eventTimeFormat={{
-            hour: '2-digit',
-            minute: '2-digit',
-            meridiem: true
-          }}
-        />
+        {loading ? (
+          <div className="flex items-center justify-center py-16 text-gray-500">
+            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+            Loading schedule...
+          </div>
+        ) : (
+          <FullCalendar
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+            initialView="timeGridWeek"
+            headerToolbar={{
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth,timeGridWeek,timeGridDay',
+            }}
+            events={events}
+            eventClick={handleEventClick}
+            dateClick={handleDateClick}
+            height="auto"
+            editable={false}
+            selectable={canSchedule}
+            slotMinTime="06:00:00"
+            slotMaxTime="22:00:00"
+            allDaySlot={false}
+            nowIndicator={true}
+            eventTimeFormat={{
+              hour: '2-digit',
+              minute: '2-digit',
+              meridiem: true,
+            }}
+          />
+        )}
       </Card>
 
       {/* Event Details Dialog */}
@@ -288,6 +346,7 @@ export default function LessonCalendar({ userRole = 'Student', userId, isEditabl
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Lesson Details</DialogTitle>
+            <DialogDescription>Details of the selected session</DialogDescription>
           </DialogHeader>
 
           {selectedEvent && (
@@ -310,6 +369,9 @@ export default function LessonCalendar({ userRole = 'Student', userId, isEditabl
                   <div>
                     <div className="text-sm text-gray-500">Course</div>
                     <div className="font-medium">{selectedEvent.course}</div>
+                    {selectedEvent.topic && (
+                      <div className="text-sm text-gray-500">Topic: {selectedEvent.topic}</div>
+                    )}
                   </div>
                 </div>
 
@@ -351,17 +413,14 @@ export default function LessonCalendar({ userRole = 'Student', userId, isEditabl
               </div>
 
               <DialogFooter className="flex gap-2 sm:justify-between">
-                {selectedEvent.meetingLink && (
-                  <Button
-                    onClick={() => handleJoinSession(selectedEvent.meetingLink!)}
-                    className="w-full"
-                  >
+                {selectedEvent.status !== 'cancelled' && (
+                  <Button onClick={() => handleJoinSession(selectedEvent.meetingLink)} className="w-full">
                     <Video className="w-4 h-4 mr-2" />
                     Join Session
                   </Button>
                 )}
-                
-                {isEditable && userRole === 'Admin' && (
+
+                {canSchedule && (
                   <Button
                     variant="destructive"
                     onClick={() => handleDeleteLesson(selectedEvent.id)}
@@ -379,30 +438,52 @@ export default function LessonCalendar({ userRole = 'Student', userId, isEditabl
 
       {/* Create Lesson Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Schedule New Lesson</DialogTitle>
-            <DialogDescription>Fill in the details to schedule a new lesson</DialogDescription>
+            <DialogDescription>Fill in the details to schedule a new session</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div>
-              <Label>Student ID</Label>
-              <Input
+              <Label>Student</Label>
+              <Select
                 value={lessonForm.studentId}
-                onChange={(e) => setLessonForm({ ...lessonForm, studentId: e.target.value })}
-                placeholder="Enter student ID"
-              />
+                onValueChange={(value) => setLessonForm({ ...lessonForm, studentId: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={students.length ? 'Select student' : 'No students found'} />
+                </SelectTrigger>
+                <SelectContent>
+                  {students.map((student) => (
+                    <SelectItem key={student._id} value={student._id}>
+                      {student.name || student.email}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
-            <div>
-              <Label>Teacher ID</Label>
-              <Input
-                value={lessonForm.teacherId}
-                onChange={(e) => setLessonForm({ ...lessonForm, teacherId: e.target.value })}
-                placeholder="Enter teacher ID"
-              />
-            </div>
+            {userRole === 'Admin' && (
+              <div>
+                <Label>Teacher</Label>
+                <Select
+                  value={lessonForm.teacherId}
+                  onValueChange={(value) => setLessonForm({ ...lessonForm, teacherId: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={teachers.length ? 'Select teacher' : 'No teachers found'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {teachers.map((teacher) => (
+                      <SelectItem key={teacher._id} value={teacher._id}>
+                        {teacher.name || teacher.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             <div>
               <Label>Course</Label>
@@ -414,7 +495,7 @@ export default function LessonCalendar({ userRole = 'Student', userId, isEditabl
                   <SelectValue placeholder="Select course" />
                 </SelectTrigger>
                 <SelectContent>
-                  {courses.map((course) => (
+                  {COURSES.map((course) => (
                     <SelectItem key={course} value={course}>
                       {course}
                     </SelectItem>
@@ -425,29 +506,31 @@ export default function LessonCalendar({ userRole = 'Student', userId, isEditabl
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Start Time</Label>
+                <Label>Date &amp; Time</Label>
                 <Input
                   type="datetime-local"
-                  value={lessonForm.startTime}
-                  onChange={(e) => setLessonForm({ ...lessonForm, startTime: e.target.value })}
+                  value={lessonForm.scheduledDate}
+                  onChange={(e) => setLessonForm({ ...lessonForm, scheduledDate: e.target.value })}
                 />
               </div>
               <div>
-                <Label>End Time</Label>
+                <Label>Duration (minutes)</Label>
                 <Input
-                  type="datetime-local"
-                  value={lessonForm.endTime}
-                  onChange={(e) => setLessonForm({ ...lessonForm, endTime: e.target.value })}
+                  type="number"
+                  min={15}
+                  step={15}
+                  value={lessonForm.duration}
+                  onChange={(e) => setLessonForm({ ...lessonForm, duration: e.target.value })}
                 />
               </div>
             </div>
 
             <div>
-              <Label>Meeting Link</Label>
+              <Label>Topic</Label>
               <Input
-                value={lessonForm.meetingLink}
-                onChange={(e) => setLessonForm({ ...lessonForm, meetingLink: e.target.value })}
-                placeholder="Enter video call link"
+                value={lessonForm.topic}
+                onChange={(e) => setLessonForm({ ...lessonForm, topic: e.target.value })}
+                placeholder="e.g. Surah Al-Fatiha revision"
               />
             </div>
 
@@ -463,11 +546,11 @@ export default function LessonCalendar({ userRole = 'Student', userId, isEditabl
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+            <Button variant="outline" onClick={() => setShowCreateDialog(false)} disabled={saving}>
               Cancel
             </Button>
-            <Button onClick={handleCreateLesson}>
-              Schedule Lesson
+            <Button onClick={handleCreateLesson} disabled={saving}>
+              {saving ? 'Scheduling...' : 'Schedule Lesson'}
             </Button>
           </DialogFooter>
         </DialogContent>

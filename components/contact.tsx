@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import apiClient, { isRetryableError } from "@/lib/api";
 import { getErrorMessage } from "@/lib/error-handler";
+import { scrollToFirstError } from "@/lib/scroll-to-first-error";
 import { CONTACT } from "@/lib/site";
 
 type FormData = {
@@ -38,8 +39,15 @@ export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
+
+  const errorProps = (field: keyof FormData) => ({
+    "aria-invalid": Boolean(errors[field]),
+    "aria-describedby": errors[field] ? `contact-${field}-error` : undefined,
+    "data-field-error": errors[field] ? "true" : undefined,
+  });
 
   const validateForm = () => {
     const newErrors: FormErrors = {};
@@ -81,7 +89,10 @@ export default function Contact() {
   const handleSubmitContact = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      scrollToFirstError(formRef.current);
+      return;
+    }
 
     setIsSubmitting(true);
     setSubmitError("");
@@ -154,8 +165,10 @@ export default function Contact() {
             </h3>
 
             <form
+              ref={formRef}
               onSubmit={handleSubmitContact}
               className="space-y-3 sm:space-y-4 md:space-y-6"
+              noValidate
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
                 <div>
@@ -170,11 +183,17 @@ export default function Contact() {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className={cn("text-sm", errors.name && "border-red-500")}
+                    {...errorProps("name")}
+                    className={cn(
+                      "text-sm",
+                      errors.name && "border-red-500 focus-visible:ring-red-500"
+                    )}
                     placeholder="Your name"
                   />
                   {errors.name && (
-                    <p className="mt-1 text-xs text-red-500">{errors.name}</p>
+                    <p id="contact-name-error" className="mt-1 text-xs text-red-500">
+                      {errors.name}
+                    </p>
                   )}
                 </div>
 
@@ -191,11 +210,17 @@ export default function Contact() {
                     type="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className={cn("text-sm", errors.email && "border-red-500")}
+                    {...errorProps("email")}
+                    className={cn(
+                      "text-sm",
+                      errors.email && "border-red-500 focus-visible:ring-red-500"
+                    )}
                     placeholder="Your email"
                   />
                   {errors.email && (
-                    <p className="mt-1 text-xs text-red-500">{errors.email}</p>
+                    <p id="contact-email-error" className="mt-1 text-xs text-red-500">
+                      {errors.email}
+                    </p>
                   )}
                 </div>
               </div>
@@ -230,14 +255,15 @@ export default function Contact() {
                     name="subject"
                     value={formData.subject}
                     onChange={handleChange}
+                    {...errorProps("subject")}
                     className={cn(
                       "text-sm",
-                      errors.subject && "border-red-500"
+                      errors.subject && "border-red-500 focus-visible:ring-red-500"
                     )}
                     placeholder="Message subject"
                   />
                   {errors.subject && (
-                    <p className="mt-1 text-xs text-red-500">
+                    <p id="contact-subject-error" className="mt-1 text-xs text-red-500">
                       {errors.subject}
                     </p>
                   )}
@@ -256,14 +282,17 @@ export default function Contact() {
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
+                  {...errorProps("message")}
                   className={cn(
                     "min-h-[100px] sm:min-h-[120px] md:min-h-[150px] text-sm",
-                    errors.message && "border-red-500"
+                    errors.message && "border-red-500 focus-visible:ring-red-500"
                   )}
                   placeholder="Your message"
                 />
                 {errors.message && (
-                  <p className="mt-1 text-xs text-red-500">{errors.message}</p>
+                  <p id="contact-message-error" className="mt-1 text-xs text-red-500">
+                    {errors.message}
+                  </p>
                 )}
               </div>
 

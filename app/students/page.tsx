@@ -89,9 +89,9 @@ export default function StudentDashboard() {
     };
   }, [user, loading, router]);
 
-  const handleJoinSession = (courseId: string) => {
-    // Navigate to WebRTC video call page
-    router.push(`/session/${courseId}`);
+  const handleJoinSession = (sessionId: string) => {
+    // Every join path in the app uses the full-featured video call room.
+    router.push(`/video-call/${sessionId}`);
   };
 
   const handleMessageTeacher = (teacherEmail: string) => {

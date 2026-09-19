@@ -18,8 +18,8 @@ export default function AdminContent() {
   useEffect(() => {
     const getAllStudents = async () => {
       try {
-        const response = await apiClient.get('/getAllStudents');
-        setStudents(Array.isArray(response.data.data) ? response.data.data : []);
+        const response = await apiClient.get('/students/getAllStudents?limit=200');
+        setStudents(response.data?.data?.students ?? []);
       } catch (error) {
         console.warn("Error fetching students:", error);
       }

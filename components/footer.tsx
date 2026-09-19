@@ -3,11 +3,28 @@ import Image from "next/image";
 import { Facebook, Instagram } from "lucide-react";
 import { SOCIAL_LINKS } from "@/lib/site";
 
+// lucide-react ships no TikTok glyph, so draw it here with the same
+// `size`/`className` contract the lucide icons use.
+function TikTok({ size = 24, className }: { size?: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M16.5 2h-2.9v13.1a2.6 2.6 0 1 1-2.6-2.6c.2 0 .4 0 .6.1V9.6a5.6 5.6 0 1 0 4.9 5.5V8.7a6.6 6.6 0 0 0 3.9 1.3V7.1a3.7 3.7 0 0 1-3.9-3.6V2Z" />
+    </svg>
+  );
+}
+
 // Icons are matched to the URLs configured in lib/site.ts, which is the same
 // list the Organization JSON-LD publishes as `sameAs`.
 const SOCIAL_ICONS = [
   { match: "facebook.com", label: "Facebook", Icon: Facebook },
-  { match: "instagram.com", label: "Instagram", Icon: Instagram },
+  { match: "tiktok.com", label: "TikTok", Icon: TikTok },
 ] as const;
 
 const SOCIAL_PROFILES = SOCIAL_LINKS.flatMap((href) => {
@@ -116,6 +133,11 @@ export default function Footer() {
                   <span className="sr-only">{label}</span>
                 </Link>
               ))}
+              {/* Instagram is shown for brand recognition only — the account
+                  is not live yet, so it is deliberately not a link. */}
+              <span className="text-accent-400" aria-hidden="true">
+                <Instagram size={14} className="sm:h-5 sm:w-5 md:h-6 md:w-6" />
+              </span>
             </div>
           </div>
 

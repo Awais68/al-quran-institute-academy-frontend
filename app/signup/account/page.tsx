@@ -31,6 +31,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { setAuthToken } from "@/lib/auth-token";
 import { getErrorMessage, SERVER_STARTING_HINT } from "@/lib/error-handler";
+import { scrollToFirstError } from "@/lib/scroll-to-first-error";
 import dynamic from "next/dynamic";
 
 // Dynamically import heavy components to reduce initial bundle size
@@ -165,6 +166,7 @@ export default function Signup() {
       const url = await uploadImage(file);
       setImageUrl(url);
       setUploadError("");
+      clearFieldError("image");
       // alert("Image uploaded successfully!");
     } catch (error) {
       // Show what actually went wrong — a generic "check your connection" hid
@@ -198,6 +200,48 @@ export default function Signup() {
   // const [date, setDate] = useState();
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
+  // Which fields failed the last submit. Every entry paints its own control red
+  // and prints the reason under it — in a form this long a single banner at the
+  // top never told the user *where* to look.
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const clearFieldError = (field: string) =>
+    setFieldErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+
+  // Red border + red focus ring for an invalid control.
+  const invalidClass = (field: string) =>
+    fieldErrors[field] &&
+    "border-red-500 focus:border-red-500 focus-visible:ring-red-500";
+
+  // Red ring around the third-party widgets (phone, date, country) that do not
+  // take a className of their own.
+  const invalidRing = (field: string) =>
+    fieldErrors[field] && "rounded-md ring-1 ring-red-500";
+
+  const fieldError = (field: string) =>
+    fieldErrors[field] ? (
+      <p id={`${field}-error`} className="text-xs font-medium text-red-600">
+        {fieldErrors[field]}
+      </p>
+    ) : null;
+
+  const errorProps = (field: string) => ({
+    "aria-invalid": Boolean(fieldErrors[field]),
+    "aria-describedby": fieldErrors[field] ? `${field}-error` : undefined,
+    "data-field-error": fieldErrors[field] ? "true" : undefined,
+  });
+
+  // For wrappers around widgets that own their own markup — only the marker
+  // scrollToFirstError() looks for, no aria-invalid on a plain <div>.
+  const errorMarker = (field: string) => ({
+    "data-field-error": fieldErrors[field] ? "true" : undefined,
+  });
+
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const validatePassword = (password: string): boolean => {
     const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -220,35 +264,70 @@ export default function Signup() {
     setError("");
     setSuccess("");
     setShowStartHint(false);
-    setIsSubmitting(true);
 
-    if (!imageUrl) {
-      setError("Please upload an image before submitting the form.");
-      setIsSubmitting(false);
-      return;
-    }
+    // Collect *every* problem in one pass instead of bailing on the first one,
+    // so the user fixes the whole form in a single round trip.
+    const form = e.target as HTMLFormElement;
+    const fieldValue = (field: string) =>
+      (
+        (form.elements.namedItem(field) as
+          | HTMLInputElement
+          | HTMLSelectElement
+          | null)?.value ?? ""
+      ).trim();
 
-    const emailValue = e.target.email.value as string;
-    if (!EMAIL_RE.test(emailValue.trim())) {
-      setError("Please enter a valid email address. For example: name@example.com");
-      setIsSubmitting(false);
-      return;
-    }
+    const nextErrors: Record<string, string> = {};
+
+    const nameValue = fieldValue("name");
+    if (!nameValue) nextErrors.name = "Full name is required";
+    else if (nameValue.length < 3)
+      nextErrors.name = "Full name must be at least 3 characters";
+
+    const fatherNameValue = fieldValue("fatherName");
+    if (!fatherNameValue) nextErrors.fatherName = "Father name is required";
+
+    const emailValue = fieldValue("email");
+    if (!emailValue) nextErrors.email = "Email is required";
+    else if (!EMAIL_RE.test(emailValue))
+      nextErrors.email =
+        "Please enter a valid email address. For example: name@example.com";
+
+    if (!fieldValue("gender")) nextErrors.gender = "Please select a gender";
 
     // Same bounds the backend enforces, so the user sees the problem here
     // instead of a 400 from /auth/signup.
-    if (phone.length < 10 || phone.length > 15) {
-      setError("Please enter a valid phone number (10 to 15 digits).");
-      setIsSubmitting(false);
+    if (!phone) nextErrors.phone = "Phone number is required";
+    else if (phone.length < 10 || phone.length > 15)
+      nextErrors.phone = "Please enter a valid phone number (10 to 15 digits).";
+
+    if (!fieldValue("suitableTime"))
+      nextErrors.suitableTime = "Please select a class timing";
+    if (!date) nextErrors.dob = "Please select your date of birth";
+    if (!fieldValue("app"))
+      nextErrors.app = "Please select the app you will attend class on";
+    if (!fieldValue("course")) nextErrors.course = "Please select a course";
+    if (selectedDays.length === 0)
+      nextErrors.classDays = "Please select at least one class day";
+    if (!selectedCountry) nextErrors.country = "Please select your country";
+    if (!imageUrl)
+      nextErrors.image = "Please upload a photo before submitting the form.";
+
+    const password = (form.elements.namedItem("password") as HTMLInputElement | null)?.value ?? "";
+    if (!password) nextErrors.password = "Password is required";
+    else if (!validatePassword(password))
+      nextErrors.password =
+        "Password must contain at least 8 characters with uppercase, lowercase, number and special character";
+
+    setFieldErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) {
+      setError(
+        "Please review the fields highlighted in red below and try again."
+      );
+      scrollToFirstError(form);
       return;
     }
 
-    const password = e.target.password.value;
-    if (!validatePassword(password)) {
-      setError("Password must contain at least 8 characters with uppercase, lowercase, number and special character");
-      setIsSubmitting(false);
-      return;
-    }
+    setIsSubmitting(true);
 
     const age = date ? dobtoage(date) : null;
 
@@ -432,7 +511,10 @@ export default function Signup() {
                 <span>{success}</span>
               </div>
             )}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            {/* noValidate: the browser's own "Please fill out this field"
+                bubble would fire before handleSubmit and hide our red
+                field-level highlighting. */}
+            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
               {/* Common Fields for All Roles */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="relative space-y-2">
@@ -448,9 +530,15 @@ export default function Signup() {
                       name="name"
                       placeholder="Full Name"
                       required
-                      className="border-blue-200 focus:border-blue-400 pl-9 sm:pl-10 uppercase h-10 sm:h-11 text-sm sm:text-base"
+                      onChange={() => clearFieldError("name")}
+                      {...errorProps("name")}
+                      className={cn(
+                        "border-blue-200 focus:border-blue-400 pl-9 sm:pl-10 uppercase h-10 sm:h-11 text-sm sm:text-base",
+                        invalidClass("name")
+                      )}
                     />
                   </div>
+                  {fieldError("name")}
                 </div>
                 {selectedRole === 'Student' && (
                   <div className="space-y-2">
@@ -462,8 +550,14 @@ export default function Signup() {
                       name="fatherName"
                       placeholder="Father Name"
                       required
-                      className="border-blue-200 focus:border-blue-400 uppercase h-10 sm:h-11 text-sm sm:text-base"
+                      onChange={() => clearFieldError("fatherName")}
+                      {...errorProps("fatherName")}
+                      className={cn(
+                        "border-blue-200 focus:border-blue-400 uppercase h-10 sm:h-11 text-sm sm:text-base",
+                        invalidClass("fatherName")
+                      )}
                     />
+                    {fieldError("fatherName")}
                   </div>
                 )}
               </div>
@@ -481,9 +575,15 @@ export default function Signup() {
                     name="email"
                     type="email"
                     placeholder="your.email@example.com"
-                    className="border-blue-200 focus:border-blue-400 pl-9 sm:pl-10 h-10 sm:h-11 text-sm sm:text-base"
+                    onChange={() => clearFieldError("email")}
+                    {...errorProps("email")}
+                    className={cn(
+                      "border-blue-200 focus:border-blue-400 pl-9 sm:pl-10 h-10 sm:h-11 text-sm sm:text-base",
+                      invalidClass("email")
+                    )}
                   />
                 </div>
+                {fieldError("email")}
               </div>
               {/* Role-Specific Fields */}
               {selectedRole === 'Student' && (
@@ -492,8 +592,18 @@ export default function Signup() {
                     <Label htmlFor="gender" className="text-blue-900 text-sm sm:text-base">
                       Gender
                     </Label>
-                    <Select name="gender" required>
-                      <SelectTrigger className="border-blue-200 focus:border-blue-400 h-10 sm:h-11 text-sm sm:text-base">
+                    <Select
+                      name="gender"
+                      required
+                      onValueChange={() => clearFieldError("gender")}
+                    >
+                      <SelectTrigger
+                        {...errorProps("gender")}
+                        className={cn(
+                          "border-blue-200 focus:border-blue-400 h-10 sm:h-11 text-sm sm:text-base",
+                          invalidClass("gender")
+                        )}
+                      >
                         <SelectValue placeholder="Select Gender" />
                       </SelectTrigger>
                       <SelectContent>
@@ -501,17 +611,37 @@ export default function Signup() {
                         <SelectItem value="female">Female</SelectItem>
                       </SelectContent>
                     </Select>
+                    {fieldError("gender")}
                   </div>
                   <div className="space-y-2">
                     <Label className="text-blue-900 text-sm sm:text-base">Phone Number</Label>
-                    <PhoneNumberInput value={phone} onChange={setPhone} />
+                    <div className={cn(invalidRing("phone"))}>
+                      <PhoneNumberInput
+                        value={phone}
+                        onChange={(next) => {
+                          setPhone(next);
+                          clearFieldError("phone");
+                        }}
+                      />
+                    </div>
+                    {fieldError("phone")}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="suitableTime" className="text-blue-900 text-sm sm:text-base">
                       Suitable Class Timing (Pakistan Time)
                     </Label>
-                    <Select name="suitableTime" required>
-                      <SelectTrigger className="border-blue-200 focus:border-blue-400 h-10 sm:h-11 text-sm sm:text-base">
+                    <Select
+                      name="suitableTime"
+                      required
+                      onValueChange={() => clearFieldError("suitableTime")}
+                    >
+                      <SelectTrigger
+                        {...errorProps("suitableTime")}
+                        className={cn(
+                          "border-blue-200 focus:border-blue-400 h-10 sm:h-11 text-sm sm:text-base",
+                          invalidClass("suitableTime")
+                        )}
+                      >
                         <SelectValue placeholder="Select Your Timing" />
                       </SelectTrigger>
                       <SelectContent>
@@ -522,10 +652,20 @@ export default function Signup() {
                         ))}
                       </SelectContent>
                     </Select>
+                    {fieldError("suitableTime")}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="dob" className="text-blue-900 text-sm sm:text-base">Date of Birth</Label>
-                    <Calendar22 date={date} onChange={setDate} />
+                    <div className={cn(invalidRing("dob"))}>
+                      <Calendar22
+                        date={date}
+                        onChange={(next) => {
+                          setDate(next);
+                          clearFieldError("dob");
+                        }}
+                      />
+                    </div>
+                    {fieldError("dob")}
                     {date && (
                       <p className="text-blue-700 mt-1 text-xs sm:text-sm">
                         Your Age: {dobtoage(date)} years
@@ -536,8 +676,18 @@ export default function Signup() {
                     <Label htmlFor="app" className="text-blue-900 text-sm sm:text-base">
                       Class Application
                     </Label>
-                    <Select name="app" required>
-                      <SelectTrigger className="border-blue-200 focus:border-blue-400 h-10 sm:h-11 text-sm sm:text-base">
+                    <Select
+                      name="app"
+                      required
+                      onValueChange={() => clearFieldError("app")}
+                    >
+                      <SelectTrigger
+                        {...errorProps("app")}
+                        className={cn(
+                          "border-blue-200 focus:border-blue-400 h-10 sm:h-11 text-sm sm:text-base",
+                          invalidClass("app")
+                        )}
+                      >
                         <SelectValue placeholder="Select Application" />
                       </SelectTrigger>
                       <SelectContent>
@@ -548,13 +698,24 @@ export default function Signup() {
                         <SelectItem value="Zoom">Zoom</SelectItem>
                       </SelectContent>
                     </Select>
+                    {fieldError("app")}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="course" className="text-blue-900 text-sm sm:text-base">
                       Course
                     </Label>
-                    <Select name="course" required>
-                      <SelectTrigger className="border-blue-200 focus:border-blue-400 h-10 sm:h-11 text-sm sm:text-base">
+                    <Select
+                      name="course"
+                      required
+                      onValueChange={() => clearFieldError("course")}
+                    >
+                      <SelectTrigger
+                        {...errorProps("course")}
+                        className={cn(
+                          "border-blue-200 focus:border-blue-400 h-10 sm:h-11 text-sm sm:text-base",
+                          invalidClass("course")
+                        )}
+                      >
                         <SelectValue placeholder="Select Your Course" />
                       </SelectTrigger>
                       <SelectContent>
@@ -567,12 +728,19 @@ export default function Signup() {
                         <SelectItem value="Arabic">Arabic Language Course</SelectItem>
                       </SelectContent>
                     </Select>
+                    {fieldError("course")}
                   </div>
                   <div className="space-y-2 col-span-full">
                     <Label htmlFor="classDays" className="text-blue-900 text-sm sm:text-base">
                       Class Days
                     </Label>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-2">
+                    <div
+                      {...errorMarker("classDays")}
+                      className={cn(
+                        "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-2",
+                        fieldErrors.classDays && "rounded-md p-2 ring-1 ring-red-500"
+                      )}
+                    >
                       {daysOfWeek.map((day) => (
                         <label key={day} className="flex items-center gap-2 text-blue-800 text-xs sm:text-sm touch-manipulation">
                           <Checkbox
@@ -584,6 +752,7 @@ export default function Signup() {
                               } else {
                                 setSelectedDays(selectedDays.filter((d) => d !== day));
                               }
+                              clearFieldError("classDays");
                             }}
                             className="h-4 w-4 sm:h-5 sm:w-5"
                           />
@@ -591,21 +760,36 @@ export default function Signup() {
                         </label>
                       ))}
                     </div>
+                    {fieldError("classDays")}
                   </div>
                   <div className="col-span-full space-y-2">
-                    <CountryCitySelector
-                      onCountryChange={setSelectedCountry}
-                      onCityChange={setSelectedCity}
-                    />
+                    <div
+                      {...errorMarker("country")}
+                      className={cn(invalidRing("country"), fieldErrors.country && "p-2")}
+                    >
+                      <CountryCitySelector
+                        onCountryChange={(next) => {
+                          setSelectedCountry(next);
+                          clearFieldError("country");
+                        }}
+                        onCityChange={setSelectedCity}
+                      />
+                    </div>
+                    {fieldError("country")}
                   </div>
                   <div className="col-span-full space-y-3 sm:space-y-4">
                     <Label className="text-blue-900 text-sm sm:text-base">Upload Photo</Label>
-                    <input 
+                    <input
                       type="file"
                       accept="image/jpeg,image/png,image/webp"
                       onChange={handleUploadImage}
-                      className="w-full text-xs sm:text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                      {...errorMarker("image")}
+                      className={cn(
+                        "w-full text-xs sm:text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100",
+                        fieldErrors.image && "rounded-md p-2 ring-1 ring-red-500"
+                      )}
                     />
+                    {fieldError("image")}
                     {imageUrl && (
                       <Image
                         src={imageUrl}
@@ -690,19 +874,33 @@ export default function Signup() {
                     />
                   </div>
                   <div className="col-span-full space-y-2">
-                    <CountryCitySelector
-                      onCountryChange={setSelectedCountry}
-                      onCityChange={setSelectedCity}
-                    />
+                    <div
+                      {...errorMarker("country")}
+                      className={cn(invalidRing("country"), fieldErrors.country && "p-2")}
+                    >
+                      <CountryCitySelector
+                        onCountryChange={(next) => {
+                          setSelectedCountry(next);
+                          clearFieldError("country");
+                        }}
+                        onCityChange={setSelectedCity}
+                      />
+                    </div>
+                    {fieldError("country")}
                   </div>
                   <div className="col-span-full space-y-3 sm:space-y-4">
                     <Label className="text-blue-900 text-sm sm:text-base">Upload Photo</Label>
-                    <input 
+                    <input
                       type="file"
                       accept="image/jpeg,image/png,image/webp"
                       onChange={handleUploadImage}
-                      className="w-full text-xs sm:text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                      {...errorMarker("image")}
+                      className={cn(
+                        "w-full text-xs sm:text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100",
+                        fieldErrors.image && "rounded-md p-2 ring-1 ring-red-500"
+                      )}
                     />
+                    {fieldError("image")}
                     {imageUrl && (
                       <Image
                         src={imageUrl}
@@ -737,19 +935,33 @@ export default function Signup() {
                     <PhoneNumberInput value={phone} onChange={setPhone} />
                   </div>
                   <div className="col-span-full space-y-2">
-                    <CountryCitySelector
-                      onCountryChange={setSelectedCountry}
-                      onCityChange={setSelectedCity}
-                    />
+                    <div
+                      {...errorMarker("country")}
+                      className={cn(invalidRing("country"), fieldErrors.country && "p-2")}
+                    >
+                      <CountryCitySelector
+                        onCountryChange={(next) => {
+                          setSelectedCountry(next);
+                          clearFieldError("country");
+                        }}
+                        onCityChange={setSelectedCity}
+                      />
+                    </div>
+                    {fieldError("country")}
                   </div>
                   <div className="col-span-full space-y-3 sm:space-y-4">
                     <Label className="text-blue-900 text-sm sm:text-base">Upload Photo</Label>
-                    <input 
+                    <input
                       type="file"
                       accept="image/jpeg,image/png,image/webp"
                       onChange={handleUploadImage}
-                      className="w-full text-xs sm:text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                      {...errorMarker("image")}
+                      className={cn(
+                        "w-full text-xs sm:text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100",
+                        fieldErrors.image && "rounded-md p-2 ring-1 ring-red-500"
+                      )}
                     />
+                    {fieldError("image")}
                     {imageUrl && (
                       <Image
                         src={imageUrl}
@@ -769,7 +981,7 @@ export default function Signup() {
               )}
 
               <div className="relative space-y-2">
-                <Label htmlFor="password" className="text-red-700 text-sm sm:text-base">
+                <Label htmlFor="password" className="text-blue-900 text-sm sm:text-base">
                   Password
                 </Label>
                 <div className="relative">
@@ -778,7 +990,12 @@ export default function Signup() {
                     name="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Create a strong password"
-                    className="border-blue-200 focus:border-pink-400 pr-10 sm:pr-12 h-10 sm:h-11 text-sm sm:text-base"
+                    onChange={() => clearFieldError("password")}
+                    {...errorProps("password")}
+                    className={cn(
+                      "border-blue-200 focus:border-blue-400 pr-10 sm:pr-12 h-10 sm:h-11 text-sm sm:text-base",
+                      invalidClass("password")
+                    )}
                   />
                   <button
                     type="button"
@@ -792,6 +1009,7 @@ export default function Signup() {
                     )}
                   </button>
                 </div>
+                {fieldError("password")}
                 <p className="text-xs text-gray-600">Must contain uppercase, lowercase, number, and special character (min 8 chars)</p>
               </div>
               {showStartHint && isSubmitting && (

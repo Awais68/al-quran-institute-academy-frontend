@@ -112,8 +112,8 @@ export default function StudentsManagement({ onStatsUpdate }: StudentsManagement
 
   const fetchStudents = async () => {
     try {
-      const response = await apiClient.get('/getAllStudents');
-      setStudents(response.data.data || []);
+      const response = await apiClient.get('/students/getAllStudents?limit=200');
+      setStudents(response.data?.data?.students ?? []);
       setLoading(false);
     } catch (error) {
       console.warn('Error fetching students:', error);

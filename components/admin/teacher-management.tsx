@@ -59,12 +59,10 @@ export default function TeacherManagement() {
 
   const fetchTeachers = async () => {
     try {
-      const response = await apiClient.get("/getAllStudents");
-      const data = Array.isArray(response.data.data) ? response.data.data : [];
-      const teacherData = data.filter(
-        (user: any) => user.role === "Teacher"
-      );
-      setTeachers(teacherData);
+      // /teacher is the teacher collection endpoint; the old call pulled the
+      // student list and filtered it by role, which returned nothing.
+      const response = await apiClient.get("/teacher?limit=200");
+      setTeachers(response.data?.data?.teachers ?? []);
       setLoading(false);
     } catch (error) {
       console.warn("Error fetching teachers:", error);

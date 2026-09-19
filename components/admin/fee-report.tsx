@@ -55,7 +55,7 @@ export default function FeeReport({ canUpdateFee = false }: FeeReportProps) {
 
   const fetchStudents = async () => {
     try {
-      const response = await apiClient.get("/students/getAllStudents");
+      const response = await apiClient.get("/students/getAllStudents?limit=200");
       const raw = response.data?.data?.students || response.data?.data || [];
       setStudents(Array.isArray(raw) ? raw : []);
     } catch (error) {

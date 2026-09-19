@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AuthContext } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { getSocket } from "@/lib/socket";
+import apiClient from "@/lib/api";
 import {
   BookOpen,
   Video,
@@ -43,6 +44,22 @@ interface MyCoursesProps {
   onMessageTeacher: (teacherId: string) => void;
 }
 
+interface Lesson {
+  _id: string;
+  title: string;
+  date: string;
+  time: string;
+  completed: boolean;
+}
+
+interface Session {
+  _id: string;
+  topic?: string;
+  course?: string;
+  scheduledDate: string;
+  status: string;
+}
+
 export default function MyCourses({
   studentData,
   onJoinSession,
@@ -51,6 +68,9 @@ export default function MyCourses({
   const { user } = useContext(AuthContext);
   const router = useRouter();
   const [incomingCall, setIncomingCall] = useState<{ from: string; roomId: string; teacherName: string } | null>(null);
+  const [course, setCourse] = useState<Course | null>(null);
+  const [nextSessionId, setNextSessionId] = useState<string | null>(null);
+  const [loadingCourse, setLoadingCourse] = useState(true);
 
   useEffect(() => {
     if (!user?._id) return;
@@ -72,7 +92,8 @@ export default function MyCourses({
 
   const handleAcceptCall = () => {
     if (incomingCall) {
-      router.push(`/session/${incomingCall.roomId}`);
+      // Same page the student dashboard uses, so both entry points land in one room.
+      router.push(`/video-call/${incomingCall.roomId}`);
       setIncomingCall(null);
     }
   };
@@ -81,27 +102,85 @@ export default function MyCourses({
     setIncomingCall(null);
   };
 
-  // Mock course data - will be replaced with actual API data
-  const [courses] = useState<Course[]>([
-    {
-      _id: "1",
-      name: studentData?.course || "Tajweed",
-      teacher: {
-        name: "Muzzamil Ahmed Shaikh",
-        email: "teacher@alquran.com",
-        image: "",
-      },
-      progress: 0,
-      nextLesson: {
-        title: "Introduction to Tajweed Rules",
-        date: new Date(Date.now() + 86400000).toLocaleDateString(),
-        time: studentData?.suitableTime || "10:00 AM",
-        completed: false,
-      },
-      totalLessons: 30,
-      completedLessons: 0,
-    },
-  ]);
+  // Real course view: lessons, progress, the assigned teacher and the next
+  // scheduled session all come from the API. "Join Live Session" targets that
+  // session's id, which is the room id both sides join.
+  useEffect(() => {
+    if (!user?._id) return;
+
+    let cancelled = false;
+
+    const load = async () => {
+      setLoadingCourse(true);
+
+      const teacherId = studentData?.assignedTeacher?._id || studentData?.assignedTeacher;
+
+      const [lessonsRes, progressRes, sessionsRes, teacherRes] = await Promise.all([
+        apiClient.get(`/lessons/student/${user._id}`).catch(() => null),
+        apiClient.get(`/progress/student/${user._id}`).catch(() => null),
+        apiClient.get("/sessions?status=scheduled").catch(() => null),
+        teacherId ? apiClient.get(`/teacher/${teacherId}`).catch(() => null) : Promise.resolve(null),
+      ]);
+
+      if (cancelled) return;
+
+      const lessons: Lesson[] = lessonsRes?.data?.data?.lessons ?? [];
+      const completedLessons = lessons.filter((lesson) => lesson.completed).length;
+      const progress = progressRes?.data?.data?.progress;
+
+      const sessions: Session[] = sessionsRes?.data?.data?.sessions ?? [];
+      const upcomingSession = sessions
+        .filter((session) => new Date(session.scheduledDate).getTime() >= Date.now())
+        .sort(
+          (a, b) =>
+            new Date(a.scheduledDate).getTime() - new Date(b.scheduledDate).getTime()
+        )[0];
+
+      const nextLesson = lessons
+        .filter((lesson) => !lesson.completed)
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
+
+      const teacher = teacherRes?.data?.data;
+      const sessionDate = upcomingSession ? new Date(upcomingSession.scheduledDate) : null;
+
+      setNextSessionId(upcomingSession?._id ?? null);
+      setCourse({
+        _id: upcomingSession?._id ?? user._id,
+        name: studentData?.course || upcomingSession?.course || "Your course",
+        teacher: {
+          name: teacher?.name || "Not assigned yet",
+          email: teacher?.email || "",
+          image: teacher?.image,
+        },
+        progress: typeof progress?.overall === "number" ? progress.overall : 0,
+        nextLesson: {
+          title:
+            nextLesson?.title ||
+            upcomingSession?.topic ||
+            "No lesson scheduled yet",
+          date: nextLesson
+            ? new Date(nextLesson.date).toLocaleDateString()
+            : sessionDate?.toLocaleDateString() ?? "-",
+          time:
+            nextLesson?.time ||
+            sessionDate?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) ||
+            studentData?.suitableTime ||
+            "-",
+          completed: false,
+        },
+        totalLessons: lessons.length,
+        completedLessons,
+      });
+      setLoadingCourse(false);
+    };
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [user?._id, studentData]);
+
+  const courses = course ? [course] : [];
 
   return (
     <div className="space-y-6">
@@ -129,6 +208,15 @@ export default function MyCourses({
                 </Button>
               </div>
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {loadingCourse && (
+        <Card>
+          <CardContent className="p-6 text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-2 text-sm text-gray-600">Loading your course...</p>
           </CardContent>
         </Card>
       )}
@@ -190,6 +278,7 @@ export default function MyCourses({
                 variant="outline"
                 size="sm"
                 className="gap-2"
+                disabled={!course.teacher.email}
                 onClick={() => onMessageTeacher(course.teacher.email)}
               >
                 <MessageCircle className="h-4 w-4" />
@@ -222,10 +311,11 @@ export default function MyCourses({
               </div>
               <Button
                 className="w-full bg-blue-600 hover:bg-blue-700"
-                onClick={() => onJoinSession(course._id)}
+                disabled={!nextSessionId}
+                onClick={() => nextSessionId && onJoinSession(nextSessionId)}
               >
                 <Video className="h-4 w-4 mr-2" />
-                Join Live Session
+                {nextSessionId ? "Join Live Session" : "No session scheduled"}
               </Button>
             </div>
 

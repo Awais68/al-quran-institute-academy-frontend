@@ -34,6 +34,7 @@ import { setAuthToken } from "@/lib/auth-token";
 import { refreshSocketAuth } from "@/lib/socket";
 import { dashboardPathForRole } from "@/lib/dashboard-path";
 import { CHANGE_PASSWORD_PATH } from "@/lib/api";
+import { scrollToFirstError } from "@/lib/scroll-to-first-error";
 
 interface LoginModalProps {
   open: boolean;
@@ -63,6 +64,7 @@ export default function LoginModal({
   const [showStartHint, setShowStartHint] = useState(false);
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const startTimeRef = useRef<number>(0);
+  const formRef = useRef<HTMLFormElement>(null);
   const router = useRouter();
   const { user, setUser } = useContext(AuthContext);
 
@@ -116,7 +118,10 @@ export default function LoginModal({
     if (!password) nextFieldErrors.password = "Password is required";
 
     setFieldErrors(nextFieldErrors);
-    if (Object.keys(nextFieldErrors).length > 0) return;
+    if (Object.keys(nextFieldErrors).length > 0) {
+      scrollToFirstError(formRef.current);
+      return;
+    }
 
     setIsLoading(true);
     setIsRetrying(false);
@@ -202,7 +207,7 @@ export default function LoginModal({
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-4 pt-4" noValidate>
+        <form ref={formRef} onSubmit={handleLogin} className="space-y-4 pt-4" noValidate>
           <div className="space-y-2">
             <Label htmlFor="login-email">Email</Label>
             <div className="relative">

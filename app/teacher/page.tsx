@@ -155,7 +155,7 @@ export default function TeacherDashboard() {
 
   const fetchStudents = async () => {
     try {
-      const response = await apiClient.get("/students/getAllStudents");
+      const response = await apiClient.get("/students/getAllStudents?limit=200");
       // Filter only active students
       const students = response.data?.data?.students;
       const activeStudents = Array.isArray(students) ? students.filter(

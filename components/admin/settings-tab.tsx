@@ -11,6 +11,23 @@ import { User, Lock, Image as ImageIcon, Settings2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import apiClient from "@/lib/api";
 import { getErrorMessage } from "@/lib/error-handler";
+import { cn } from "@/lib/utils";
+
+// Same rule the backend enforces, so the user sees the problem on the field
+// instead of a 400 a second later.
+const PASSWORD_RULE =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+type PasswordFieldErrors = {
+  currentPassword?: string;
+  newPassword?: string;
+  confirmPassword?: string;
+};
+
+type ProfileFieldErrors = {
+  name?: string;
+  phone?: string;
+};
 
 interface SettingsTabProps {
   user: any;
@@ -35,8 +52,25 @@ export default function SettingsTab({ user, onUpdate }: SettingsTabProps) {
     confirmPassword: '',
   });
 
+  // Field-level errors: a toast tells you *that* something is wrong, the red
+  // field tells you *which* one.
+  const [passwordErrors, setPasswordErrors] = useState<PasswordFieldErrors>({});
+  const [profileErrors, setProfileErrors] = useState<ProfileFieldErrors>({});
+
+  const invalid = (hasError?: string) =>
+    hasError && "border-red-500 focus-visible:ring-red-500";
+
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const nextErrors: ProfileFieldErrors = {};
+    if (!profileData.name.trim()) nextErrors.name = "Name is required";
+    if (profileData.phone && !/^\d{10,15}$/.test(profileData.phone.replace(/\D/g, "")))
+      nextErrors.phone = "Enter a valid phone number (10 to 15 digits)";
+
+    setProfileErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
+
     setLoading(true);
 
     try {
@@ -63,14 +97,20 @@ export default function SettingsTab({ user, onUpdate }: SettingsTabProps) {
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast({
-        title: "Error",
-        description: "New passwords do not match",
-        variant: "destructive",
-      });
-      return;
-    }
+    const nextErrors: PasswordFieldErrors = {};
+    if (!passwordData.currentPassword)
+      nextErrors.currentPassword = "Enter your current password";
+    if (!PASSWORD_RULE.test(passwordData.newPassword))
+      nextErrors.newPassword =
+        "Must be 8+ characters with uppercase, lowercase, number and special character";
+    else if (passwordData.newPassword === passwordData.currentPassword)
+      nextErrors.newPassword =
+        "The new password must be different from the current one";
+    if (passwordData.confirmPassword !== passwordData.newPassword)
+      nextErrors.confirmPassword = "New passwords do not match";
+
+    setPasswordErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
 
     setLoading(true);
 
@@ -90,6 +130,7 @@ export default function SettingsTab({ user, onUpdate }: SettingsTabProps) {
         newPassword: '',
         confirmPassword: '',
       });
+      setPasswordErrors({});
     } catch (error: any) {
       toast({
         title: "Error",
@@ -143,9 +184,17 @@ export default function SettingsTab({ user, onUpdate }: SettingsTabProps) {
                     <Input
                       id="name"
                       value={profileData.name}
-                      onChange={(e) => setProfileData({...profileData, name: e.target.value})}
+                      onChange={(e) => {
+                        setProfileData({...profileData, name: e.target.value});
+                        setProfileErrors((prev) => ({ ...prev, name: undefined }));
+                      }}
                       placeholder="Enter your name"
+                      aria-invalid={Boolean(profileErrors.name)}
+                      className={cn(invalid(profileErrors.name))}
                     />
+                    {profileErrors.name && (
+                      <p className="text-xs font-medium text-red-600">{profileErrors.name}</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -165,9 +214,17 @@ export default function SettingsTab({ user, onUpdate }: SettingsTabProps) {
                     <Input
                       id="phone"
                       value={profileData.phone}
-                      onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
+                      onChange={(e) => {
+                        setProfileData({...profileData, phone: e.target.value});
+                        setProfileErrors((prev) => ({ ...prev, phone: undefined }));
+                      }}
                       placeholder="Enter phone number"
+                      aria-invalid={Boolean(profileErrors.phone)}
+                      className={cn(invalid(profileErrors.phone))}
                     />
+                    {profileErrors.phone && (
+                      <p className="text-xs font-medium text-red-600">{profileErrors.phone}</p>
+                    )}
                   </div>
                 </div>
 
@@ -182,17 +239,25 @@ export default function SettingsTab({ user, onUpdate }: SettingsTabProps) {
         <TabsContent value="password" className="space-y-4 mt-6">
           <Card>
             <CardContent className="p-6">
-              <form onSubmit={handlePasswordChange} className="space-y-4">
+              <form onSubmit={handlePasswordChange} className="space-y-4" noValidate>
                 <div className="space-y-2">
                   <Label htmlFor="currentPassword">Current Password</Label>
                   <Input
                     id="currentPassword"
                     type="password"
                     value={passwordData.currentPassword}
-                    onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
+                    onChange={(e) => {
+                      setPasswordData({...passwordData, currentPassword: e.target.value});
+                      setPasswordErrors((prev) => ({ ...prev, currentPassword: undefined }));
+                    }}
                     placeholder="Enter current password"
                     required
+                    aria-invalid={Boolean(passwordErrors.currentPassword)}
+                    className={cn(invalid(passwordErrors.currentPassword))}
                   />
+                  {passwordErrors.currentPassword && (
+                    <p className="text-xs font-medium text-red-600">{passwordErrors.currentPassword}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -201,13 +266,22 @@ export default function SettingsTab({ user, onUpdate }: SettingsTabProps) {
                     id="newPassword"
                     type="password"
                     value={passwordData.newPassword}
-                    onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                    onChange={(e) => {
+                      setPasswordData({...passwordData, newPassword: e.target.value});
+                      setPasswordErrors((prev) => ({ ...prev, newPassword: undefined }));
+                    }}
                     placeholder="Enter new password"
                     required
+                    aria-invalid={Boolean(passwordErrors.newPassword)}
+                    className={cn(invalid(passwordErrors.newPassword))}
                   />
-                  <p className="text-xs text-gray-500">
-                    Must contain 8+ characters with uppercase, lowercase, number and special character
-                  </p>
+                  {passwordErrors.newPassword ? (
+                    <p className="text-xs font-medium text-red-600">{passwordErrors.newPassword}</p>
+                  ) : (
+                    <p className="text-xs text-gray-500">
+                      Must contain 8+ characters with uppercase, lowercase, number and special character
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -216,10 +290,18 @@ export default function SettingsTab({ user, onUpdate }: SettingsTabProps) {
                     id="confirmPassword"
                     type="password"
                     value={passwordData.confirmPassword}
-                    onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                    onChange={(e) => {
+                      setPasswordData({...passwordData, confirmPassword: e.target.value});
+                      setPasswordErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+                    }}
                     placeholder="Confirm new password"
                     required
+                    aria-invalid={Boolean(passwordErrors.confirmPassword)}
+                    className={cn(invalid(passwordErrors.confirmPassword))}
                   />
+                  {passwordErrors.confirmPassword && (
+                    <p className="text-xs font-medium text-red-600">{passwordErrors.confirmPassword}</p>
+                  )}
                 </div>
 
                 <Button type="submit" disabled={loading} className="w-full">

@@ -63,8 +63,8 @@ export default function AdminDashboard() {
             setLoading(true);
 
             // Fetch students
-            const studentsRes = await apiClient.get('/getAllStudents');
-            const studentsData = studentsRes.data.data || [];
+            const studentsRes = await apiClient.get('/students/getAllStudents?limit=200');
+            const studentsData = studentsRes.data?.data?.students ?? [];
             setStudents(studentsData);
 
             // Fetch teachers

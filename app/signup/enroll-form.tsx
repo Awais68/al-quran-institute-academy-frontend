@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +8,7 @@ import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { programTitles } from "@/lib/programs";
 import { getErrorMessage } from "@/lib/error-handler";
+import { scrollToFirstError } from "@/lib/scroll-to-first-error";
 
 type FieldErrors = Partial<Record<"fullName" | "email" | "phone" | "course", string>>;
 type Status = { kind: "idle" | "success" | "error"; message?: string };
@@ -55,6 +56,7 @@ export default function EnrollForm() {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState<Status>({ kind: "idle" });
+  const formRef = useRef<HTMLFormElement>(null);
 
   const setField = (field: keyof typeof EMPTY) => (value: string) => {
     setValues((prev) => ({ ...prev, [field]: value }));
@@ -69,6 +71,7 @@ export default function EnrollForm() {
     const nextErrors = validate(values);
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
+      scrollToFirstError(formRef.current);
       return;
     }
 
@@ -82,7 +85,10 @@ export default function EnrollForm() {
       const result = await response.json().catch(() => ({}));
 
       if (!response.ok || !result.ok) {
-        if (result.errors) setErrors(result.errors as FieldErrors);
+        if (result.errors) {
+          setErrors(result.errors as FieldErrors);
+          scrollToFirstError(formRef.current);
+        }
         setStatus({
           kind: "error",
           message: result.message || "Something went wrong. Please try again.",
@@ -134,7 +140,7 @@ export default function EnrollForm() {
     cn("h-11", errors[field] && "border-red-500 focus-visible:ring-red-500");
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-4">
+    <form ref={formRef} onSubmit={handleSubmit} noValidate className="space-y-4">
       {status.kind === "error" && (
         <div
           role="alert"

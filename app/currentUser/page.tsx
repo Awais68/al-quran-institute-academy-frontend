@@ -83,11 +83,11 @@ export default function AdminDashboardPage() {
   const fetchDashboardStats = async () => {
     try {
       const [studentsRes, userStatsRes] = await Promise.all([
-        apiClient.get('/students/getAllStudents'),
+        apiClient.get('/students/getAllStudents?limit=200'),
         apiClient.get('/user/stats/overview').catch(() => ({ data: { data: {} } }))
       ]);
 
-      const students = studentsRes.data.data || [];
+      const students = studentsRes.data?.data?.students ?? [];
       const userStats = userStatsRes.data.data || {};
 
       // Calculate stats

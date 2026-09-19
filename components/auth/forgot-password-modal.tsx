@@ -17,6 +17,7 @@ import { Mail, CheckCircle2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import apiClient from "@/lib/api";
 import { getErrorMessage } from "@/lib/error-handler";
+import { cn } from "@/lib/utils";
 
 interface ForgotPasswordModalProps {
   open: boolean;
@@ -28,29 +29,32 @@ export default function ForgotPasswordModal({ open, onOpenChange }: ForgotPasswo
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  // Separate from `error` (server failures) so a bad email paints the field
+  // red rather than only printing a banner above it.
+  const [emailError, setEmailError] = useState("");
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!email) {
-      setError("Please enter your email address");
+      setEmailError("Please enter your email address");
       return;
     }
 
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address");
+      setEmailError("Please enter a valid email address");
       return;
     }
 
     setLoading(true);
     setError("");
+    setEmailError("");
 
     try {
-      // TODO: Replace with actual API call
-      const response = await apiClient.post("/auth/forgot-password", { email });
+      await apiClient.post("/auth/forgot-password", { email });
 
       setSuccess(true);
       toast({
@@ -84,6 +88,7 @@ export default function ForgotPasswordModal({ open, onOpenChange }: ForgotPasswo
     if (!loading) {
       setEmail("");
       setError("");
+      setEmailError("");
       setSuccess(false);
       onOpenChange(false);
     }
@@ -112,7 +117,7 @@ export default function ForgotPasswordModal({ open, onOpenChange }: ForgotPasswo
             </Alert>
           </div>
         ) : (
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
             <div className="space-y-4 py-4">
               {error && (
                 <Alert variant="destructive">
@@ -134,11 +139,22 @@ export default function ForgotPasswordModal({ open, onOpenChange }: ForgotPasswo
                   onChange={(e) => {
                     setEmail(e.target.value);
                     setError("");
+                    setEmailError("");
                   }}
                   disabled={loading}
                   autoFocus
-                  className="w-full"
+                  aria-invalid={Boolean(emailError)}
+                  aria-describedby={emailError ? "forgot-email-error" : undefined}
+                  className={cn(
+                    "w-full",
+                    emailError && "border-red-500 focus-visible:ring-red-500"
+                  )}
                 />
+                {emailError && (
+                  <p id="forgot-email-error" className="text-xs font-medium text-red-600">
+                    {emailError}
+                  </p>
+                )}
               </div>
 
               <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">

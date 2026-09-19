@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { AuthContext } from "@/app/context/AuthContext";
 import { getSocket } from "@/lib/socket";
+import apiClient from "@/lib/api";
 import { getIceServers } from "@/lib/ice-servers";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -76,6 +77,25 @@ export default function VideoCallPage() {
     };
   }, [user, authLoading, router]);
 
+  // Rooms created from the schedule are named after the Session document, so the
+  // student to ring has to be looked up. Older ad-hoc rooms encode the student id
+  // as "room-<studentId>-<timestamp>", which stays supported as a fallback.
+  const resolveStudentId = async (): Promise<string | null> => {
+    if (/^[0-9a-fA-F]{24}$/.test(sessionId)) {
+      try {
+        const response = await apiClient.get(`/sessions/${sessionId}`);
+        const session = response.data?.data?.session;
+        return session?.studentId?._id || session?.studentId || null;
+      } catch (error) {
+        console.warn("Could not resolve session student:", error);
+        return null;
+      }
+    }
+
+    const legacyId = sessionId.replace("room-", "").split("-")[0];
+    return legacyId || null;
+  };
+
   const initializeCall = async () => {
     try {
       // Fetch ICE servers up front so every peer connection below uses the
@@ -104,11 +124,13 @@ export default function VideoCallPage() {
         // Only the teacher rings the student. Previously every participant
         // emitted this on join, so a student joining rang themselves.
         if (user?.role === "Teacher") {
-          const studentId = sessionId.replace("room-", "").split("-")[0];
-          socket.emit("call-student", {
-            studentId,
-            teacherName: user?.name,
-            roomId: sessionId,
+          resolveStudentId().then((studentId) => {
+            if (!studentId) return;
+            socket.emit("call-student", {
+              studentId,
+              teacherName: user?.name,
+              roomId: sessionId,
+            });
           });
         }
 
