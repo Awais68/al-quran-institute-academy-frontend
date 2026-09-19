@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 // Private / non-marketing route: keep it out of the index and give it its own
 // canonical so it never inherits the homepage canonical from the root layout.
@@ -13,5 +14,9 @@ export default function CurrentuserLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <ProtectedRoute allowedRoles={["Student", "Teacher", "Admin"]}>
+      {children}
+    </ProtectedRoute>
+  );
 }

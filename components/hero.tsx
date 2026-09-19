@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import dynamic from 'next/dynamic';
-import Image from "next/image";
+import { getImageProps } from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -33,7 +33,7 @@ export default function Hero() {
     },
     {
       id: 2,
-      image: "/images/online-quran-video-lesson-mobile-hero.png",
+      image: "/images/online-quran-video-lesson-mobile-hero.jpg",
       alt: "Online Quran lesson in progress on a laptop video call",
       title: "",
       urduText: " ",
@@ -81,50 +81,78 @@ export default function Hero() {
     },
   ];
 
+  // Text still follows the breakpoint (it is cheap and only swaps after
+  // hydration), but the IMAGES must not: `isMobile` is false on the server and
+  // on the first client render, so a JS-driven swap made mobile visitors
+  // download the desktop hero first and the mobile one again after hydration.
+  // Art direction belongs in the markup — see the <picture> below, where the
+  // browser picks one source before any JavaScript runs.
   const activeSlides = isMobile ? mobSlides : slides;
 
   useEffect(() => {
     const id = setInterval(
-      () => setCurrentSlide((i) => (i + 1) % activeSlides.length),
+      () => setCurrentSlide((i) => (i + 1) % slides.length),
       6000
     );
     return () => clearInterval(id);
-  }, [activeSlides.length]);
+  }, [slides.length]);
 
   return (
-    <section className="relative w-full h-screen overflow-hidden bg-gradient-to-b from-slate-900 to-slate-800">
-      <div className="relative w-full h-screen overflow-hidden">
+    // Deliberately short of a full viewport: the edge of the next section stays
+    // visible, so the homepage does not open on a bare carousel. `svh` rather
+    // than `vh` so mobile browsers do not resize the hero when the URL bar hides.
+    <section className="relative w-full min-h-screen overflow-hidden bg-gradient-to-b from-slate-900 to-slate-800">
+      <div className="relative w-full min-h-screen overflow-hidden">
         <HeroScene />
         <div className="absolute inset-0 bg-black/40" />
 
         {/* Slides with Responsive Background Images */}
-        {activeSlides.map((slide, i) => (
-          <div
-            key={slide.id}
-            className={cn(
-              "absolute inset-0 transition-opacity duration-1000",
-              i === currentSlide ? "opacity-100" : "opacity-0"
-            )}
-          >
-            {/* The slide is a full-bleed background: it always paints the whole
-                viewport width, so `sizes` must say 100vw. The old
-                "…50vw, 33vw" value made the browser request a variant far
-                narrower than it renders at. Only the first slide is
-                above-the-fold, so only that one gets `priority`; the rest lazy
-                load as the carousel advances. */}
-            <Image
-              src={slide.image}
-              alt={slide.alt}
-              fill
-              priority={i === 0}
-              loading={i === 0 ? undefined : "lazy"}
-              sizes="100vw"
-              quality={70}
-              className="object-cover brightness-50"
-              style={{ objectPosition: "center" }}
-            />
-          </div>
-        ))}
+        {slides.map((slide, i) => {
+          // The slide is a full-bleed background: it always paints the whole
+          // viewport width, so `sizes` must say 100vw. Only the first slide is
+          // above the fold, so only that one is eager; the rest lazy load as
+          // the carousel advances.
+          const common = {
+            alt: slide.alt,
+            fill: true,
+            sizes: "100vw",
+            quality: 70,
+            priority: i === 0,
+            loading: i === 0 ? ("eager" as const) : ("lazy" as const),
+          };
+          const { props: desktop } = getImageProps({ ...common, src: slide.image });
+          const { props: mobile } = getImageProps({
+            ...common,
+            src: mobSlides[i]?.image ?? slide.image,
+          });
+
+          return (
+            <div
+              key={slide.id}
+              className={cn(
+                "absolute inset-0 transition-opacity duration-1000",
+                i === currentSlide ? "opacity-100" : "opacity-0"
+              )}
+            >
+              {/* <picture> rather than <Image> so the browser resolves the art
+                  direction from the media queries before any JS runs — one
+                  download, matched to the actual viewport. */}
+              <picture>
+                <source media="(max-width: 767px)" srcSet={mobile.srcSet} sizes="100vw" />
+                <source media="(min-width: 768px)" srcSet={desktop.srcSet} sizes="100vw" />
+                {/* The hero box is shorter than the source photos, so
+                    object-cover has to drop something. Anchor the crop near the
+                    top: the subject sits in the upper half of every slide, and
+                    a centred crop pushed it under the fixed header. */}
+                <img
+                  {...desktop}
+                  alt={slide.alt}
+                  className="absolute inset-0 h-full w-full object-cover brightness-50 object-top md:object-[center_30%]"
+                />
+              </picture>
+            </div>
+          );
+        })}
       </div>
 
       {/* Content */}
@@ -138,9 +166,11 @@ export default function Hero() {
             transition={{ duration: 0.6 }}
             className="text-center md:text-left"
           >
-            <h3 className="text-sm sm:text-base text-gray-300 uppercase">
+            {/* A brand kicker, not a section heading — an <h3> before the <h1>
+                broke the document outline for screen readers. */}
+            <p className="text-sm sm:text-base text-gray-300 uppercase tracking-wide">
               Al-Quran Institute Online
-            </h3>
+            </p>
             {/* The kicker above already carries the brand name — the <h1> is the
                 homepage's one ranking heading, so it states what we teach. */}
             <h1 className="mt-2 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">
@@ -215,7 +245,7 @@ export default function Hero() {
 
       {/* Indicators */}
       <div className="absolute bottom-6 w-full flex justify-center gap-2">
-        {activeSlides.map((_, idx) => (
+        {slides.map((_, idx) => (
           <button
             key={idx}
             onClick={() => setCurrentSlide(idx)}

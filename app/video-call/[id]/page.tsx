@@ -18,21 +18,27 @@ import {
   Settings,
 } from "lucide-react";
 import { AuthContext } from "@/app/context/AuthContext";
-import io from "socket.io-client";
-import { SOCKET_URL } from "@/app/constant/constant";
+import { getSocket } from "@/lib/socket";
+import { getIceServers } from "@/lib/ice-servers";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-const ICE_SERVERS = {
-  iceServers: [
-    {
-      urls: "turn:101.53.235.94:3478",
-      username: "awais",
-      credential: "awais123",
-    },
-    { urls: "stun:stun.l.google.com:19302" },
-    { urls: "stun:stun1.l.google.com:19302" },
-  ],
-};
+// Signalling events these pages own. The socket is shared app-wide, so on
+// unmount we detach exactly these instead of disconnecting the connection.
+interface Participant {
+  userId?: string;
+  socketId: string;
+  userName: string;
+  userType: string;
+}
+
+const SIGNALLING_EVENTS = [
+  "existing-participants",
+  "user-joined",
+  "offer",
+  "answer",
+  "ice-candidate",
+  "user-left",
+];
 
 export default function VideoCallPage() {
   const params = useParams();
@@ -50,6 +56,8 @@ export default function VideoCallPage() {
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRefs = useRef<{ [key: string]: HTMLVideoElement }>({});
   const socketRef = useRef<any>(null);
+  const onSocketConnectRef = useRef<(() => void) | null>(null);
+  const iceConfigRef = useRef<RTCConfiguration>({ iceServers: [] });
   const peerConnectionsRef = useRef<{ [key: string]: RTCPeerConnection }>({});
   const localStreamRef = useRef<MediaStream | null>(null);
 
@@ -70,6 +78,10 @@ export default function VideoCallPage() {
 
   const initializeCall = async () => {
     try {
+      // Fetch ICE servers up front so every peer connection below uses the
+      // same (ideally short-lived) TURN credentials.
+      iceConfigRef.current = await getIceServers();
+
       // Get local media stream
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
@@ -83,40 +95,46 @@ export default function VideoCallPage() {
       }
 
       // Connect to Socket.IO
-      const socket = io(SOCKET_URL);
+      const socket = getSocket();
       socketRef.current = socket;
 
-      socket.on("connect", () => {
-        console.log("Connected to server");
+      const onConnect = () => {
         setConnectionStatus("Connected");
 
-        // Extract student ID from sessionId (format: room-{studentId})
-        const studentId = sessionId.replace('room-', '');
+        // Only the teacher rings the student. Previously every participant
+        // emitted this on join, so a student joining rang themselves.
+        if (user?.role === "Teacher") {
+          const studentId = sessionId.replace("room-", "").split("-")[0];
+          socket.emit("call-student", {
+            studentId,
+            teacherName: user?.name,
+            roomId: sessionId,
+          });
+        }
 
-        // Notify student about incoming call
-        socket.emit("call-student", {
-          studentId,
-          teacherName: user?.name,
-          roomId: sessionId,
-        });
-
-        // Join the session
+        // Join the session. The server derives identity from the handshake
+        // token; these fields are routing hints, not authorisation.
         socket.emit("join-session", {
           sessionId,
           userId: user?._id,
           userName: user?.name,
           userType: user?.role,
         });
-      });
+      };
+      onSocketConnectRef.current = onConnect;
+      socket.on("connect", onConnect);
+      // The shared socket may already be connected, in which case "connect"
+      // will never fire for us — join straight away.
+      if (socket.connected) onConnect();
 
-      socket.on("existing-participants", (participants) => {
+      socket.on("existing-participants", (participants: Participant[]) => {
         console.log("Existing participants:", participants);
-        participants.forEach(({ userId, socketId, userName, userType }) => {
+        participants.forEach(({ socketId, userName, userType }: Participant) => {
           createPeerConnection(socketId, userName, userType, true);
         });
       });
 
-      socket.on("user-joined", ({ userId, userName, userType, socketId }) => {
+      socket.on("user-joined", ({ userName, userType, socketId }: Participant) => {
         console.log(`User joined: ${userName}`);
         createPeerConnection(socketId, userName, userType, false);
       });
@@ -164,13 +182,6 @@ export default function VideoCallPage() {
         }, 3000);
       });
 
-      socket.on("disconnect", () => {
-        setConnectionStatus("Disconnected");
-        // Clean up all connections
-        Object.values(peerConnectionsRef.current).forEach((pc) => pc.close());
-        peerConnectionsRef.current = {};
-        setRemoteUsers([]);
-      });
     } catch (error) {
       console.warn("Error initializing call:", error);
       setConnectionStatus("Error: Camera/Microphone access denied");
@@ -183,7 +194,7 @@ export default function VideoCallPage() {
     userType: string,
     isInitiator: boolean
   ) => {
-    const pc = new RTCPeerConnection(ICE_SERVERS);
+    const pc = new RTCPeerConnection(iceConfigRef.current);
     peerConnectionsRef.current[socketId] = pc;
 
     // Add local stream tracks to peer connection
@@ -312,8 +323,13 @@ export default function VideoCallPage() {
     peerConnectionsRef.current = {};
 
     // Disconnect socket
+    // The socket is shared app-wide — leave the room and drop this page's
+    // listeners rather than tearing the whole connection down.
     if (socketRef.current) {
-      socketRef.current.disconnect();
+      socketRef.current.emit("leave-session", { sessionId });
+      SIGNALLING_EVENTS.forEach((event) => socketRef.current?.off(event));
+      socketRef.current.off("connect", onSocketConnectRef.current!);
+      socketRef.current = null;
     }
   };
 

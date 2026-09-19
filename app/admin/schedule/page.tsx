@@ -1,10 +1,22 @@
 'use client';
 
 import { useState } from 'react';
-import LessonCalendar from '@/components/calendar/lesson-calendar';
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calendar, BarChart3, Video } from 'lucide-react';
+
+// FullCalendar plus its three plugins is ~80 kB of this route's bundle and is
+// only ever rendered on the Calendar tab. ssr:false because it touches the DOM
+// on mount and prerendering it buys nothing on an admin-only screen.
+const LessonCalendar = dynamic(
+  () => import('@/components/calendar/lesson-calendar'),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-[600px] w-full rounded-lg" />,
+  }
+);
 
 export default function SchedulePage() {
   return (

@@ -51,6 +51,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import StudentProfileDialog from "./student-profile-dialog";
 import FeeReceiptDialog from "./fee-receipt-dialog";
+import { getErrorMessage } from "@/lib/error-handler";
 
 interface Student {
   _id: string;
@@ -194,7 +195,10 @@ export default function StudentsManagement({ onStatsUpdate }: StudentsManagement
       console.warn('Error updating payment:', error);
       toast({
         title: "Error",
-        description: "Failed to update payment status",
+        description: getErrorMessage(error, {
+          endpoint: "/user/admin/updateUser",
+          fallback: "Failed to update payment status",
+        }),
         variant: "destructive",
       });
     }

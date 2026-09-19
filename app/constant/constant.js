@@ -1,7 +1,15 @@
+// Which backend the browser talks to is a per-environment setting, not a
+// function of NODE_ENV. Vercel preview deployments build with
+// NODE_ENV=production, so keying off it pointed every preview at the live
+// backend and made it impossible to test a production build locally.
+// Set NEXT_PUBLIC_API_BASE_URL per environment (see .env.example).
 const devURL = process.env.NEXT_PUBLIC_API_DEV_URL || "http://localhost:4000";
-const prodURL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://al-quran-institute-online-backend.onrender.com";
 
-export const BASE_URL = process.env.NODE_ENV === 'production' ? prodURL : devURL;
+export const BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  (process.env.NODE_ENV === "production"
+    ? "https://al-quran-institute-online-backend.onrender.com"
+    : devURL);
 export const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || BASE_URL;
 
 export const AppRoutes = {

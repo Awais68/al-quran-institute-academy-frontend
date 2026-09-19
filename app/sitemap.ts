@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { programs } from "@/lib/programs";
+import { PROGRAMS_UPDATED_AT, programs } from "@/lib/programs";
 import { absoluteUrl } from "@/lib/site";
 
 /**
@@ -10,9 +10,23 @@ import { absoluteUrl } from "@/lib/site";
  * noindex'd in their layouts and must never appear here, or Search Console
  * reports "Submitted URL marked noindex".
  */
-export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date();
+/**
+ * Per-route edit dates, YYYY-MM-DD. These are deliberately hand-maintained
+ * rather than new Date(): a <lastmod> that moves on every crawl is noise, and
+ * Google stops trusting the whole sitemap. Bump the one route you edited.
+ */
+const ROUTE_UPDATED_AT: Record<string, string> = {
+  "/": "2026-09-19",
+  "/about": "2026-08-25",
+  "/programs": PROGRAMS_UPDATED_AT,
+  "/faculty": "2026-08-25",
+  "/gallery": "2026-08-25",
+  "/testimonials": "2026-08-25",
+  "/contact": "2026-09-19",
+  "/signup": "2026-09-19",
+};
 
+export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes: {
     path: string;
     changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
@@ -30,7 +44,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const programRoutes = programs.map((program) => ({
     url: absoluteUrl(`/programs/${program.slug}`),
-    lastModified,
+    lastModified: new Date(program.updatedAt ?? PROGRAMS_UPDATED_AT),
     changeFrequency: "monthly" as const,
     priority: 0.8,
   }));
@@ -38,7 +52,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...staticRoutes.map(({ path, changeFrequency, priority }) => ({
       url: absoluteUrl(path),
-      lastModified,
+      lastModified: new Date(ROUTE_UPDATED_AT[path] ?? PROGRAMS_UPDATED_AT),
       changeFrequency,
       priority,
     })),

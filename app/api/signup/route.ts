@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { BASE_URL } from "@/app/constant/constant";
 import { programTitles } from "@/lib/programs";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
 
 // Leads are written to an external service, so this route must run on Node
 // and must never be cached or statically evaluated.
@@ -120,7 +121,24 @@ async function emailLead(lead: Lead): Promise<boolean> {
   }
 }
 
+// Each submission can fan out to the backend and to Resend, so an unthrottled
+// endpoint is both a spam hose and a billable one.
+const RATE_LIMIT = 5;
+const RATE_WINDOW_MS = 10 * 60 * 1000;
+
 export async function POST(request: Request) {
+  const limit = rateLimit(`signup:${clientIp(request)}`, RATE_LIMIT, RATE_WINDOW_MS);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      {
+        ok: false,
+        message:
+          "Too many enquiries from this connection. Please wait a few minutes, or WhatsApp us directly.",
+      },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfter) } }
+    );
+  }
+
   let body: unknown;
   try {
     body = await request.json();

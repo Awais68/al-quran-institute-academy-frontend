@@ -9,9 +9,9 @@ import { Badge } from "@/components/ui/badge";
 import { Send, MessageCircle, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import apiClient from "@/lib/api";
+import { getErrorMessage } from "@/lib/error-handler";
 import { AuthContext } from "@/app/context/AuthContext";
-import io from "socket.io-client";
-import { SOCKET_URL } from "@/app/constant/constant";
+import { getSocket } from "@/lib/socket";
 
 interface Message {
   _id: string;
@@ -58,10 +58,10 @@ export default function ChatInterface({
     fetchMessages();
 
     // Setup socket for real-time messages
-    const socket = io(SOCKET_URL);
+    const socket = getSocket();
     socketRef.current = socket;
 
-    socket.on("new-message", (message: Message) => {
+    const onNewMessage = (message: Message) => {
       // Only add message if it's from the current conversation
       if (
         (message.senderId._id === recipientId && message.receiverId._id === user?._id) ||
@@ -70,10 +70,12 @@ export default function ChatInterface({
         setMessages((prev) => [...prev, message]);
         scrollToBottom();
       }
-    });
+    };
+    socket.on("new-message", onNewMessage);
 
+    // The connection is shared app-wide — detach the listener, never disconnect.
     return () => {
-      socket.disconnect();
+      socket.off("new-message", onNewMessage);
     };
   }, [recipientId, user]);
 
@@ -117,7 +119,10 @@ export default function ChatInterface({
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to send message",
+        description: getErrorMessage(error, {
+          endpoint: "/message",
+          fallback: "Failed to send message",
+        }),
         variant: "destructive",
       });
     } finally {

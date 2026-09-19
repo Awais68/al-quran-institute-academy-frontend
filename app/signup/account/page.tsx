@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
-import { EyeIcon, EyeOffIcon, MailIcon, UserIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon, MailIcon, UserIcon, AlertCircle, RefreshCw } from "lucide-react";
 import { AppRoutes } from "@/app/constant/constant";
 import apiClient from "@/lib/api";
 import { useRouter } from "next/navigation";
@@ -30,6 +30,7 @@ import { LoadingSpinner } from "@/components/loader";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { setAuthToken } from "@/lib/auth-token";
+import { getErrorMessage, SERVER_STARTING_HINT } from "@/lib/error-handler";
 import dynamic from "next/dynamic";
 
 // Dynamically import heavy components to reduce initial bundle size
@@ -57,10 +58,17 @@ export default function Signup() {
   const [imageUrl, setImageUrl] = useState("");
   const [uploading, setUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showStartHint, setShowStartHint] = useState(false);
+  const [uploadError, setUploadError] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [loginOpen, setLoginOpen] = useState(false);
-  const [selectedRole, setSelectedRole] = useState("Student");
+  // Public signup can only ever create a Student account. Teacher and Admin
+  // accounts are provisioned from the admin panel. A role chosen in the browser
+  // is attacker-controlled input, so it must never be an authorisation
+  // decision — the backend has to force this role server-side as well.
+  const SIGNUP_ROLE = "Student";
+  const selectedRole: string = SIGNUP_ROLE;
   const daysOfWeek = [
     "Monday",
     "Tuesday",
@@ -96,43 +104,74 @@ export default function Signup() {
     return age;
   };
 
+  // Uploads through the backend /upload endpoint, which signs the request to
+  // Cloudinary server-side. The old direct browser -> Cloudinary call used an
+  // unsigned preset that no longer exists, so every upload came back 400 and
+  // the user only ever saw "check your internet connection".
   const uploadImage = async (file: File): Promise<string> => {
     const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "al-quran-institute");
+    formData.append("image", file);
 
-    const cloudName = "dcp2soyzn";
+    const response = await fetch(AppRoutes.uploadImage, {
+      method: "POST",
+      body: formData,
+    });
 
-    const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
+    const data = await response.json().catch(() => ({} as any));
 
     if (!response.ok) {
-      throw new Error("Image upload failed");
+      throw new Error(
+        data?.message || `Image upload failed (${response.status}).`
+      );
     }
 
-    const data = await response.json();
+    const url = data?.data?.url || data?.url || data?.secure_url;
+    if (!url) {
+      throw new Error("Image upload failed: server did not return an image URL.");
+    }
 
-    return data.secure_url;
+    return url;
   };
+
+  // Client-side guard rails. These are a courtesy to the user, not security —
+  // the Cloudinary upload preset itself must also restrict formats, file size
+  // and folder, because anyone can post to it directly.
+  const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+  const MAX_IMAGE_BYTES = 2 * 1024 * 1024; // 2 MB
 
   // Image upload handler
   const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUploading(true);
+    setUploadError("");
     const file = e.target.files?.[0];
     if (!file) {
-      setUploading(false);
       return;
     }
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setUploadError("Please choose a JPG, PNG or WebP image.");
+      e.target.value = "";
+      return;
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      setUploadError("That image is over 2 MB. Please choose a smaller one.");
+      e.target.value = "";
+      return;
+    }
+    setUploading(true);
     try {
       const url = await uploadImage(file);
       setImageUrl(url);
+      setUploadError("");
       // alert("Image uploaded successfully!");
     } catch (error) {
+      // Show what actually went wrong — a generic "check your connection" hid
+      // real server errors (bad file type, size limit, misconfigured storage).
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : "We couldn't upload your photo. Please try again.";
+      console.error("Profile image upload failed:", error);
+      setUploadError(message);
+      e.target.value = "";
     } finally {
       setUploading(false);
     }
@@ -155,19 +194,39 @@ export default function Signup() {
   // const [date, setDate] = useState();
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const validatePassword = (password: string): boolean => {
     const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     return passwordPattern.test(password);
   };
 
+  // After a few seconds of waiting, tell the user the backend may be starting
+  // up (free-tier servers sleep and take up to a minute to wake).
+  useEffect(() => {
+    if (!isSubmitting) {
+      setShowStartHint(false);
+      return;
+    }
+    const timer = setTimeout(() => setShowStartHint(true), 8000);
+    return () => clearTimeout(timer);
+  }, [isSubmitting]);
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setShowStartHint(false);
     setIsSubmitting(true);
 
     if (!imageUrl) {
       setError("Please upload an image before submitting the form.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    const emailValue = e.target.email.value as string;
+    if (!EMAIL_RE.test(emailValue.trim())) {
+      setError("Please enter a valid email address. For example: name@example.com");
       setIsSubmitting(false);
       return;
     }
@@ -239,12 +298,14 @@ export default function Signup() {
         );
 
         // Redirect directly to appropriate dashboard based on role
+        // Trust the role the server assigned, never the one the client sent.
+        const assignedRole = responseData?.data?.user?.role ?? SIGNUP_ROLE;
         setTimeout(() => {
-          if (selectedRole === 'Admin') {
+          if (assignedRole === 'Admin') {
             router.push("/currentUser");
-          } else if (selectedRole === 'Teacher') {
+          } else if (assignedRole === 'Teacher') {
             router.push("/teacher");
-          } else if (selectedRole === 'Student') {
+          } else if (assignedRole === 'Student') {
             router.push("/students");
           } else {
             router.push("/");
@@ -255,12 +316,10 @@ export default function Signup() {
       }
     } catch (err: any) {
       setError(
-        err.response?.data?.message ||
-        (typeof err.response?.data === "string"
-          ? err.response?.data
-          : JSON.stringify(err.response?.data)) ||
-        err.message ||
-        "Signup failed. Please try again later."
+        getErrorMessage(err, {
+          endpoint: "/auth/signup",
+          fallback: "Signup failed. Please try again later.",
+        })
       );
     } finally {
       setIsSubmitting(false);
@@ -301,10 +360,12 @@ export default function Signup() {
   }
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden">
-      {/* <IslamicBackground /> */}
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-blue-100 via-white to-sky-100">
+      {/* soft blurred shapes behind the glass card */}
+      <div aria-hidden className="pointer-events-none absolute -top-24 -right-16 h-72 w-72 rounded-full bg-primary-300/30 blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-16 h-80 w-80 rounded-full bg-sky-300/30 blur-3xl" />
       <div className="relative z-2 min-h-screen flex items-center justify-center px-2 sm:px-4 py-4 sm:py-6">
-        <Card className="w-full max-w-md bg-white/70 backdrop-blur-sm border-blue-100/50 md:max-w-2xl lg:max-w-4xl">
+        <Card className="glass-panel w-full max-w-md md:max-w-2xl lg:max-w-4xl">
           <CardHeader className="text-center px-4 sm:px-6 py-4 sm:py-6">
             <Link
               href="/"
@@ -333,48 +394,33 @@ export default function Signup() {
           <CardContent>
             {/* Show error or success message */}
             {error && (
-              <div className="bg-red-100 text-red-700 p-3 mb-4 rounded-md text-center">
-                {typeof error === "string" ? error : JSON.stringify(error)}
+              <div
+                role="alert"
+                className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 p-3 mb-4 rounded-md text-sm leading-snug"
+              >
+                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
+                <span>{error}</span>
+              </div>
+            )}
+            {uploadError && (
+              <div
+                role="alert"
+                className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 p-3 mb-4 rounded-md text-sm leading-snug"
+              >
+                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
+                <span>{uploadError}</span>
               </div>
             )}
             {success && (
-              <div className="bg-green-100 text-green-700 p-3 mb-4 rounded-md text-center">
-                {success}
+              <div
+                role="status"
+                className="flex items-start gap-2 bg-green-50 border border-green-200 text-green-700 p-3 mb-4 rounded-md text-sm leading-snug"
+              >
+                <span className="mt-0.5 block h-2 w-2 shrink-0 rounded-full bg-green-500" />
+                <span>{success}</span>
               </div>
             )}
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Role Selection */}
-              <div className="space-y-2">
-                <Label className="text-blue-900 text-sm sm:text-base">Register As</Label>
-                <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
-                  {['Student', 'Teacher', 'Admin'].map((roleOption) => (
-                    <button
-                      key={roleOption}
-                      type="button"
-                      onClick={() => setSelectedRole(roleOption)}
-                      className={cn(
-                        "px-2 sm:px-4 py-2.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all touch-manipulation",
-                        selectedRole === roleOption
-                          ? "bg-blue-600 text-white shadow-md"
-                          : "bg-blue-100 text-blue-700 hover:bg-blue-200 active:bg-blue-300"
-                      )}
-                    >
-                      {roleOption}
-                    </button>
-                  ))}
-                </div>
-                {selectedRole === 'Admin' && (
-                  <p className="text-xs text-orange-600 mt-1">
-                    ⚠️ First Admin registration is auto-approved. Additional admins require approval.
-                  </p>
-                )}
-                {selectedRole === 'Teacher' && (
-                  <p className="text-xs text-blue-600 mt-1">
-                    👨‍🏫 Teacher accounts have access to student management
-                  </p>
-                )}
-              </div>
-
               {/* Common Fields for All Roles */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="relative space-y-2">
@@ -543,7 +589,8 @@ export default function Signup() {
                   <div className="col-span-full space-y-3 sm:space-y-4">
                     <Label className="text-blue-900 text-sm sm:text-base">Upload Photo</Label>
                     <input 
-                      type="file" 
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
                       onChange={handleUploadImage}
                       className="w-full text-xs sm:text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     />
@@ -639,7 +686,8 @@ export default function Signup() {
                   <div className="col-span-full space-y-3 sm:space-y-4">
                     <Label className="text-blue-900 text-sm sm:text-base">Upload Photo</Label>
                     <input 
-                      type="file" 
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
                       onChange={handleUploadImage}
                       className="w-full text-xs sm:text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     />
@@ -685,7 +733,8 @@ export default function Signup() {
                   <div className="col-span-full space-y-3 sm:space-y-4">
                     <Label className="text-blue-900 text-sm sm:text-base">Upload Photo</Label>
                     <input 
-                      type="file" 
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
                       onChange={handleUploadImage}
                       className="w-full text-xs sm:text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     />
@@ -733,6 +782,12 @@ export default function Signup() {
                 </div>
                 <p className="text-xs text-gray-600">Must contain uppercase, lowercase, number, and special character (min 8 chars)</p>
               </div>
+              {showStartHint && isSubmitting && (
+                <div className="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-800">
+                  <RefreshCw className="mt-0.5 h-4 w-4 shrink-0 animate-spin" />
+                  <span>{SERVER_STARTING_HINT}</span>
+                </div>
+              )}
               <Button
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white h-11 sm:h-12 text-sm sm:text-base font-medium touch-manipulation"

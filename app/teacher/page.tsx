@@ -14,8 +14,7 @@ import ProgressReport from "@/components/teacher/progress-report";
 import FeeReport from "@/components/admin/fee-report";
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, BookOpen, Clock, Star, LogOut, ArrowLeft, Video, Phone, DollarSign } from "lucide-react";
-import io from "socket.io-client";
-import { SOCKET_URL } from "@/app/constant/constant";
+import { getSocket } from "@/lib/socket";
 import NotificationBell from "@/components/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -120,16 +119,17 @@ export default function TeacherDashboard() {
     setLoading(false);
 
     // Setup socket for incoming calls from students
-    const socket = io(SOCKET_URL);
+    const socket = getSocket();
     socket.emit("register-user", { userId: user._id, userName: user.name, userType: "Teacher" });
 
-    socket.on("incoming-call", ({ from, roomId, studentName }) => {
-      console.log("Incoming call from student:", studentName);
+    const onIncomingCall = ({ from, roomId, studentName }: any) => {
       setIncomingCall({ from, roomId, studentName });
-    });
+    };
+    socket.on("incoming-call", onIncomingCall);
 
+    // The connection is shared app-wide — detach the listener, never disconnect.
     return () => {
-      socket.disconnect();
+      socket.off("incoming-call", onIncomingCall);
     };
   }, [user, authLoading, router]);
 

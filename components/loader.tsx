@@ -48,6 +48,41 @@ export function LoadingSpinner({
   );
 }
 
+interface LoadingStateProps {
+  message?: string;
+  hint?: string;
+  showHint?: boolean;
+  className?: string;
+}
+
+/**
+ * A visible loading block with a message. `hint` + `showHint` is used to tell
+ * the user the backend may be starting up (Render free tier sleeps), so they
+ * don't think the app is frozen.
+ */
+export function LoadingState({
+  message = "Loading...",
+  hint,
+  showHint = false,
+  className = "",
+}: LoadingStateProps) {
+  return (
+    <div role="status" className={`space-y-3 text-center ${className}`}>
+      <div className="flex items-center justify-center gap-3">
+        <LoadingSpinner color="blue" className="text-primary-200 dark:text-slate-700" />
+        <span className="text-sm font-medium text-primary-800 dark:text-blue-100">
+          {message}
+        </span>
+      </div>
+      {showHint && hint && (
+        <p className="mx-auto max-w-sm text-xs leading-relaxed text-amber-700 dark:text-amber-300">
+          {hint}
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function LoadingComponent() {
   return (
     <div className="p-8 space-y-8">

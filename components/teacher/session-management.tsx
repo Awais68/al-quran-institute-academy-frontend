@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import apiClient from "@/lib/api";
+import { getErrorMessage } from "@/lib/error-handler";
 import { useToast } from "@/hooks/use-toast";
 
 interface Session {
@@ -117,7 +118,10 @@ export default function SessionManagement({
       console.warn("Error scheduling session:", error);
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to schedule session",
+        description: getErrorMessage(error, {
+          endpoint: "/session",
+          fallback: "Failed to schedule session",
+        }),
         variant: "destructive",
       });
     } finally {

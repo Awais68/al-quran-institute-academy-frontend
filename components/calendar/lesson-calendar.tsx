@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, User, BookOpen, Video, Edit, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import apiClient from '@/lib/api';
+import { getErrorMessage } from '@/lib/error-handler';
 
 interface LessonEvent {
   id: string;
@@ -105,7 +106,10 @@ export default function LessonCalendar({ userRole = 'Student', userId, isEditabl
       console.warn('Error fetching lessons:', error);
       toast({
         title: 'Error',
-        description: 'Failed to load lessons',
+        description: getErrorMessage(error, {
+          endpoint: '/lessons',
+          fallback: 'Failed to load lessons',
+        }),
         variant: 'destructive'
       });
     } finally {
@@ -163,7 +167,10 @@ export default function LessonCalendar({ userRole = 'Student', userId, isEditabl
       console.warn('Error creating lesson:', error);
       toast({
         title: 'Error',
-        description: 'Failed to schedule lesson',
+        description: getErrorMessage(error, {
+          endpoint: '/lessons',
+          fallback: 'Failed to schedule lesson',
+        }),
         variant: 'destructive'
       });
     }
@@ -185,7 +192,10 @@ export default function LessonCalendar({ userRole = 'Student', userId, isEditabl
       console.warn('Error deleting lesson:', error);
       toast({
         title: 'Error',
-        description: 'Failed to delete lesson',
+        description: getErrorMessage(error, {
+          endpoint: '/lessons',
+          fallback: 'Failed to delete lesson',
+        }),
         variant: 'destructive'
       });
     }

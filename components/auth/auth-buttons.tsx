@@ -8,6 +8,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { AuthContext } from "@/app/context/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import apiClient from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
+import { getErrorMessage } from "@/lib/error-handler";
+import { Loader2 } from "lucide-react";
 
 interface AuthButtonsProps {
   className?: string;
@@ -24,7 +27,9 @@ export default function AuthButtons({
 }: AuthButtonsProps) {
   const [loginOpen, setLoginOpen] = useState(false);
   const [signup, setSignup] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const { user, setUser } = useContext(AuthContext);
+  const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -56,19 +61,31 @@ export default function AuthButtons({
   const openSignupModal = () => {
     setLoginOpen(false);
     setSignup(false);
-    router.push('/signup');
+    router.push('/signup/account');
   };
 
   const handleLogout = async () => {
+    if (loggingOut) return;
+    setLoggingOut(true);
     try {
       // Call logout endpoint to clear server-side session/cookie
       await apiClient.post('/auth/logout'); // Assuming there's a logout endpoint
     } catch (error) {
+      // Still log out locally even if the server can't be reached.
       console.warn('Logout error:', error);
+      toast({
+        title: "Note",
+        description: getErrorMessage(error, {
+          endpoint: "/auth/logout",
+          fallback: "You've been logged out on this device, but the server couldn't be reached.",
+        }),
+      });
     } finally {
       // Clear client-side state and token
       localStorage.removeItem('token');
+      document.cookie = 'token=; path=/; max-age=0; SameSite=Lax';
       setUser(null);
+      setLoggingOut(false);
       router.replace("/");
     }
   };
@@ -108,7 +125,11 @@ export default function AuthButtons({
           variant="outline"
           className="bg-white text-primary-600 hover:bg-primary-50"
           onClick={handleLogout}
+          disabled={loggingOut}
         >
+          {loggingOut ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : null}
           Logout
         </Button>
       </div>
@@ -136,7 +157,7 @@ export default function AuthButtons({
         >
           Login
         </Button>
-        <Link href="/signup" className="w-full border-black hover:bg-primary-50">
+        <Link href="/signup/account" className="w-full border-black hover:bg-primary-50">
           {/* <Button variant="outline" className=" w-full bg-black text-white">Register</Button> */}
           {/* Register */}
           <Button
@@ -176,7 +197,7 @@ export default function AuthButtons({
       >
         Login
       </Button>
-      <Link href="/signup" className="w-full border-black ">
+      <Link href="/signup/account" className="w-full border-black ">
         <Button variant="outline" className="bg-white text-primary-600 hover:bg-primary-50">Register</Button>
         {/* Register */}
       </Link>

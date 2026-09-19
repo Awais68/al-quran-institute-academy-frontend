@@ -1,20 +1,24 @@
 "use client";
 
 import { createContext, useState, useEffect } from "react";
-import apiClient from "@/lib/api";
-import { clearAuthToken } from "@/lib/auth-token";
+import axios from "axios";
+import apiClient, { isRetryableError } from "@/lib/api";
+import { clearAuthToken, getAuthToken } from "@/lib/auth-token";
+import { getErrorMessage } from "@/lib/error-handler";
+import { closeSocket } from "@/lib/socket";
 
 export const AuthContext = createContext();
 
 export default function AuthContextProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState("");
 
   useEffect(() => {
     const getCurrentUserInfo = async () => {
       try {
         // Check if token exists
-        const token = localStorage.getItem('token');
+        const token = getAuthToken();
         if (!token) {
           setUser(null);
           setLoading(false);
@@ -23,11 +27,31 @@ export default function AuthContextProvider({ children }) {
 
         const response = await apiClient.get('/getCurrentUser/getCurrentUser');
         setUser(response.data?.data);
+        setAuthError("");
       } catch (error) {
-        // If request fails, user is not authenticated
         setUser(null);
-        clearAuthToken();
-        console.warn('Failed to get current user:', error.message);
+
+        // Only an explicit rejection from the server means the session is
+        // actually dead. A timeout or a network error usually just means the
+        // free-tier backend is still waking up — throwing the token away there
+        // would log out a user whose session is perfectly valid.
+        const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+        const sessionRejected = status === 401 || status === 403;
+
+        if (sessionRejected) {
+          clearAuthToken();
+          closeSocket();
+        }
+
+        setAuthError(
+          getErrorMessage(error, {
+            endpoint: "/getCurrentUser/getCurrentUser",
+            fallback: isRetryableError(error)
+              ? "We couldn't reach the server. It may still be starting up — please try again in a moment."
+              : undefined,
+          })
+        );
+        console.warn('Failed to get current user:', getErrorMessage(error));
       } finally {
         setLoading(false);
       }
@@ -39,10 +63,17 @@ export default function AuthContextProvider({ children }) {
   const logout = () => {
     clearAuthToken();
     setUser(null);
+    // Drop the authenticated socket, and tell the service worker to throw away
+    // everything it cached — otherwise the next user on a shared device could
+    // be served this session's pages.
+    closeSocket();
+    if (typeof navigator !== "undefined" && navigator.serviceWorker?.controller) {
+      navigator.serviceWorker.controller.postMessage({ type: "CLEAR_CACHE" });
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading, logout }}>
+    <AuthContext.Provider value={{ user, setUser, loading, authError, logout }}>
       {children}
     </AuthContext.Provider>
   );

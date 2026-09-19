@@ -40,8 +40,9 @@ export const CONTACT = {
  * `sameAs` links the wrong entity to the brand in Google's knowledge graph.
  */
 export const SOCIAL_LINKS: string[] = [
-  "https://www.facebook.com/awais.shaikh.662440/",
-  "https://www.instagram.com/awaisshaikh0002/",
+  // Deliberately empty. The entries here used to be a developer's personal
+  // Facebook/Instagram profiles, which would tie the wrong person to the brand
+  // in Google's knowledge graph. Add the institute's own pages — nothing else.
 ];
 
 /** Build an absolute URL on the canonical origin. */

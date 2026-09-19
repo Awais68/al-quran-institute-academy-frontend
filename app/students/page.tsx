@@ -3,11 +3,10 @@
 import { useEffect, useState, useContext } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
-import { io } from "socket.io-client";
+import { getSocket } from "@/lib/socket";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AuthContext } from "@/app/context/AuthContext";
-import { SOCKET_URL } from "@/app/constant/constant";
 import {
   BookOpen,
   Calendar,
@@ -76,16 +75,17 @@ export default function StudentDashboard() {
     }
 
     // Setup socket for incoming calls from teachers
-    const socket = io(SOCKET_URL);
+    const socket = getSocket();
     socket.emit("register-user", { userId: user._id, userName: user.name, userType: "Student" });
 
-    socket.on("incoming-call", ({ from, roomId, teacherName }) => {
-      console.log("Incoming call from teacher:", teacherName);
+    const onIncomingCall = ({ from, roomId, teacherName }: any) => {
       setIncomingCall({ from, roomId, teacherName });
-    });
+    };
+    socket.on("incoming-call", onIncomingCall);
 
+    // The connection is shared app-wide — detach the listener, never disconnect.
     return () => {
-      socket.disconnect();
+      socket.off("incoming-call", onIncomingCall);
     };
   }, [user, loading, router]);
 
@@ -120,9 +120,9 @@ export default function StudentDashboard() {
       return;
     }
 
-    const roomId = `room-${teacherData._id}-${Date.now()}`;
-    const socket = io(SOCKET_URL);
-    
+    const roomId = `room-${teacherData._id}-${crypto.randomUUID()}`;
+    const socket = getSocket();
+
     socket.emit("call-teacher", {
       teacherId: teacherData._id,
       studentName: user?.name || "Student",
@@ -136,7 +136,6 @@ export default function StudentDashboard() {
 
     setTimeout(() => {
       router.push(`/video-call/${roomId}`);
-      socket.disconnect();
     }, 500);
   };
 

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { programTitles } from "@/lib/programs";
+import { getErrorMessage } from "@/lib/error-handler";
 
 type FieldErrors = Partial<Record<"fullName" | "email" | "phone" | "course", string>>;
 type Status = { kind: "idle" | "success" | "error"; message?: string };
@@ -92,11 +93,14 @@ export default function EnrollForm() {
       setValues(EMPTY);
       setErrors({});
       setStatus({ kind: "success", message: result.message });
-    } catch {
+    } catch (error) {
       setStatus({
         kind: "error",
-        message:
-          "We couldn't reach the server. Check your connection and try again.",
+        message: getErrorMessage(error, {
+          endpoint: "/api/signup",
+          fallback:
+            "We couldn't reach the server. Check your connection and try again.",
+        }),
       });
     } finally {
       setSubmitting(false);

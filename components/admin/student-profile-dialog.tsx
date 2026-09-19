@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import apiClient from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { getErrorMessage } from "@/lib/error-handler";
 
 interface Student {
   _id: string;
@@ -101,7 +102,10 @@ export default function StudentProfileDialog({
       console.warn('Error updating student:', error);
       toast({
         title: "Error",
-        description: "Failed to update student profile",
+        description: getErrorMessage(error, {
+          endpoint: "/user/admin/updateUser",
+          fallback: "Failed to update student profile",
+        }),
         variant: "destructive",
       });
     } finally {

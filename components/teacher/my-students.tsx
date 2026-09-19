@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useContext } from "react";
-import { io } from "socket.io-client";
+import { getSocket } from "@/lib/socket";
 import { AuthContext } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,6 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import apiClient from "@/lib/api";
 import ProfileSidebar from "@/components/student/profile-sidebar";
-import { SOCKET_URL } from "@/app/constant/constant";
 
 interface Student {
   _id: string;
@@ -303,16 +302,14 @@ export default function MyStudents({ students, onRefresh }: MyStudentsProps) {
                           View Profile
                         </DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => {
-                          const roomId = `room-${student._id}-${Date.now()}`;
-                          const socket = io(SOCKET_URL);
-                          socket.emit("call-student", {
+                          const roomId = `room-${student._id}-${crypto.randomUUID()}`;
+                          getSocket().emit("call-student", {
                             studentId: student._id,
                             teacherName: user?.name || "Teacher",
                             roomId: roomId
                           });
                           setTimeout(() => {
                             router.push(`/video-call/${roomId}`);
-                            socket.disconnect();
                           }, 500);
                         }}>
                           <Video className="h-4 w-4 mr-2" />

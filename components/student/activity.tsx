@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import apiClient from "@/lib/api";
+import { getErrorMessage } from "@/lib/error-handler";
 
 interface Activity {
   _id: string;
@@ -156,7 +157,10 @@ export default function Activity({ studentId }: ActivityProps) {
     } catch (error: any) {
       toast({
         title: "Upload failed",
-        description: error.response?.data?.message || "Please try again later",
+        description: getErrorMessage(error, {
+          endpoint: "/activity",
+          fallback: "Please try again later",
+        }),
         variant: "destructive",
       });
     } finally {

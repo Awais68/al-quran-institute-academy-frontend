@@ -8,9 +8,10 @@ import { Mail, MapPin, Phone, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import axios from "axios";
 import { cn } from "@/lib/utils";
-import { AppRoutes } from "@/app/constant/constant";
+import apiClient, { isRetryableError } from "@/lib/api";
+import { getErrorMessage } from "@/lib/error-handler";
+import { CONTACT } from "@/lib/site";
 
 type FormData = {
   name: string;
@@ -36,6 +37,7 @@ export default function Contact() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
 
@@ -82,11 +84,13 @@ export default function Contact() {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
+    setSubmitError("");
     const data = { ...formData };
 
-    // Simulate form submission
     try {
-      const response = await axios.post(AppRoutes.contact, data);
+      // apiClient (not bare axios) so this inherits the base URL, the timeout
+      // and the auth interceptors like every other call in the app.
+      await apiClient.post("/contactForms", data);
 
       setSubmitSuccess(true);
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
@@ -96,6 +100,16 @@ export default function Contact() {
         setSubmitSuccess(false);
       }, 5000);
     } catch (error) {
+      // This form is a lead channel. Failing silently meant the enquiry was
+      // lost and nobody — visitor or institute — ever knew.
+      setSubmitError(
+        getErrorMessage(error, {
+          endpoint: "/contactForms",
+          fallback: isRetryableError(error)
+            ? "We couldn't reach the server. It may still be starting up — please try again in a moment."
+            : "We couldn't send your message. Please try again, or reach us on WhatsApp.",
+        })
+      );
       console.warn("Error submitting form:", error);
     } finally {
       setIsSubmitting(false);
@@ -262,8 +276,28 @@ export default function Contact() {
               </Button>
 
               {submitSuccess && (
-                <div className="p-3 sm:p-4 bg-green-50 border border-green-200 text-green-700 rounded-md text-xs sm:text-sm">
+                <div
+                  role="status"
+                  className="p-3 sm:p-4 bg-green-50 border border-green-200 text-green-700 rounded-md text-xs sm:text-sm"
+                >
                   Thank you for your message! We will get back to you soon.
+                </div>
+              )}
+
+              {submitError && (
+                <div
+                  role="alert"
+                  className="p-3 sm:p-4 bg-red-50 border border-red-200 text-red-700 rounded-md text-xs sm:text-sm"
+                >
+                  <p>{submitError}</p>
+                  <a
+                    href={CONTACT.whatsapp}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-block font-semibold underline underline-offset-2"
+                  >
+                    Message us on WhatsApp instead
+                  </a>
                 </div>
               )}
             </form>

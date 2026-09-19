@@ -8,8 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AuthContext } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
-import io from "socket.io-client";
-import { SOCKET_URL } from "@/app/constant/constant";
+import { getSocket } from "@/lib/socket";
 import {
   BookOpen,
   Video,
@@ -56,17 +55,18 @@ export default function MyCourses({
   useEffect(() => {
     if (!user?._id) return;
 
-    const socket = io(SOCKET_URL);
+    const socket = getSocket();
 
     socket.emit("register-user", { userId: user._id, userName: user.name, userType: "Student" });
 
-    socket.on("incoming-call", ({ from, roomId, teacherName }) => {
-      console.log("Incoming call from:", teacherName);
+    const onIncomingCall = ({ from, roomId, teacherName }: any) => {
       setIncomingCall({ from, roomId, teacherName });
-    });
+    };
+    socket.on("incoming-call", onIncomingCall);
 
+    // The connection is shared app-wide — detach the listener, never disconnect.
     return () => {
-      socket.disconnect();
+      socket.off("incoming-call", onIncomingCall);
     };
   }, [user]);
 

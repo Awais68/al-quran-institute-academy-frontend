@@ -1,4 +1,4 @@
-const CACHE_NAME = 'al-quran-institute-v1';
+const CACHE_NAME = 'al-quran-institute-v2';
 const STATIC_ASSETS = [
   '/',
   '/offline',
@@ -37,77 +37,70 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch event - network first, fallback to cache
+// Fetch handler.
+//
+// Rule: this worker only ever caches *public, same-origin* assets. It used to
+// treat anything whose URL did not contain "/api/" as a static asset, which
+// meant authenticated backend responses (the backend is on another origin and
+// has no "/api/" prefix) were cached and replayed — on a shared device the next
+// user could be served the previous user's data.
 self.addEventListener('fetch', (event) => {
   const { request } = event;
 
-  // Skip non-GET requests
+  // Only GETs are cacheable.
   if (request.method !== 'GET') return;
 
-  // Skip chrome extensions and other non-http(s) requests
+  // Skip chrome extensions and other non-http(s) requests.
   if (!request.url.startsWith('http')) return;
 
-  // Network first strategy for API calls
-  if (request.url.includes('/api/') || request.url.includes('localhost:4000')) {
+  const url = new URL(request.url);
+
+  // Cross-origin (backend API, Cloudinary, analytics): never touch it. Let the
+  // network handle it so nothing personal lands in the cache.
+  if (url.origin !== self.location.origin) return;
+
+  // Same-origin route handlers are dynamic — network only.
+  if (url.pathname.startsWith('/api/')) return;
+
+  // Navigations: network first so a deploy is picked up immediately, with the
+  // offline page as the fallback. HTML is never served stale from cache.
+  if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
-        .then((response) => {
-          // Clone and cache successful responses
-          if (response && response.status === 200) {
-            const responseClone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, responseClone);
-            });
-          }
-          return response;
-        })
-        .catch(() => {
-          // Return cached response if network fails
-          return caches.match(request).then((cached) => {
-            return cached || caches.match('/offline');
-          });
-        })
+      fetch(request).catch(() => caches.match(request).then((cached) => cached || caches.match('/offline')))
     );
     return;
   }
 
-  // Cache first strategy for static assets
+  // Static assets (_next/static, images, fonts, manifest): cache first with a
+  // background refresh.
   event.respondWith(
     caches.match(request).then((cached) => {
-      if (cached) {
-        // Return cached version and update in background
-        fetch(request).then((response) => {
-          if (response && response.status === 200) {
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, response);
-            });
+      const network = fetch(request)
+        .then((response) => {
+          if (response && response.status === 200 && response.type === 'basic') {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
           }
-        });
-        return cached;
-      }
-
-      // Fetch from network
-      return fetch(request).then((response) => {
-        // Cache successful responses
-        if (response && response.status === 200) {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseClone);
-          });
-        }
-        return response;
-      }).catch(() => {
-        // Return offline page for navigation requests
-        if (request.mode === 'navigate') {
-          return caches.match('/offline');
-        }
-        return new Response('Network error', {
+          return response;
+        })
+        .catch(() => cached || new Response('Network error', {
           status: 408,
-          headers: { 'Content-Type': 'text/plain' }
-        });
-      });
+          headers: { 'Content-Type': 'text/plain' },
+        }));
+
+      return cached || network;
     })
   );
+});
+
+// Logout tells the worker to drop everything it holds, so nothing survives into
+// the next session on a shared device.
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    event.waitUntil(
+      caches.keys().then((names) => Promise.all(names.map((name) => caches.delete(name))))
+    );
+  }
 });
 
 // Background sync for offline actions

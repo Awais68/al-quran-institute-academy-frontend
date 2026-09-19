@@ -16,6 +16,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Mail, CheckCircle2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import apiClient from "@/lib/api";
+import { getErrorMessage } from "@/lib/error-handler";
 
 interface ForgotPasswordModalProps {
   open: boolean;
@@ -64,9 +65,10 @@ export default function ForgotPasswordModal({ open, onOpenChange }: ForgotPasswo
         onOpenChange(false);
       }, 3000);
     } catch (error: any) {
-      const errorMessage =
-        error?.response?.data?.message ||
-        "Failed to send reset email. Please try again.";
+      const errorMessage = getErrorMessage(error, {
+        endpoint: "/auth/forgot-password",
+        fallback: "Failed to send reset email. Please try again.",
+      });
       setError(errorMessage);
       toast({
         title: "Error",
@@ -89,7 +91,7 @@ export default function ForgotPasswordModal({ open, onOpenChange }: ForgotPasswo
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="glass-modal sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-2xl text-blue-900">Reset Password</DialogTitle>
           <DialogDescription>

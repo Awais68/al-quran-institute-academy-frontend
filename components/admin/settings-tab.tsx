@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { User, Lock, Image as ImageIcon, Settings2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import apiClient from "@/lib/api";
+import { getErrorMessage } from "@/lib/error-handler";
 
 interface SettingsTabProps {
   user: any;
@@ -48,7 +49,10 @@ export default function SettingsTab({ user, onUpdate }: SettingsTabProps) {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to update profile",
+        description: getErrorMessage(error, {
+          endpoint: "/user",
+          fallback: "Failed to update profile",
+        }),
         variant: "destructive",
       });
     } finally {
@@ -89,7 +93,10 @@ export default function SettingsTab({ user, onUpdate }: SettingsTabProps) {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to change password",
+        description: getErrorMessage(error, {
+          endpoint: "/user",
+          fallback: "Failed to change password",
+        }),
         variant: "destructive",
       });
     } finally {

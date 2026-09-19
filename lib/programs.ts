@@ -7,8 +7,20 @@
  * drives /programs, /programs/[slug] and signup course validation.
  */
 
+/**
+ * Date the catalogue copy below was last edited, as YYYY-MM-DD.
+ *
+ * Feeds <lastmod> in /sitemap.xml. It has to be a hand-maintained constant:
+ * emitting new Date() there told crawlers every page changed on every crawl,
+ * which makes Google discard the signal entirely. Bump this whenever a
+ * program's copy changes, or set updatedAt on the single program you edited.
+ */
+export const PROGRAMS_UPDATED_AT = "2026-09-19";
+
 export type Program = {
   slug: string;
+  /** Overrides PROGRAMS_UPDATED_AT for this one program. YYYY-MM-DD. */
+  updatedAt?: string;
   title: string;
   urduTitle: string;
   tagline: string;

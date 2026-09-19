@@ -9,12 +9,23 @@
 // Canonical host — every other hostname 301s here. Keep in sync with lib/site.ts.
 const CANONICAL_HOST = "alquraninstituteonline.com";
 
+// Backend origin the browser is allowed to call. Keep in sync with
+// app/constant/constant.js.
+const BACKEND_ORIGIN =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  "https://al-quran-institute-online-backend.onrender.com";
+
 const nextConfig = {
   eslint: {
-    ignoreDuringBuilds: true,
+    // Lint runs as part of the build. The config in eslint.config.mjs keeps
+    // the pre-existing debt at "warn" so only new hard errors break a deploy.
+    ignoreDuringBuilds: false,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    // The codebase type-checks cleanly, so let the build fail on real errors
+    // rather than shipping them. (A syntax error in a stale `page_backup.tsx`
+    // used to make `tsc` skip semantic checks entirely and hide 12 of them.)
+    ignoreBuildErrors: false,
   },
   images: {
     // Widths the optimizer is allowed to emit for `fill` / `sizes`-driven
@@ -37,6 +48,59 @@ const nextConfig = {
         pathname: "/**",
       },
     ],
+  },
+  async headers() {
+    // Content-Security-Policy is deliberately Report-Only for now: the app
+    // loads Cloudinary images, talks to the backend over XHR + websockets, and
+    // Tailwind/Next inject inline styles. Watch the violation reports, then
+    // switch this to `Content-Security-Policy` once it is clean.
+    const csp = [
+      "default-src 'self'",
+      // 'unsafe-inline'/'unsafe-eval' are required by the Next.js runtime.
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: blob: https://res.cloudinary.com",
+      "media-src 'self' blob:",
+      "font-src 'self' data:",
+      `connect-src 'self' ${BACKEND_ORIGIN} ${BACKEND_ORIGIN.replace(/^https/, "wss")} https://api.cloudinary.com`,
+      "frame-ancestors 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "object-src 'none'",
+    ].join("; ");
+
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          // Clickjacking. `frame-ancestors` above is the modern equivalent;
+          // X-Frame-Options stays for older browsers.
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          // Camera and microphone are needed by the video call pages, so they
+          // are allowed for this origin only. Everything else is denied.
+          {
+            key: "Permissions-Policy",
+            value: "camera=(self), microphone=(self), geolocation=(), interest-cohort=()",
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+          { key: "X-DNS-Prefetch-Control", value: "on" },
+          { key: "Content-Security-Policy-Report-Only", value: csp },
+        ],
+      },
+      {
+        // The service worker must never be served from a stale cache, or a bad
+        // version pins itself in place.
+        source: "/sw.js",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+        ],
+      },
+    ];
   },
   async redirects() {
     return [

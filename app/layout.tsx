@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import AuthContextProvider from "./context/AuthContext";
 import ErrorBoundary from "@/components/error-boundary";
 import { Toaster } from "@/components/ui/toaster";
+import TrialDemoModal from "@/components/trial-demo-modal";
 import "react-day-picker/dist/style.css";
 import {
   OG_IMAGE,
@@ -22,22 +23,28 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-// Load Noto Nastaliq Urdu font for Urdu text
+// Noto Nastaliq Urdu for Urdu text. Served as woff2 subset to the Arabic
+// script + Latin punctuation ranges: 1 MB of raw TTF became ~280 kB, and the
+// full OpenType layout features are kept so Nastaliq ligatures still shape
+// correctly.
 const notoNastaliq = localFont({
   src: [
     {
-      path: "../public/fonts/NotoNastaliqUrdu-Regular.ttf",
+      path: "../public/fonts/NotoNastaliqUrdu-Regular.woff2",
       weight: "400",
       style: "normal",
     },
     {
-      path: "../public/fonts/NotoNastaliqUrdu-Bold.ttf",
+      path: "../public/fonts/NotoNastaliqUrdu-Bold.woff2",
       weight: "700",
       style: "normal",
     },
   ],
   display: "swap",
   variable: "--font-noto",
+  // Urdu content is a minority of the page; don't block first paint on it.
+  preload: false,
+  fallback: ["Noto Naskh Arabic", "serif"],
 });
 
 export const metadata: Metadata = {
@@ -101,7 +108,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/images/al-quran-institute-online-logo-transparent.png",
-    apple: "/icons/icon-192x192.png",
+    apple: "/apple-touch-icon.png",
   },
   manifest: "/manifest.json",
   appleWebApp: {
@@ -161,6 +168,7 @@ export default function RootLayout({
             >
               {children}
               <Toaster />
+              <TrialDemoModal />
             </ThemeProvider>
           </AuthContextProvider>
         </ErrorBoundary>

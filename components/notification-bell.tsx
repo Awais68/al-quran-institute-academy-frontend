@@ -12,7 +12,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { AuthContext } from "@/app/context/AuthContext";
 import apiClient from "@/lib/api";
-import { io, Socket } from "socket.io-client";
+import type { Socket } from "socket.io-client";
+import { getSocket } from "@/lib/socket";
 import NotificationItem from "./notification-item";
 
 interface Notification {
@@ -61,7 +62,7 @@ export default function NotificationBell() {
   useEffect(() => {
     if (!user?._id) return;
 
-    const socketConnection = io("http://localhost:4000");
+    const socketConnection = getSocket();
     setSocket(socketConnection);
 
     socketConnection.emit("register-user", {
@@ -70,13 +71,15 @@ export default function NotificationBell() {
     });
 
     // Listen for new notifications
-    socketConnection.on("new-notification", (notification: Notification) => {
+    const onNewNotification = (notification: Notification) => {
       setNotifications((prev) => [notification, ...prev.slice(0, 9)]);
       setUnreadCount((prev) => prev + 1);
-    });
+    };
+    socketConnection.on("new-notification", onNewNotification);
 
+    // The connection is shared app-wide — detach the listener, never disconnect.
     return () => {
-      socketConnection.disconnect();
+      socketConnection.off("new-notification", onNewNotification);
     };
   }, [user]);
 

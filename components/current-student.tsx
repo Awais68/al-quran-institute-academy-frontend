@@ -45,6 +45,7 @@ interface Student {
   image?: string;
   role: string;
   roll_no: string;
+  status?: string;
 }
 
 interface Activity {

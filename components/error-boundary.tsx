@@ -9,7 +9,12 @@ interface Props {
 
 interface State {
   hasError: boolean;
-  error?: Error;
+  /**
+   * React attaches a digest to errors thrown during server rendering. It is an
+   * opaque id that maps to the real stack in the server logs — safe to show,
+   * and the only thing a user can usefully quote to support.
+   */
+  digest?: string;
 }
 
 class ErrorBoundary extends Component<Props, State> {
@@ -18,8 +23,8 @@ class ErrorBoundary extends Component<Props, State> {
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+  static getDerivedStateFromError(error: Error & { digest?: string }): State {
+    return { hasError: true, digest: error.digest };
   }
 
   componentDidCatch(error: Error, errorInfo: any) {
@@ -48,8 +53,18 @@ class ErrorBoundary extends Component<Props, State> {
             </div>
             <h3 className="mt-4 text-lg font-medium text-gray-900">Something went wrong</h3>
             <p className="mt-2 text-sm text-gray-500">
-              {this.state.error?.message || 'An unexpected error occurred.'}
+              {/*
+                Never render error.message here. It is whatever the thrown
+                object happened to carry — a stack trace, a database error, an
+                internal URL — and this boundary wraps the whole app.
+              */}
+              Something on this page failed to load. Refreshing usually fixes it.
             </p>
+            {this.state.digest && (
+              <p className="mt-2 font-mono text-xs text-gray-400">
+                Reference: {this.state.digest}
+              </p>
+            )}
             <div className="mt-6">
               <Button
                 onClick={() => window.location.reload()}

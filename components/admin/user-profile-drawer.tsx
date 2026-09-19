@@ -11,6 +11,7 @@ import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import apiClient from "@/lib/api";
+import { getErrorMessage } from "@/lib/error-handler";
 import { Mail, Phone, MapPin, BookOpen, Clock, DollarSign, UserCheck } from "lucide-react";
 
 interface UserProfileDrawerProps {
@@ -58,7 +59,10 @@ export default function UserProfileDrawer({ user, open, onOpenChange, onUpdate }
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to update user",
+        description: getErrorMessage(error, {
+          endpoint: "/user/admin/updateUser",
+          fallback: "Failed to update user",
+        }),
         variant: "destructive",
       });
     } finally {

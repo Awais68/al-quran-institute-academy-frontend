@@ -1,38 +1,29 @@
-// import * as React from "react"
-
-// const MOBILE_BREAKPOINT = 768
-
-// export function useIsMobile() {
-//   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
-
-//   React.useEffect(() => {
-//     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
-//     const onChange = () => {
-//       setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
-//     }
-//     mql.addEventListener("change", onChange)
-//     setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
-//     return () => mql.removeEventListener("change", onChange)
-//   }, [])
-
-//   return !!isMobile
-// }
-
-// hooks/use-mobile.ts
-
 import { useEffect, useState } from "react";
 
+/**
+ * True below the given breakpoint.
+ *
+ * Uses `matchMedia`, which only fires when the breakpoint is actually crossed.
+ * The previous implementation called `setState` on every `resize` event, so
+ * dragging a desktop window triggered dozens of re-renders.
+ *
+ * Note this still starts `false` on the server and on the first client render —
+ * so never use it to pick which image to render. Do that with CSS, or the
+ * browser downloads the desktop asset before hydration and the mobile one
+ * after.
+ */
 export function useIsMobile(breakpoint = 768): boolean {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < breakpoint);
+    const mql = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
+    const onChange = (event: MediaQueryListEvent | MediaQueryList) => {
+      setIsMobile(event.matches);
     };
 
-    checkScreenSize();
-    window.addEventListener("resize", checkScreenSize);
-    return () => window.removeEventListener("resize", checkScreenSize);
+    onChange(mql);
+    mql.addEventListener("change", onChange);
+    return () => mql.removeEventListener("change", onChange);
   }, [breakpoint]);
 
   return isMobile;

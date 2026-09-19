@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import apiClient from "@/lib/api";
+import { getErrorMessage } from "@/lib/error-handler";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -145,7 +146,10 @@ export default function StudentProfileEnhanced({ studentId, isAdmin = false }: S
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to add payment",
+        description: getErrorMessage(error, {
+          endpoint: "/fees",
+          fallback: "Failed to add payment",
+        }),
         variant: "destructive"
       });
     } finally {
@@ -168,7 +172,10 @@ export default function StudentProfileEnhanced({ studentId, isAdmin = false }: S
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to update status",
+        description: getErrorMessage(error, {
+          endpoint: "/fees",
+          fallback: "Failed to update status",
+        }),
         variant: "destructive"
       });
     }
@@ -192,7 +199,10 @@ export default function StudentProfileEnhanced({ studentId, isAdmin = false }: S
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to send receipt",
+        description: getErrorMessage(error, {
+          endpoint: "/fees",
+          fallback: "Failed to send receipt",
+        }),
         variant: "destructive"
       });
     }
