@@ -48,6 +48,8 @@ export function extractServerMessage(data: unknown): string | null {
 
   const candidates: unknown[] = [
     data.message,
+    // `msg` is what this backend's sendResponse() helper uses.
+    data.msg,
     data.error,
     data.detail,
     data.error_description,

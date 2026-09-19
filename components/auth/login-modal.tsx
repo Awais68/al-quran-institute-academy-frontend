@@ -32,6 +32,8 @@ import {
 import ForgotPasswordModal from "./forgot-password-modal";
 import { setAuthToken } from "@/lib/auth-token";
 import { refreshSocketAuth } from "@/lib/socket";
+import { dashboardPathForRole } from "@/lib/dashboard-path";
+import { CHANGE_PASSWORD_PATH } from "@/lib/api";
 
 interface LoginModalProps {
   open: boolean;
@@ -155,14 +157,13 @@ export default function LoginModal({
       setError("");
       setFieldErrors({});
 
-      if (userData.role === "Admin") {
-        router.replace("/currentUser");
-      } else if (userData.role === "Teacher") {
-        router.replace("/teacher");
-      } else if (userData.role === "Student") {
-        router.replace("/students");
+      // An account created by an admin still holds a generated password. The
+      // backend blocks every other endpoint until it is changed, so send the
+      // user straight to the form instead of to a dashboard that cannot load.
+      if (userData.mustResetPassword) {
+        router.replace(CHANGE_PASSWORD_PATH);
       } else {
-        router.replace("/");
+        router.replace(dashboardPathForRole(userData.role));
       }
     } catch (err: any) {
       setError(getErrorMessage(err, { endpoint: "/auth/login" }));

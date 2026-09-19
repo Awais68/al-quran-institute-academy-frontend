@@ -14,6 +14,7 @@ const protectedRoutes = [
   '/admin',
   '/session',
   '/video-call',
+  '/change-password',
 ];
 
 // Routes that should redirect authenticated users away (account creation).
@@ -56,6 +57,7 @@ export const config = {
     '/admin/:path*',
     '/session/:path*',
     '/video-call/:path*',
+    '/change-password',
     '/signup/account',
   ],
 };

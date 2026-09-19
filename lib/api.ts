@@ -12,6 +12,24 @@ const apiClient = axios.create({
   },
 });
 
+/** Path of the page that lets a user set a new password. */
+export const CHANGE_PASSWORD_PATH = '/change-password';
+
+/**
+ * The backend answers 403 with this code for every request made by an account
+ * that still carries `mustResetPassword` (an admin-created teacher who has not
+ * changed the generated password yet). Only POST /auth/change-password is
+ * exempt, so the only way forward is that page.
+ */
+export const PASSWORD_RESET_CODE = 'PASSWORD_RESET_REQUIRED';
+
+export function isPasswordResetRequired(error: unknown): boolean {
+  if (!axios.isAxiosError(error)) return false;
+  if (error.response?.status !== 403) return false;
+  const body = error.response.data as { data?: { code?: string } } | undefined;
+  return body?.data?.code === PASSWORD_RESET_CODE;
+}
+
 /** Statuses that are worth retrying when the server wakes up or is overloaded. */
 const RETRYABLE_STATUS = new Set([408, 429, 500, 502, 503, 504]);
 
@@ -83,13 +101,27 @@ apiClient.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
-      const isLoginEndpoint = error.config?.url?.includes('/auth/login');
-      // Only clear the token when an authenticated request fails (not on login itself,
-      // where 401 means wrong credentials and is handled by the form's catch block)
-      if (!isLoginEndpoint && getAuthToken()) {
+      const url = error.config?.url ?? '';
+      // Only clear the token when an authenticated request fails. On login a 401
+      // means wrong credentials, and on change-password it means the *current*
+      // password was mistyped — neither says anything about the session, and
+      // both are handled by the form's catch block.
+      const isCredentialCheck =
+        url.includes('/auth/login') || url.includes('/auth/change-password');
+      if (!isCredentialCheck && getAuthToken()) {
         clearAuthToken();
       }
     }
+
+    // A pending password reset blocks every other endpoint, so there is nothing
+    // any page can do about this error except send the user to the form. The
+    // token stays put — it is still valid, and the form needs it.
+    if (isPasswordResetRequired(error) && typeof window !== 'undefined') {
+      if (window.location.pathname !== CHANGE_PASSWORD_PATH) {
+        window.location.assign(CHANGE_PASSWORD_PATH);
+      }
+    }
+
     return Promise.reject(error);
   }
 );

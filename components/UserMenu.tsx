@@ -4,6 +4,8 @@ import apiClient from "@/lib/api";
 import { AuthContext } from "@/app/context/AuthContext";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
+import { CHANGE_PASSWORD_PATH } from "@/lib/api";
+import { dashboardPathForRole } from "@/lib/dashboard-path";
 
 export default function UserMenu() {
   const { user, setUser } = useContext(AuthContext);
@@ -27,13 +29,7 @@ export default function UserMenu() {
   };
 
   const handleProfileClick = () => {
-    if (user?.role === 'Teacher') {
-      router.push('/teacher');
-    } else if (user?.role === 'Student') {
-      router.push('/students');
-    } else if (user?.role === 'Admin') {
-      router.push('/currentUser');
-    }
+    if (user?.role) router.push(dashboardPathForRole(user.role));
   };
 
   return (
@@ -52,6 +48,12 @@ export default function UserMenu() {
           {userName}
         </span>
       </div>
+      <button
+        onClick={() => router.push(CHANGE_PASSWORD_PATH)}
+        className="hidden sm:inline text-sm font-medium text-primary-600 hover:text-primary-800"
+      >
+        Change password
+      </button>
       <button
         onClick={handleLogout}
         className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow text-sm ml-2"

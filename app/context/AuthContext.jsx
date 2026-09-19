@@ -2,7 +2,7 @@
 
 import { createContext, useState, useEffect } from "react";
 import axios from "axios";
-import apiClient, { isRetryableError } from "@/lib/api";
+import apiClient, { isPasswordResetRequired, isRetryableError } from "@/lib/api";
 import { clearAuthToken, getAuthToken } from "@/lib/auth-token";
 import { getErrorMessage } from "@/lib/error-handler";
 import { closeSocket } from "@/lib/socket";
@@ -31,12 +31,24 @@ export default function AuthContextProvider({ children }) {
       } catch (error) {
         setUser(null);
 
+        // Not a broken session: the account simply owes a password change, and
+        // lib/api has already redirected to the form. Showing an auth error
+        // here would only confuse the user on a page that works fine.
+        if (isPasswordResetRequired(error)) {
+          setAuthError("");
+          return;
+        }
+
         // Only an explicit rejection from the server means the session is
         // actually dead. A timeout or a network error usually just means the
         // free-tier backend is still waking up — throwing the token away there
         // would log out a user whose session is perfectly valid.
+        // A 403 that only asks for a password change is not a dead session:
+        // the token still works, and lib/api has already sent the user to the
+        // change-password page. Throwing the token away there would strand them.
         const status = axios.isAxiosError(error) ? error.response?.status : undefined;
-        const sessionRejected = status === 401 || status === 403;
+        const sessionRejected =
+          (status === 401 || status === 403) && !isPasswordResetRequired(error);
 
         if (sessionRejected) {
           clearAuthToken();
