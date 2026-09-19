@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 // is a logged-out utility page — noindex, with its own canonical so it doesn't
 // inherit the homepage one from the root layout.
 export const metadata: Metadata = {
-  title: "Create Your Student Account | Al-Quran Institute Online",
+  title: "Create Your Student Account",
   description:
     "Create your Al-Quran Institute Online student account to schedule classes and access your dashboard.",
   alternates: { canonical: "/signup/account" },

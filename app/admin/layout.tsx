@@ -21,7 +21,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 
 // Private route: never index, and don't inherit the homepage canonical.
 export const metadata: Metadata = {
-  title: "Admin | Al-Quran Institute Online",
+  title: "Admin",
   alternates: { canonical: "/admin" },
   robots: { index: false, follow: false, nocache: true },
 };
