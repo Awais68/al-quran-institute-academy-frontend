@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -71,10 +71,12 @@ export function CallRoom({ sessionId, title, onJoined }: CallRoomProps) {
     enabled: !authLoading && !!user,
   });
 
-  if (!authLoading && !user) {
-    router.replace("/");
-    return null;
-  }
+  // Redirecting has to happen after the render, not during it.
+  useEffect(() => {
+    if (!authLoading && !user) router.replace("/");
+  }, [authLoading, user, router]);
+
+  if (!authLoading && !user) return null;
 
   return (
     <div className="min-h-screen bg-gray-900">
