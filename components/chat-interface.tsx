@@ -37,6 +37,8 @@ interface ChatInterfaceProps {
   recipientName: string;
   recipientImage?: string;
   onClose?: () => void;
+  /** Called after a message leaves, so a parent list can re-sort. */
+  onSent?: () => void;
 }
 
 export default function ChatInterface({
@@ -44,6 +46,7 @@ export default function ChatInterface({
   recipientName,
   recipientImage,
   onClose,
+  onSent,
 }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -67,8 +70,9 @@ export default function ChatInterface({
         (message.senderId._id === recipientId && message.receiverId._id === user?._id) ||
         (message.senderId._id === user?._id && message.receiverId._id === recipientId)
       ) {
-        setMessages((prev) => [...prev, message]);
-        scrollToBottom();
+        setMessages((prev) =>
+          prev.some((m) => m._id === message._id) ? prev : [...prev, message]
+        );
       }
     };
     socket.on("new-message", onNewMessage);
@@ -77,7 +81,7 @@ export default function ChatInterface({
     return () => {
       socket.off("new-message", onNewMessage);
     };
-  }, [recipientId, user]);
+  }, [recipientId, user?._id]);
 
   useEffect(() => {
     scrollToBottom();
@@ -111,10 +115,13 @@ export default function ChatInterface({
         content: newMessage.trim(),
       });
 
-      if (response.data && response.data.data) {
-        setMessages([...messages, response.data.data.message]);
+      const sent = response.data?.data?.message;
+      if (sent) {
+        setMessages((prev) =>
+          prev.some((m) => m._id === sent._id) ? prev : [...prev, sent]
+        );
         setNewMessage("");
-        scrollToBottom();
+        onSent?.();
       }
     } catch (error: any) {
       toast({
@@ -130,7 +137,7 @@ export default function ChatInterface({
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
@@ -223,7 +230,7 @@ export default function ChatInterface({
           <Input
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyDown}
             placeholder="Type a message..."
             disabled={sending}
             className="flex-1"
