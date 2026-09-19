@@ -60,6 +60,10 @@ export default function Signup() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showStartHint, setShowStartHint] = useState(false);
   const [uploadError, setUploadError] = useState("");
+  // Controlled so the digits-only value is posted. The rendered input shows
+  // "+92 335 220 4606" (16 chars) which the backend rejects — it caps phone at
+  // 15 characters (routers/auth.js Joi .max(15)).
+  const [phone, setPhone] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [loginOpen, setLoginOpen] = useState(false);
@@ -231,6 +235,14 @@ export default function Signup() {
       return;
     }
 
+    // Same bounds the backend enforces, so the user sees the problem here
+    // instead of a 400 from /auth/signup.
+    if (phone.length < 10 || phone.length > 15) {
+      setError("Please enter a valid phone number (10 to 15 digits).");
+      setIsSubmitting(false);
+      return;
+    }
+
     const password = e.target.password.value;
     if (!validatePassword(password)) {
       setError("Password must contain at least 8 characters with uppercase, lowercase, number and special character");
@@ -243,7 +255,7 @@ export default function Signup() {
     let data: any = {
       name: e.target.name.value.toUpperCase(),
       email: e.target.email.value,
-      phone: e.target.phone.value,
+      phone,
       gender: e.target.gender.value,
       city: selectedCity || null,
       country: selectedCountry,
@@ -492,7 +504,7 @@ export default function Signup() {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-blue-900 text-sm sm:text-base">Phone Number</Label>
-                    <PhoneNumberInput />
+                    <PhoneNumberInput value={phone} onChange={setPhone} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="suitableTime" className="text-blue-900 text-sm sm:text-base">
@@ -625,7 +637,7 @@ export default function Signup() {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-blue-900 text-sm sm:text-base">Phone Number</Label>
-                    <PhoneNumberInput />
+                    <PhoneNumberInput value={phone} onChange={setPhone} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="qualification" className="text-blue-900 text-sm sm:text-base">
@@ -722,7 +734,7 @@ export default function Signup() {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-blue-900 text-sm sm:text-base">Phone Number</Label>
-                    <PhoneNumberInput />
+                    <PhoneNumberInput value={phone} onChange={setPhone} />
                   </div>
                   <div className="col-span-full space-y-2">
                     <CountryCitySelector
